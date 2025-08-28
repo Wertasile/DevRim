@@ -130,18 +130,24 @@ const allowedOrigins = [
   'http://127.0.0.1:5173'     // optional: some setups use 127.0.0.1 instead of localhost
 ];
 
+// app.use(cors({
+//   origin: function (origin, callback) {
+//     // Allow requests with no origin (e.g., curl, mobile apps)
+//     if (!origin) return callback(null, true);
+//     if (allowedOrigins.includes(origin)) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error('Not allowed by CORS'));
+//     }
+//   },
+//   credentials: true // if you're using cookies or auth headers across origins
+// }));
+
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (e.g., curl, mobile apps)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true // if you're using cookies or auth headers across origins
+  origin: "https://devrim-seven.vercel.app",
+  credentials: true,
 }));
+
 app.options('*', cors());
 
 app.use(logger('dev'));
