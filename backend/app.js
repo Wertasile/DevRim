@@ -128,8 +128,24 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(cors({origin: 'http://localhost:5173',
-  credentials: true
+
+const allowedOrigins = [
+  'https://devrim-seven.vercel.app/',        // production frontend
+  'http://localhost:5173',    // local React/Vite/Next dev server
+  'http://127.0.0.1:5173'     // optional: some setups use 127.0.0.1 instead of localhost
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (e.g., curl, mobile apps)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true // if you're using cookies or auth headers across origins
 }));
 app.options('*', cors());
 
