@@ -72,9 +72,9 @@ async function connectToGoogle (req,res) {
 
     // return a http only cookie
     res.cookie("token", jwtToken, {
-      secure: process.env.NODE_ENV === "production", // true in prod
+      secure: true, // true in prod
       httpOnly: true,                                // prevent JS access
-      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+      sameSite: "None",   // none is prod, Lax in local
       maxAge: 7 * 24 * 60 * 60 * 1000               // 7 days
     });
 
@@ -91,9 +91,9 @@ async function LogoutFromGoogle (req,res) {
   
     // clear the cookie that we have, i.e.
     res.clearCookie("token", {
-      secure: process.env.NODE_ENV === "production",
+      secure: true,
       httpOnly: true,
-      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+      sameSite: "None",
     });
 
     res.json({success: true})
