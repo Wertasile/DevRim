@@ -71,12 +71,12 @@ async function connectToGoogle (req,res) {
     });
 
     // return a http only cookie
-    res.cookie('token', jwtToken, {
-      secure: false,
+    res.cookie("token", jwtToken, {
       httpOnly: true,
-      sameSite: 'Lax',
+      secure: process.env.NODE_ENV === "production",       // true on Railway/HTTPS
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax", // cross-site for prod
       maxAge: 7 * 24 * 60 * 60 * 1000
-    })
+    });
 
     return res.json({success: true})
     
