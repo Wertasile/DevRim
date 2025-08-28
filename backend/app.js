@@ -22,7 +22,7 @@ var client = new OAuth2Client(
 
 
 async function connectToDB () {
-  await mongoose.connect(process.env.MONGO_DB)
+  await mongoose.connect(process.env.MONGO_DB, {})
   .then((result) => {
     console.log("Successfully Connected to Database")
   }).catch((err) => {
