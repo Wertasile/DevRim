@@ -30,8 +30,10 @@ async function connectToDB () {
   });
 }
 
+const isProduction = process.env.NODE_ENV === "production";
 async function connectToGoogle (req,res) {
   const { tokens } = await client.getToken(req.body.code.code)
+  console.log("Tokens from Google:", tokens);
 
   const idToken = tokens.id_token
 
@@ -72,10 +74,10 @@ async function connectToGoogle (req,res) {
 
     // return a http only cookie
     res.cookie("token", jwtToken, {
-      secure: true, // true in prod
-      httpOnly: true,                                // prevent JS access
-      sameSite: "None",   // none is prod, Lax in local
-      maxAge: 7 * 24 * 60 * 60 * 1000               // 7 days
+      secure: isProduction,             // only secure in prod
+      httpOnly: true,
+      sameSite: isProduction ? "None" : "Lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
     return res.json({success: true})
@@ -91,9 +93,9 @@ async function LogoutFromGoogle (req,res) {
   
     // clear the cookie that we have, i.e.
     res.clearCookie("token", {
-      secure: true,
+      secure: isProduction,
       httpOnly: true,
-      sameSite: "None",
+      sameSite: isProduction ? "None" : "Lax"
     });
 
     res.json({success: true})
