@@ -148,7 +148,14 @@ app.use(cors({
   credentials: true,
 }));
 
-app.options('*', cors());
+app.options("*", (req, res) => {
+  res.header("Access-Control-Allow-Origin", "https://devrim-seven.vercel.app");
+  res.header("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.header("Access-Control-Allow-Credentials", "true");
+  return res.sendStatus(200);
+});
+
 
 app.use(logger('dev'));
 app.use(express.json());
