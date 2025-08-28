@@ -4,6 +4,8 @@ import type { Blog } from '~/types/types'
 import Search from '~/components/Search'
 import { NavLink } from 'react-router'
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export default function BlogHome() {
     const [blogs, setBlogs] = useState<Blog []>([])
     const [searchResults, setSearchResults] = useState<Blog[]>([])
@@ -23,7 +25,7 @@ export default function BlogHome() {
     }), [blogs])
 
     const getBlogs = async () => {
-        const response = await fetch("http://localhost:5000/posts/", {
+        const response = await fetch(`${API_URL}/posts/`, {
             method: 'get',
             credentials: 'include',
         })

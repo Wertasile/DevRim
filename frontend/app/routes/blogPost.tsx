@@ -9,18 +9,21 @@ import TextAlign from '@tiptap/extension-text-align';
 import { ListItem } from '@tiptap/extension-list';
 import Image from '@tiptap/extension-image';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export default function BlogPost({ params }: Route.ComponentProps) {
   const [blog, setBlog] = useState<Blog>()
   const [user, setUser] = useState<User | null>(null)
 
   const getBlog = async () => {
-    const response = await fetch(`http://localhost:5000/posts/${params.id}`, {
+    const response = await fetch(`${API_URL}/posts/${params.id}`, {
       method: 'post'
     })
     const data = await response.json()
+    console.log(data)
     setBlog(data)
 
-    const userResponse = await fetch(`http://localhost:5000/users/${data.user}`, {
+    const userResponse = await fetch(`${API_URL}/users/${data.user}`, {
       method: 'get'
     })
     const userData = await userResponse.json()

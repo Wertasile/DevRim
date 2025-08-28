@@ -6,6 +6,9 @@ import type { Blog, User } from '~/types/types'
 import BlogPostCard from '~/components/blogPostCard'
 import fetchUser from '../apiCalls/fetchUser'
 
+
+const API_URL = import.meta.env.VITE_API_URL;
+
 const profile = ({params}: Route.ComponentProps) => {
 
     const [profile, setProfile] = useState<User>()
@@ -28,7 +31,7 @@ const profile = ({params}: Route.ComponentProps) => {
     }, [profile])
 
     const getBlogs = async () => {
-        const response = await fetch(`http://localhost:5000/posts/${profile?._id}`, {
+        const response = await fetch(`${API_URL}/posts/${profile?._id}`, {
             method: 'get',
             credentials: 'include',
         })

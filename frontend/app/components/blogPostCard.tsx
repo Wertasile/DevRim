@@ -5,8 +5,9 @@ type BlogPostProps = {
   title: string;
   summary : string;
   releaseDate: string;
+  content: object;
 }
-const BlogPostCard = ({id, title, releaseDate, summary,} : BlogPostProps) => {
+const BlogPostCard = ({id, title, releaseDate, summary, content} : BlogPostProps) => {
   const date = releaseDate.split("T")
 
   const handleNav = () => {

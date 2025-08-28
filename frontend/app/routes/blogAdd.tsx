@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import Tiptap from '~/components/tiptap/tiptap'
 import { useUser } from '~/context/userContext'
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const BlogAdd = () => {
 
   const {user} = useUser()
@@ -17,7 +19,7 @@ const BlogAdd = () => {
 
   const savePost = async() => {
 
-    const response = await fetch("http://localhost:5000/posts", {
+    const response = await fetch(`${API_URL}/posts`, {
       method: 'post',
       credentials: 'include',
       headers: {

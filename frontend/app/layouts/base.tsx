@@ -4,6 +4,8 @@ import { useGoogleLogin, GoogleLogin, googleLogout } from '@react-oauth/google'
 import { AppProvider, UserProvider, useUser } from '../context/userContext'
 import CustomButton from '~/components/customButton';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const base = () => {
   
     const { user, setUser } = useUser()
@@ -15,7 +17,7 @@ const base = () => {
             onSuccess : async (code ) => {
 
                 // login, get tokens from backend which is sent in response as cookies
-                const tokens = await fetch('http://localhost:5000/auth/google', {
+                const tokens = await fetch(`${API_URL}/auth/google`, {
                     method: 'post',
                     headers: {
                         'Content-Type': 'application/json',
@@ -41,7 +43,7 @@ const base = () => {
 
     async function handleLogout() {
         try {
-            const res = await fetch('http://localhost:5000/logout', {
+            const res = await fetch(`${API_URL}/logout`, {
                 method:'post',
                 credentials: 'include'
             })
@@ -58,7 +60,7 @@ const base = () => {
 
     const fetchUser = async () => {
 
-        const user = await fetch('http://localhost:5000/me', {
+        const user = await fetch(`${API_URL}/me`, {
             method:'get',
             credentials: 'include'
         })

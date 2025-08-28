@@ -5,6 +5,8 @@ import ChatMenu from '~/components/ChatMenu'
 import { useChat, useUser } from '~/context/userContext'
 import type { Chat, Message } from '~/types/types'
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const ChatPage = () => {
 
     const { user, setUser } = useUser()
@@ -23,7 +25,7 @@ const ChatPage = () => {
             onSuccess : async (code ) => {
 
                 // login, get tokens from backend which is sent in response as cookies
-                const tokens = await fetch('http://localhost:5000/auth/google', {
+                const tokens = await fetch(`${API_URL}/auth/google`, {
                     method: 'post',
                     headers: {
                         'Content-Type': 'application/json',
@@ -49,7 +51,7 @@ const ChatPage = () => {
 
     async function handleLogout() {
         try {
-            const res = await fetch('http://localhost:5000/logout', {
+            const res = await fetch(`${API_URL}/logout`, {
                 method:'post',
                 credentials: 'include'
             })
@@ -65,7 +67,7 @@ const ChatPage = () => {
 
     const fetchUser = async () => {
 
-        const user = await fetch('http://localhost:5000/me', {
+        const user = await fetch(`${API_URL}/me`, {
             method:'get',
             credentials: 'include'
         })
@@ -84,7 +86,7 @@ const ChatPage = () => {
 
     const fetchChats = async() => {
 
-        const chatRes = await fetch("http://localhost:5000/chats/", {
+        const chatRes = await fetch(`${API_URL}/chats/`, {
             method: 'get',
             credentials: 'include'
         })

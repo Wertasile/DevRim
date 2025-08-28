@@ -17,12 +17,25 @@ export type Token = {
     idToken : string;
 }
 
+export type TipTapNode = {
+  type: string;
+  attrs?: Record<string, any>;
+  content?: TipTapNode[];
+  text?: string;
+}
+
+export type TipTapDoc = {
+  type: "doc";
+  content: TipTapNode[];
+}
+
+
 export type Blog = {
-    _id: string;
-    title: string;
-    summary : string;
-    content: object;
-    releaseDate: string;
+  _id: string;
+  title: string;
+  summary: string;
+  content: TipTapDoc;  // ✅ now strongly typed
+  releaseDate: string;
 }
 
 export type Chat = {
