@@ -71,12 +71,12 @@ async function connectToGoogle (req,res) {
     });
 
     // return a http only cookie
-    res.cookie('token', jwtToken, {
-      secure: false,
-      httpOnly: true,
-      sameSite: 'None',
-      maxAge: 7 * 24 * 60 * 60 * 1000
-    })
+    res.cookie("token", jwtToken, {
+      secure: process.env.NODE_ENV === "production", // true in prod
+      httpOnly: true,                                // prevent JS access
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000               // 7 days
+    });
 
     return res.json({success: true})
     
@@ -90,11 +90,10 @@ async function connectToGoogle (req,res) {
 async function LogoutFromGoogle (req,res) {
   
     // clear the cookie that we have, i.e.
-    res.cookie("token", jwtToken, {
-      secure: process.env.NODE_ENV === "production", // true in prod
+    res.clearCookie("token", {
+      secure: process.env.NODE_ENV === "production",
       httpOnly: true,
       sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
     res.json({success: true})
