@@ -31,7 +31,7 @@ async function connectToDB () {
 }
 
 async function connectToGoogle (req,res) {
-  const { tokens } = await client.getToken(req.body.code)
+  const { tokens } = await client.getToken(req.body.code.code)
 
   const idToken = tokens.id_token
 
