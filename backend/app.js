@@ -90,11 +90,12 @@ async function connectToGoogle (req,res) {
 async function LogoutFromGoogle (req,res) {
   
     // clear the cookie that we have, i.e.
-    res.clearCookie('token', {
-      secure: false,
+    res.cookie("token", jwtToken, {
+      secure: process.env.NODE_ENV === "production", // true in prod
       httpOnly: true,
-      sameSite: 'Lax',
-    })
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    });
 
     res.json({success: true})
 }
@@ -123,14 +124,8 @@ const getPersonalData = async (req, res) => {
 
 connectToDB()
 
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-
 const allowedOrigins = [
-  'https://devrim-seven.vercel.app/',        // production frontend
+  'https://devrim-seven.vercel.app',        // production frontend
   'http://localhost:5173',    // local React/Vite/Next dev server
   'http://127.0.0.1:5173'     // optional: some setups use 127.0.0.1 instead of localhost
 ];
@@ -148,6 +143,14 @@ app.use(cors({
   credentials: true // if you're using cookies or auth headers across origins
 }));
 app.options('*', cors());
+
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
+
+
 
 app.use('/posts', require('./routes/postRoutes'));
 app.use('/users', require('./routes/userRoutes'));
