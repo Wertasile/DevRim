@@ -1,60 +1,53 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const {OAuth2Client, UserRefreshClient} = require('google-auth-library');
+var createError = require("http-errors");
+var express = require("express");
+var path = require("path");
+var cookieParser = require("cookie-parser");
+var logger = require("morgan");
+const mongoose = require("mongoose");
+const cors = require("cors");
+const { OAuth2Client, UserRefreshClient } = require("google-auth-library");
 const User = require("./models/user");
-const authenticateUser = require('./functions/auth');
-require('dotenv').config();
+const authenticateUser = require("./functions/auth");
+require("dotenv").config();
 const jwt = require("jsonwebtoken");
-
 
 var app = express();
 
 var client = new OAuth2Client(
   process.env.CLIENT_ID,
   process.env.CLIENT_SECRET,
-  'postmessage',
+  "postmessage"
 );
 
-
-async function connectToDB () {
-  await mongoose.connect(process.env.MONGO_DB, {})
-  .then((result) => {
-    console.log("Successfully Connected to Database")
-  }).catch((err) => {
-    console.log(`error ${err}`)
-  });
+async function connectToDB() {
+  await mongoose
+    .connect(process.env.MONGO_DB, {})
+    .then((result) => {
+      console.log("✅ Successfully Connected to Database");
+    })
+    .catch((err) => {
+      console.log(`❌ DB error ${err}`);
+    });
 }
 
-async function connectToGoogle (req,res) {
-  const { tokens } = await client.getToken(req.body.code)
+// ---------- GOOGLE AUTH ----------
 
-  const idToken = tokens.id_token
+async function connectToGoogle(req, res) {
+  const { tokens } = await client.getToken(req.body.code);
+  const idToken = tokens.id_token;
 
   try {
+    const ticket = await client.verifyIdToken({
+      idToken: idToken,
+      audience: process.env.CLIENT_ID,
+    });
 
-    // verifyIdToken return a Login Ticket which has property payload and method getPayload()
+    const payload = ticket.getPayload();
+    const googleId = payload.sub;
 
-    const ticket = await client.verifyIdToken(
-      {
-        idToken : idToken,
-        audience : process.env.CLIENT_ID
-      }
-    )
-
-    // payload consist of serveral properties sub(userid), email, name, picture, etc..
-
-    const payload = ticket.getPayload()
-
-    const googleId = payload.sub
-    
     let user = await User.findOne({ googleId });
 
-    if (!user){
+    if (!user) {
       user = await User.create({
         googleId: payload.sub,
         family_name: payload.family_name,
@@ -62,135 +55,125 @@ async function connectToGoogle (req,res) {
         email: payload.email,
         name: payload.name,
         picture: payload.picture,
-      })
+      });
     }
 
-    // creating JWT token with our secret
     const jwtToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: '7d',
+      expiresIn: "7d",
     });
 
-    // return a http only cookie
-    res.cookie('token', jwtToken, {
-      secure: false,
-      httpOnly: true,
-      sameSite: 'Lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000
-    })
-
-    return res.json({success: true})
-    
-  } catch (error) {
-    console.error(error);
-    return res.status(401).json({ error: 'Invalid token' });
-  }
-  res.json(tokens)
-}
-
-async function LogoutFromGoogle (req,res) {
-  
-    // clear the cookie that we have, i.e.
+    // ✅ Cookie config: secure + sameSite None in production
     res.cookie("token", jwtToken, {
-      secure: process.env.NODE_ENV === "production", // true in prod
+      secure: process.env.NODE_ENV === "production",
       httpOnly: true,
       sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res.json({success: true})
+    return res.json({ success: true });
+  } catch (error) {
+    console.error(error);
+    return res.status(401).json({ error: "Invalid token" });
+  }
+}
+
+async function LogoutFromGoogle(req, res) {
+  res.clearCookie("token", {
+    secure: process.env.NODE_ENV === "production",
+    httpOnly: true,
+    sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+  });
+
+  res.json({ success: true });
 }
 
 const getPersonalData = async (req, res) => {
-  // No need for next() here
-
   console.log("✅ Request user:", req.user);
 
   res.json({
     _id: req.user._id,
-    googleId: req.user.googleId, // 👈 fixed: was req.id.googleId (typo)
+    googleId: req.user.googleId,
     name: req.user.name,
     given_name: req.user.given_name,
     family_name: req.user.family_name,
     email: req.user.email,
-    picture: req.user.picture
+    picture: req.user.picture,
   });
 };
 
-// async function refreshTokenGoogle (req,res) {
-//   const user = new UserRefreshClient(clientId, clientSecret, req.body.refreshToken)
-//   const { credentials } = await user.refreshAccessToken();
-//   res.json(credentials)
-//}
+connectToDB();
 
-connectToDB()
+// ---------- CORS CONFIG ----------
 
 const allowedOrigins = [
-  'https://devrim-seven.vercel.app',        // production frontend
-  'http://localhost:5173',    // local React/Vite/Next dev server
-  'http://127.0.0.1:5173'     // optional: some setups use 127.0.0.1 instead of localhost
+  "https://devrim-seven.vercel.app", // production frontend
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
 ];
 
-// app.use(cors({
-//   origin: function (origin, callback) {
-//     // Allow requests with no origin (e.g., curl, mobile apps)
-//     if (!origin) return callback(null, true);
-//     if (allowedOrigins.includes(origin)) {
-//       callback(null, true);
-//     } else {
-//       callback(new Error('Not allowed by CORS'));
-//     }
-//   },
-//   credentials: true // if you're using cookies or auth headers across origins
-// }));
+// ✅ Apply CORS at the very top
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+  })
+);
 
-app.use(cors({
-  origin: "https://devrim-seven.vercel.app",
-  credentials: true,
-}));
-
+// ✅ Preflight handling
 app.options("*", (req, res) => {
-  res.header("Access-Control-Allow-Origin", "https://devrim-seven.vercel.app");
+  res.header("Access-Control-Allow-Origin", req.headers.origin || "*");
   res.header("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization"
+  );
   res.header("Access-Control-Allow-Credentials", "true");
   return res.sendStatus(200);
 });
 
-
-app.use(logger('dev'));
+// ---------- EXPRESS MIDDLEWARE ----------
+app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")));
 
+// ---------- ROUTES ----------
+app.use("/posts", require("./routes/postRoutes"));
+app.use("/users", require("./routes/userRoutes"));
+app.use("/chats", require("./routes/chatRoutes"));
+app.use("/messages", require("./routes/messageRoutes"));
 
+app.post("/auth/google", connectToGoogle);
+app.get("/me", authenticateUser, getPersonalData);
+app.post("/logout", LogoutFromGoogle);
 
-app.use('/posts', require('./routes/postRoutes'));
-app.use('/users', require('./routes/userRoutes'));
-app.use('/chats', require('./routes/chatRoutes'));
-app.use('/messages', require('./routes/messageRoutes'));
-// app.use('/aws', require('./routes/awsRoutes'));
-
-//google authentication
-app.post("/auth/google", connectToGoogle)
-app.get("/me", authenticateUser, getPersonalData)
-app.post("/logout", LogoutFromGoogle) 
-//app.post("/auth/google/refresh-token", refreshTokenGoogle)
-
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
+// ---------- 404 ----------
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+// ---------- ERROR HANDLER ----------
+app.use(function (err, req, res, next) {
+  // ✅ Ensure CORS headers even on error
+  res.header("Access-Control-Allow-Origin", req.headers.origin || "*");
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization"
+  );
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
 
-  // render the error page
+  res.locals.message = err.message;
+  res.locals.error = req.app.get("env") === "development" ? err : {};
+
   res.status(err.status || 500).json({ error: err.message });
-  // res.render('error');
 });
 
 module.exports = app;
