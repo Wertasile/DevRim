@@ -72,11 +72,13 @@ async function connectToGoogle (req,res) {
       expiresIn: '7d',
     });
 
+    console.log("Setting cookie with SameSite:", isProduction ? "none" : "lax");
+
     // return a http only cookie
     res.cookie("token", jwtToken, {
       secure: isProduction,             // only secure in prod
       httpOnly: true,
-      sameSite: isProduction ? "None" : "Lax",
+      sameSite: isProduction ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
