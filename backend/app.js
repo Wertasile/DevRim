@@ -95,7 +95,7 @@ async function LogoutFromGoogle (req,res) {
     res.clearCookie("token", {
       secure: isProduction,
       httpOnly: true,
-      sameSite: isProduction ? "None" : "Lax"
+      sameSite: isProduction ? "none" : "lax"
     });
 
     res.json({success: true})
