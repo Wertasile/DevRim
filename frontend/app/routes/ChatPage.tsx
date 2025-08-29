@@ -1,5 +1,5 @@
 import { googleLogout, useGoogleLogin } from '@react-oauth/google'
-import { CircleQuestionMark, LayoutGrid, MessageSquare, User } from 'lucide-react'
+import { CircleQuestionMark, LayoutGrid, MessageSquare, Paperclip, SendHorizonal, User } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import ChatMenu from '~/components/ChatMenu'
 import { useChat, useUser } from '~/context/userContext'
@@ -16,7 +16,6 @@ const ChatPage = () => {
     const [ chats, setChats] = useState<Chat[]>()
     const [ messages, setMessages] = useState<Message[]>()
 
-    const [ currentChat, setCurrentChat] = useState<Chat>()
 
     const [ newMessage, setNewMessage] = useState<string>()
 
@@ -94,16 +93,62 @@ const ChatPage = () => {
         const chatData = await chatRes.json()
         console.log(chatData)
         setChats(chatData)
+        // fetchMessages(chatData[0]._id)
     }
+
+    const fetchMessages = async(chatId : any) => {
+        const messages = await fetch(`${API_URL}/messages/${chatId}`, {
+            method:'get',
+            credentials: 'include'
+        })
+
+        if (!messages.ok) {
+            console.error("Failed to fetch user info")
+            return
+        }
+
+        const messageData = await messages.json()
+        console.log("MESSAGES FETCHED!")
+        console.log(messageData)
+        setMessages(messageData)
+    }
+
+    const sendMessage = async() => {
+
+        const response = await fetch(`${API_URL}/messages/`, {
+            method:'post',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+           body: JSON.stringify({content:newMessage, chatId:chat?._id, messageType: "text", url: "url"})
+        })
+
+        if (!response.ok){
+            console.error("Failed to send message!")
+            return
+        }
+
+        const sentMessage = await response.json()
+
+        setMessages( prev => [...(prev ?? []), sentMessage])
+        setNewMessage("")
+    }
+    
 
     useEffect( () => {
         fetchUser()
     }, [])
 
+    useEffect( () => {
+        fetchMessages(chat?._id)
+    }, [chat])
+
+
   return (
     <div className='flex flex-row h-[100vh]'>
 
-        <div className='w-[110px] flex flex-col items-center h-full border-r-[1px] border-solid border-[#979797] justify-between py-5'>
+        <div className='w-[80px] flex flex-col items-center h-full border-r-[1px] border-solid border-[#979797] justify-between py-5'>
             
             <div className='flex flex-col gap-5'>
                 <a href='/'><img src="/Images/DevRim_Logo_0.png" width={48} className='rouned-3xl'/></a>
@@ -140,16 +185,75 @@ const ChatPage = () => {
                 {chat?.chatName === "sender" ? (chat.users.filter((u) => u._id !== user?._id).map( (otherUser) => <h2>{otherUser.name}</h2>)) : (<h3>{chat?._id}</h3>)}
             </h1>
 
-            <div className='flex-end flex flex-col gap-2px px-5'>
+            <div className='flex-end flex flex-col gap-2 px-5 flex-grow justify-end'>
                 {messages?.map( (message, index) => (
-                    <div key={index}/>
+                    <>
+                    {message.sender._id === user?._id ? (
+                        <div 
+                        key={index} 
+                        className='rounded-2xl flex flex-col gap-2 bg-green-100 w-fit p-2 self-end border-solid border-[1px] border-[#979797] font-semibold'
+                        >  
+                            <div>{message.content}</div>
+                            <i className='text-xs text-right font-light'>{message.updatedAt.split("T")[1].slice(0, 5)}</i>
+                        </div>
+                    ) : (
+                        <div key={index} className='flex flex-row gap-2 w-fit p-2 self-start'>
+                            {index === 0 ? (
+                                // First message → always show avatar
+                                <div>
+                                    <img
+                                    src={message.sender.picture}
+                                    width={24}
+                                    height={24}
+                                    className="rounded-xl object-contain "
+                                    />
+                                </div>
+                                ) : (
+                                // For all others → show avatar only if sender changed
+                                message.sender._id !== messages[index - 1].sender._id ? (
+                                    <div>
+                                    <img
+                                        src={message.sender.picture}
+                                        width={24}
+                                        height={24}
+                                        className="rounded-xl object-contain"
+                                    />
+                                    </div>
+                                ) : (<div className="w-[24px]" />)
+                            )}
+
+                              
+                            <div className='rounded-2xl flex flex-col gap-2 bg-[#9A9CD4] min-w-[100px] w-fit p-2 self-end border-solid border-[1px] border-[#979797] font-semibold'>
+                                <div>{message.content}</div>
+                                <i className='text-xs text-right font-light'>{message.updatedAt.split("T")[1].slice(0, 5)}</i>
+                            </div>
+                        </div>
+                    )}
+                    
+                    </>
                 ))}
 
             </div>
 
-            <div>
+            <div className='flex flex-row items-center gap-2 px-2'>
                 <label htmlFor='message' id="message" className='hidden'>Message</label>
-                <input placeholder="Send Message" id="message" name="message" className='mx-5 my-1' onChange={(event) => {setNewMessage(event.target.value)}}/>
+                <input 
+                    placeholder="Send Message" 
+                    id="message" 
+                    name="message"
+                    className='mx-5 my-1' 
+                    value={newMessage ?? ""} 
+                    onKeyDown={(event) => {
+                        if (event.key === "Enter"){
+                            event.preventDefault()
+                            sendMessage()
+                        }
+                    }}
+                    onChange={(event) => {setNewMessage(event.target.value)}
+                
+                }/>
+                <SendHorizonal onClick={() => {sendMessage()}}/>
+                <Paperclip/>
             </div>
             
 

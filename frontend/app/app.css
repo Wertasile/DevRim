@@ -326,11 +326,7 @@ input, textarea{
         linear-gradient(var(--border-1), var(--border-2))border-box; */
 }
 
-#blog-post{
-    margin: 0 auto;
-    width: 700px;
-    height: 100%;
-}
+
 
 body{
     display: flex;

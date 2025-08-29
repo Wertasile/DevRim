@@ -49,9 +49,9 @@ export type Chat = {
 
 export type Message = {
     _id:string,
-    sender: string,
+    sender: User,
     content: string,
     chat: string;
-    created_at: string;
-    updated_at: string;
+    createdAt: string;
+    updatedAt: string;
 }

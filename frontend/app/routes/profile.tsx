@@ -46,19 +46,20 @@ const profile = ({params}: Route.ComponentProps) => {
         <div className='w-[400px] md:border-r-[2px] border-black border-solid flex flex-col gap-3 p-2 '>
             <img className="rounded-3xl " src={profile?.picture} width={64} height={64}/>
             <div>
-                <p>{profile?.picture}</p>
                 <h3>{profile?.name}</h3>
                 <i>{profile?.email}</i>
             </div>
 
             <p>About</p>
         </div>
-        <div className='p-2 flex-grow'>
-            <h1 className='hidden md:block'>{profile?.name}</h1>
+        <div className='p-2 flex-grow flex flex-col gap-5'>
             <h1 className='hidden md:block'>BLOGPOSTS</h1>
-            {blogs.map((b) => (
+            <div className='flex flex-col gap-5'>
+                {blogs.map((b) => (
                     <BlogPostCard key={b._id} id={b._id} title={b.title} releaseDate={b.releaseDate} summary={b.summary}/>
                 ))}
+            </div>
+            
         </div>
     </div>
   )

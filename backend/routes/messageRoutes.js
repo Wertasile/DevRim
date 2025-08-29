@@ -3,11 +3,11 @@ const {
   allMessages,
   sendMessage,
 } = require("../controllers/messageController");
-const { authenticateUser } = require("../functions/auth");
+const  authenticateUser = require("../functions/auth");
 
 const router = express.Router();
 
 router.get("/:chatId", allMessages);
-router.post("/",sendMessage);
+router.post("/",authenticateUser, sendMessage);
 
 module.exports = router;
