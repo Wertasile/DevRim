@@ -1,4 +1,5 @@
 const User = require("../models/user")
+const Post = require('../models/post')
 
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken')
@@ -88,4 +89,42 @@ const deleteUser = async (req, res) => {
     }
 }
 
-module.exports = {fetchUser, createUser, loginUser, logoutUser, deleteUser}
+const likeBlog = async (req, res) => {
+
+    const userId = req.user._id
+    const blogId = req.params.blogId
+
+    const updateLike = await User.findByIdAndUpdate(
+        userId,
+        { $addToSet: { liked: blogId } },
+        { new: true } 
+    )
+
+    const addToBlogLikes = await Post.findByIdAndUpdate(
+        blogId,
+        { $addToSet: { likes: userId } }
+    )
+
+    res.send(updateLike)
+}
+
+const unlikeBlog = async (req, res) => {
+
+    const userId = req.user._id
+    const blogId = req.params.blogId
+
+    const updateLike = await User.findByIdAndUpdate(
+        userId,
+        { $pull: { liked: blogId } }
+    )
+
+    const removeFromBlogLikes = await Post.findByIdAndUpdate(
+        blogId,
+        { $pull: { likes: userId } }
+    )
+
+    res.send(updateLike)
+
+}
+
+module.exports = {fetchUser, createUser, loginUser, logoutUser, deleteUser, likeBlog, unlikeBlog}

@@ -41,7 +41,15 @@ const getPost = async(req, res) => {
     try
     {
         const id = req.params.id
-        const data = await Post.findById(id).exec()
+        const data = await Post.findById(id)
+        .populate({
+            path : "comments",
+            populate: {
+                path: "user",
+                select: "name picture"
+            }
+        })
+        .exec()
         res.send(data)
     } 
     catch(e){console.log(e)}     

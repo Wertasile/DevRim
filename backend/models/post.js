@@ -7,7 +7,9 @@ const postSchema = new Schema({
     summary: {type: String, required: true},
     content: {type: Object, required: true},
     releaseDate : {type: Date}, // we use form with type: date-time local
-    user: {type: Schema.Types.ObjectId, ref: "user"}
+    user: {type: Schema.Types.ObjectId, ref: "user"},
+    comments: [{type: Schema.Types.ObjectId, ref:"comment"}],
+    likes: [{type: Schema.Types.ObjectId, ref:"user"}],
 })
 
 const post = mongoose.model("post", postSchema)

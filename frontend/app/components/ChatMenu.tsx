@@ -16,7 +16,7 @@ const ChatMenu = ({Chat} : ChatMenuProps) => {
     <div className='border-b-[1px] border-solid border-[#979797] flex flex-row py-2 justify-between' onClick={() => {setChat(Chat)}}>
         <div>
             {Chat?.chatName === "sender" ? (<h3>{Chat.users.filter((u) => u._id !== user?._id).map( (otherUser) => <h3>{otherUser.name}</h3>)}</h3>) : (<h3>{Chat?._id}</h3>)}
-            <p>Message</p>
+            <p className='font-light text-sm'>{Chat?.latestMessage.content}</p>
         </div>
         <div>
             {Chat?.chatName === "sender" ? 
@@ -30,7 +30,7 @@ const ChatMenu = ({Chat} : ChatMenuProps) => {
                 width={48}
               />)
             }
-            <div className='mt-[5px]'>{Chat?.updatedAt.split("T")[0]}</div>
+            <i className='mt-[5px] text-xs'>{Chat?.updatedAt.split("T")[0]}</i>
         </div>
         
     </div>

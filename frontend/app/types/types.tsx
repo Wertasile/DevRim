@@ -1,5 +1,12 @@
 import type { ReactNode } from "react";
 
+export type List = {
+  _id: string;
+  user: User;
+  name: string;
+  blogs: Blog[]
+}
+
 export type User = {
     googleId: string,
     email: string;
@@ -8,7 +15,10 @@ export type User = {
     _id: string;
     name: string;
     picture: string;
-
+    lists: List[];
+    liked: Blog[];
+    following: User[];
+    followers: User[];
 }
 
 export type Token = {
@@ -29,6 +39,12 @@ export type TipTapDoc = {
   content: TipTapNode[];
 }
 
+export type Comment = {
+  _id: string;
+  blog: Blog;
+  comment: string;
+  user: User;
+}
 
 export type Blog = {
   _id: string;
@@ -36,12 +52,15 @@ export type Blog = {
   summary: string;
   content: TipTapDoc;  // ✅ now strongly typed
   releaseDate: string;
+  likes : User[];
+  Comments: Comment[];
 }
 
 export type Chat = {
     _id:string,
     chatName: string,
     isGroupChat: boolean;
+    latestMessage: Message;
     users: User[];
     created_at: string;
     updatedAt: string;

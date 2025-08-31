@@ -65,7 +65,7 @@ const fetchChats = asyncHandler(async (req, res) => {
     .populate("users")
       // .populate("users", "-password")
       // .populate("groupAdmin", "-password")
-      // .populate("latestMessage")
+      .populate("latestMessage")
       .sort({ updatedAt: -1 })
       // .then(async (results) => {
       //   results = await User.populate(results, {

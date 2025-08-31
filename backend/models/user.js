@@ -7,6 +7,8 @@ const userSchema = new mongoose.Schema({
   email: String,
   name: String,
   picture: String,
+  liked: [{type: mongoose.Schema.Types.ObjectId, ref:"post"}],
+  lists: [{type: mongoose.Schema.Types.ObjectId, ref:"list"}]
 });
 
 module.exports = mongoose.model('user', userSchema);

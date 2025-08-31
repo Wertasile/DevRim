@@ -1,4 +1,4 @@
-const userController = require("../controllers/userController");
+const { logoutUser, loginUser, fetchUser, createUser, likeBlog, unlikeBlog} = require("../controllers/userController");
 const authenticateUser = require("../functions/auth");
 // const protect =require("../functions/auth")
 
@@ -6,9 +6,11 @@ var express = require('express');
 var router = express.Router();
 
 /* GET users listing. */
-router.get('/logout', authenticateUser, userController.logoutUser);
-router.post('/login', userController.loginUser);
-router.get('/:userid', userController.fetchUser,);
-router.post('/', userController.createUser);
+router.get('/logout', authenticateUser, logoutUser);
+router.post('/login', loginUser);
+router.get('/:userid', fetchUser,);
+router.post('/', createUser);
+router.put('/like/:blogId', authenticateUser, likeBlog)
+router.delete('/like/:blogId', authenticateUser, unlikeBlog)
 
 module.exports = router;

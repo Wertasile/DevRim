@@ -115,7 +115,9 @@ const getPersonalData = async (req, res) => {
     given_name: req.user.given_name,
     family_name: req.user.family_name,
     email: req.user.email,
-    picture: req.user.picture
+    picture: req.user.picture,
+    liked: req.user.liked,
+    lists: req.user.lists,
   });
 };
 
@@ -161,6 +163,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/posts', require('./routes/postRoutes'));
 app.use('/users', require('./routes/userRoutes'));
 app.use('/chats', require('./routes/chatRoutes'));
+app.use('/comments', require('./routes/commentRoutes'));
 app.use('/messages', require('./routes/messageRoutes'));
 // app.use('/aws', require('./routes/awsRoutes'));
 
