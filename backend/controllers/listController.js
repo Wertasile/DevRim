@@ -2,6 +2,16 @@ const List = require('../models/list')
 const Post = require('../models/post')
 const User = require('../models/user')
 
+const getAllList = async (req, res) => {
+    
+    const userId = req.params.userId
+
+    const data = await List.find({user: userId})
+    .exec()
+
+    res.send(data)
+}
+
 const fetchList = async (req, res) => {
     
     const listId = req.params.listId
@@ -16,13 +26,13 @@ const fetchList = async (req, res) => {
 const createList = async (req, res) => {
 
     const userId = req.user._id
-    const { listName } = req.body
+    const { name } = req.body
     console.log(req.body)
     const addedList = await List.create(
         {
             blogs: [],
             user: userId,
-            name: listName
+            name: name
         }
     )
 
@@ -55,8 +65,10 @@ const addToList = async (req, res) => {
 const deleteFromList = async (req, res) => {
 
     const listId = req.params.listId
+    const blogId = req.params.blogId
+
     const userId = req.user._id
-    const { blogId } = req.body
+
     console.log(req.body)
 
     const addBlogToList = await List.findByIdAndUpdate(
@@ -86,4 +98,4 @@ const deleteList = async (req, res) => {
     res.status(200).json(data)
 }
 
-module.exports = {fetchList, createList, addToList, deleteFromList, deleteList}
+module.exports = {getAllList, fetchList, createList, addToList, deleteFromList, deleteList}

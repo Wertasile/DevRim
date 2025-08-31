@@ -1,17 +1,16 @@
 const express = require("express");
 
-const {
-  getComments,
-  addComment,
-} = require("../controllers/commentController");
 
 const  authenticateUser = require("../functions/auth");
+const { getAllList, fetchList, createList, addToList, deleteFromList, deleteList } = require("../controllers/listController");
 
 const router = express.Router();
 
+router.get("/user/:userId", authenticateUser, getAllList)
 router.get("/:listId", authenticateUser, fetchList);
 router.post("/", authenticateUser, createList);
-router.update("/:listId", authenticateUser,updateList);
+router.put("/:listId", authenticateUser,addToList);
+router.delete("/:listId/blogs/:blogId", authenticateUser, deleteFromList);
 router.delete("/:listId", authenticateUser, deleteList);
 
 module.exports = router;

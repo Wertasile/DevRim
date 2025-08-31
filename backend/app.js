@@ -165,6 +165,7 @@ app.use('/users', require('./routes/userRoutes'));
 app.use('/chats', require('./routes/chatRoutes'));
 app.use('/comments', require('./routes/commentRoutes'));
 app.use('/messages', require('./routes/messageRoutes'));
+app.use('/lists', require('./routes/listRoutes'));
 // app.use('/aws', require('./routes/awsRoutes'));
 
 //google authentication
