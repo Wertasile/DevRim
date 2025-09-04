@@ -9,16 +9,19 @@ import {
   MicOff,
   Paperclip,
   SendHorizonal,
-  User,
+  UserIcon,
+  Users,
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import ChatMenu from "~/components/ChatMenu";
 import { useChat, useNotification, useUser } from "~/context/userContext";
-import type { Chat, Message } from "~/types/types";
+import type { Chat, Message, User } from "~/types/types";
 import io from "socket.io-client" // io is a function to call an individual socket
+import { socket } from "../components/socket";
+import GroupModal from "~/components/groupModal";
 
 const API_URL = import.meta.env.VITE_API_URL;
-var socket : any;
+
 var selectedChatCompare: any;
 
 const ChatPage = () => {
@@ -46,6 +49,14 @@ const ChatPage = () => {
 
   const [typing, setTyping] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+
+  const [convoModal, setConvoModal] = useState(false)
+  const [convoUser, setConvoUser] = useState("")
+
+  const [groupModal, setGroupModal] = useState(false)
+  const [groupName, setGroupName] = useState("")
+  const [searchUser, setSearchUser] = useState<User[]>([]) // search results
+  const [groupUsers, setGroupUsers] = useState<User[]>([]) // users selected by user
 
   // ---------- LOGIN / LOGOUT ----------
 
@@ -347,8 +358,6 @@ const ChatPage = () => {
 
   useEffect(() => {
     if (user){
-      // starting socket connection by passing in the URL of our server
-      socket = io(API_URL)
       socket.emit("setup", user)  // send setup event to server, we also emit user data
 
       //socket listens to connected event declared in server.js, even runs everytime we connect to server
@@ -359,6 +368,13 @@ const ChatPage = () => {
       // for typing checking
       socket.on("typing", () => setIsTyping(true))
       socket.on("stop typing", () => setIsTyping(false))
+
+      // Cleanup to prevent duplicate listeners on re-render
+      return () => {
+        socket.off("connected");
+        socket.off("typing");
+        socket.off("stop typing");
+      };
     }
   }, [])
 
@@ -416,6 +432,11 @@ const ChatPage = () => {
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   return (
+    <>
+    {groupModal && 
+      <GroupModal groupName={groupName} setGroupName={setGroupName} groupUsers={groupUsers} setGroupUsers={setGroupUsers} searchUser={searchUser} setSearchUser={setSearchUser} setGroupModal={setGroupModal}/>
+    }
+    
     <div className="flex flex-row h-[100vh]">
       {/* SIDEBAR */}
       <div className="w-[80px] flex flex-col items-center h-full border-r border-[#979797] justify-between py-5">
@@ -424,7 +445,7 @@ const ChatPage = () => {
             <img src="/Images/DevRim_Logo_0.png" width={48} />
           </a>
           <MessageSquare className="w-[48px] text-[#979797]" />
-          <User className="w-[48px] text-[#979797]" />
+          <UserIcon className="w-[48px] text-[#979797]" />
         </div>
         <div className="flex flex-col gap-5">
           <CircleQuestionMark className="w-[48px] text-[#979797]" />
@@ -435,7 +456,12 @@ const ChatPage = () => {
 
       {/* CHAT MENU */}
       <div className="w-[400px] flex flex-col border-r border-[#979797]">
-        <div className="h-[50px] border-b border-[#979797]" />
+        <div className="h-[50px] border-b border-[#979797] flex items-center p-2 gap-3 ">
+          <div className="bg-[#EEEEEE] hover:text-white hover:bg-black p-2 rounded-xl cursor-pointer w-full text-center">
+            Find or Start a Conversation
+          </div>
+          <div className="flex bg-[#EEEEEE] hover:text-white hover:bg-black p-2 rounded-xl cursor-pointer" onClick={() => {setGroupModal(!groupModal)}}> + <Users/></div>
+        </div>
         <div className="flex flex-col gap-5 p-5">
           {chats?.map((chat, index) => (
             <ChatMenu key={index} Chat={chat} />
@@ -538,6 +564,7 @@ const ChatPage = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 
