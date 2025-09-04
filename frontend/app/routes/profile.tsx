@@ -93,7 +93,7 @@ const profile = ({params}: Route.ComponentProps) => {
     <div>
         {listModal && 
         <div className='absolute h-[85vh] w-[100vw] backdrop-blur-sm flex justify-center items-center' onClick={handleCreateList}>
-            <div className='bg-blue-100 w-[300px h-[300px] flex flex-col items-center justify-center gap-5 p-10 rounded-3xl' onClick={(e) => e.stopPropagation()}>
+            <div className='bg-blue-100 w-[300px] h-[300px] flex flex-col items-center justify-center gap-5 p-10 rounded-3xl' onClick={(e) => e.stopPropagation()}>
                 <label className='hidden' id="list" htmlFor='list'></label>
                 <input 
                     name="list" 
@@ -107,7 +107,7 @@ const profile = ({params}: Route.ComponentProps) => {
         </div>
         }
         <div className='flex flex-col md:flex-row p-2 sm:p-10'>
-            <div className='w-[400px] md:border-r-[2px] border-black border-solid flex flex-col gap-3 p-2 '>
+            <div className='w-[350px] md:border-r-[2px] border-black border-solid flex flex-col gap-3 p-2 '>
                 <img className="rounded-3xl " src={profile?.picture} width={64} height={64}/>
                 <div>
                     <h3>{profile?.name}</h3>
@@ -116,9 +116,19 @@ const profile = ({params}: Route.ComponentProps) => {
 
                 <p>About</p>
             </div>
-            <div className='p-2 flex-grow flex flex-col gap-5'>
+            <div className='p-5 flex-grow flex flex-col gap-5'>
+
+                <div className='flex flex-row gap-5 border-solid border-b-[2px] border-[#979797]'>
+                    <h3 className='' onClick={() => setView("blogs")}>Blogs</h3>
+                    <h3 className='' onClick={() => setView("lists")}>Lists</h3>
+                    {/* <h3 className='' onClick={() => setView("about")}>About</h3> */}
+                    {profile?._id === user?._id && 
+                        <h3 className='' onClick={() => setView("liked")}>Liked</h3>
+                    }
+                </div>
+
                 <div className='flex justify-between'>
-                    <h2>{profile?.name}</h2>
+                    <h2 className='uppercase font-semibold'>{view}</h2>
                     {view === "lists" && profile?._id === user?._id && 
                     <button 
                         className='primary-btn cursor-pointer'
@@ -128,19 +138,10 @@ const profile = ({params}: Route.ComponentProps) => {
                     </button>}
                 </div>
 
-                <div className='flex flex-row gap-5'>
-                    <h3 className='' onClick={() => setView("blogs")}>Blogs</h3>
-                    <h3 className='' onClick={() => setView("lists")}>Lists</h3>
-                    <h3 className='' onClick={() => setView("about")}>About</h3>
-                    {profile?._id === user?._id && 
-                        <h3 className='' onClick={() => setView("liked")}>Liked</h3>
-                    }
-                </div>
-                
                 {view === "blogs" && (
                     <div className='flex flex-col gap-5'>
                         {blogs.map((b) => (
-                            <BlogPostCard key={b._id} id={b._id} title={b.title} releaseDate={b.releaseDate} summary={b.summary}/>
+                            <BlogPostCard key={b._id} id={b._id} user={b.user} title={b.title} releaseDate={b.releaseDate} summary={b.summary} comments={b.comments} likes={b.likes}/>
                         ))}
                     </div>
                     )
@@ -148,14 +149,17 @@ const profile = ({params}: Route.ComponentProps) => {
 
                 {view === "lists" && (
                     <div className='flex flex-col gap-5'>
-                        {profile?.lists.map((list, index) => (
-                            <div key={index}>list {index+1}</div>
+                        {lists?.map((list) => (
+                            <div className='flex flex-col'>
+                                <div>{list.name}</div>
+                                <div className='text-[#979797]'>{list.blog?.length} blog(s)</div>
+                            </div>
                         ))}
                     </div>
                     )
                 }
 
-                {view === "about" && (
+                {/* {view === "about" && (
                     <div className='flex flex-col gap-5'>
                         {lists?.map((list) => (
                             <>
@@ -165,12 +169,12 @@ const profile = ({params}: Route.ComponentProps) => {
                         ))}
                     </div>
                     )
-                }
+                } */}
 
                 {view === "liked" && (
                     <div className='flex flex-col gap-5'>
                         {profile?.liked.map((b, index) => (
-                            <BlogPostCard key={index} id={b._id} title={b.title} releaseDate={b.releaseDate} summary={b.summary}/>
+                            <BlogPostCard key={index} id={b._id} user={b.user} title={b.title} releaseDate={b.releaseDate} summary={b.summary} comments={b.comments} likes={b.likes}/>
                         ))}
                     </div>
                     )

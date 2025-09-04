@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, type ReactNode } from 'react';
-import type { Chat, User } from '~/types/types';
+import type { Chat, Message, User } from '~/types/types';
+
+// =============================== USER CONTEXT  ==========================================================================================================================
 
 // --- User Context Types ---
 type UserContextProps = {
@@ -26,6 +28,8 @@ export const useUser = () => {
   return context;
 };
 
+// ============================= CHAT CONTEXT ================================================================================================================================
+
 // --- Chat Context Types ---
 type ChatContextProps = {
   chat: Chat | null;
@@ -49,6 +53,34 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
 export const useChat = () => {
   const context = useContext(chatContext);
   if (!context) throw new Error("useUser must be used within a UserProvider");
+  return context;
+};
+
+// =========================== NOTIFICATION CONTEXT ========================================================================================================================
+
+// --- Notification Context Types ---
+type NotificationContextProps = {
+  notification: Message[];
+  setNotification: React.Dispatch<React.SetStateAction<Message[]>>;
+}
+
+
+// -- Chat Context
+export const notificationContext = createContext<NotificationContextProps | null>(null);
+
+export const NotificationProvider = ({ children }: { children: ReactNode }) => {
+  const [notification, setNotification] = useState<Message[]>([]);
+
+  return (
+    <notificationContext.Provider value={{ notification, setNotification }}>
+      {children}
+    </notificationContext.Provider>
+  )
+}
+
+export const useNotification = () => {
+  const context = useContext(notificationContext);
+  if (!context) throw new Error("useNotification must be used within a UserProvider");
   return context;
 };
 
@@ -84,7 +116,9 @@ export const AppProvider = ({children} : {children : React.ReactNode}) => {
     return(
         <UserProvider>
             <ChatProvider>
+              <NotificationProvider>
                 {children}
+              </NotificationProvider>
             </ChatProvider>
         </UserProvider>
     )

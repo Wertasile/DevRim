@@ -4,7 +4,7 @@ export type List = {
   _id: string;
   user: User;
   name: string;
-  blogs: Blog[]
+  blog: Blog[]
 }
 
 export type User = {
@@ -50,10 +50,11 @@ export type Blog = {
   _id: string;
   title: string;
   summary: string;
+  user: User;
   content: TipTapDoc;  // ✅ now strongly typed
   releaseDate: string;
   likes : User[];
-  Comments: Comment[];
+  comments: Comment[];
 }
 
 export type Chat = {
@@ -71,6 +72,8 @@ export type Message = {
     sender: User,
     content: string,
     chat: string;
+    messageType: string;
+    url: string;
     createdAt: string;
     updatedAt: string;
 }

@@ -4,7 +4,7 @@ const fetchPosts = async(req, res) => {
     try
     {   
         const currentUser = req.user
-        const data = await Post.find().exec()
+        const data = await Post.find().populate("user").exec()
         res.send(data)
     } 
     catch(e){console.log(e)}     

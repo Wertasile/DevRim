@@ -10,6 +10,8 @@ const User = require("./models/user");
 const authenticateUser = require('./functions/auth');
 require('dotenv').config();
 const jwt = require("jsonwebtoken");
+const { S3Client, PutObjectCommand, GetObjectCommand } = require("@aws-sdk/client-s3");
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
 
 var app = express();
@@ -20,7 +22,7 @@ var client = new OAuth2Client(
   'postmessage',
 );
 
-
+// CONNECTING TO MONGODB DATABASE
 async function connectToDB () {
   await mongoose.connect(process.env.MONGO_DB, {})
   .then((result) => {
@@ -31,6 +33,8 @@ async function connectToDB () {
 }
 
 const isProduction = process.env.NODE_ENV === "production";
+
+// -------------------- GOOGLE SIGN IN - SIGN OUT - GOOGLE TOKEN MANAGEMENT ----------------------------------------------------------------------------------------//
 async function connectToGoogle (req,res) {
   const { tokens } = await client.getToken(req.body.code.code)
   console.log("Tokens from Google:", tokens);
@@ -121,13 +125,12 @@ const getPersonalData = async (req, res) => {
   });
 };
 
-// async function refreshTokenGoogle (req,res) {
-//   const user = new UserRefreshClient(clientId, clientSecret, req.body.refreshToken)
-//   const { credentials } = await user.refreshAccessToken();
-//   res.json(credentials)
-//}
+
 
 connectToDB()
+
+
+// -------------------- CROSS ORIGIN RESOURCE SHARING SETTINGS ------------------------------------------------------------------------------------------------------------
 
 const allowedOrigins = [
   'https://devrim-seven.vercel.app',        // production frontend
@@ -151,7 +154,7 @@ app.use(
 
 app.options("*", cors());
 
-
+// ------------------------ ADDITION OF VARIOUS MIDDLEWARES ----------------------------------------------------------------------------------------------------------------
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -159,7 +162,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-
+// -------------------------- ALL ROUTES ------------------------------------------------------------------------------------------------------------------------------------
 app.use('/posts', require('./routes/postRoutes'));
 app.use('/users', require('./routes/userRoutes'));
 app.use('/chats', require('./routes/chatRoutes'));
@@ -173,6 +176,65 @@ app.post("/auth/google", connectToGoogle)
 app.get("/me", authenticateUser, getPersonalData)
 app.post("/logout", LogoutFromGoogle) 
 //app.post("/auth/google/refresh-token", refreshTokenGoogle)
+
+// --------------------------- S3 FILE UPLOAD STUFF -------------------------------------------------------------------------------------------------------------------------
+
+const s3 = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY,
+    secretAccessKey: process.env.AWS_SECRET,
+  },
+  requestChecksumCalculation: "WHEN_REQUIRED",
+});
+
+// ----------------------------- GENERATING PRESIGNED URL FOR UPLOADING --------------------------------------------------------------------------------------------------
+app.get("/s3/presign-upload", async (req, res) => {
+  try {
+    const { filename, contentType, type } = req.query;
+
+    let bucket = process.env.S3_BUCKET_FILE;
+    // if (type === "audio") bucket = process.env.S3_BUCKET_AUDIO;
+    // else if (type === "image") bucket = process.env.S3_BUCKET_IMAGE;
+
+    const command = new PutObjectCommand({
+      Bucket: bucket,
+      Key: filename,
+      ContentType: contentType,
+    });
+
+    const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 }); // 5 min
+
+    res.json({ uploadUrl, key: filename });
+  } catch (err) {
+    console.error("Error generating presigned upload URL:", err);
+    res.status(500).json({ error: "Failed to generate presigned upload URL" });
+  }
+});
+
+// --------------------------------- GENERATING A PRESIGNED URL FOR DOWNLOADING --------------------------------------------------------------------------------------------
+app.get("/s3/presign-download", async (req, res) => {
+  try {
+    const { filename } = req.query;
+
+    if (!filename) return res.status(400).json({ error: "Filename is required" });
+
+    const command = new GetObjectCommand({
+      Bucket: process.env.S3_BUCKET_FILE, // single bucket
+      Key: filename,
+    });
+
+    const downloadUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 60 }); // 1 hour
+
+    res.json({ downloadUrl });
+  } catch (err) {
+    console.error("Error generating presigned download URL:", err);
+    res.status(500).json({ error: "Failed to generate presigned download URL" });
+  }
+});
+
+
+// ------------------------------------------ SOME DEFAULT STUFF ------------------------------------------------------------------------------------------------------------
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

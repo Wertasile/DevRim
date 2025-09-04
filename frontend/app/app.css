@@ -163,35 +163,7 @@ input, button, select, textarea {
 
 p{margin-top: 20px;}
 li p{margin-top: 0px;}
-header{
-    background: var(--background-color);  
-    border-radius: 1rem;
-    display: flex;
-    width: 80vw;
-    justify-content: space-between;
-    margin: 10px auto;
-    padding: 10px;
-    top: 10px;
-    position:sticky;
-    border: 0.5px solid gray;  
-}
 
-nav{
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-footer{
-    background-color: #191919;
-    color: white;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding: 20px 10px;
-    bottom: 0;
-    margin: 20px 0 0 0;
-}
 
 .primary-btn{
     background-color: orange;
@@ -308,13 +280,6 @@ input, textarea{
     width: 100%;
 }
 
-.blogs_x{
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid antiquewhite;
-    background-color: black;
-    border: 1px solid transparent;
-    color: white;
     /* background-image:
         radial-gradient(circle at 50% 250%, var(--primary-500), var(--primary-500)),
         linear-gradient(red,blue);
@@ -324,7 +289,7 @@ input, textarea{
     /* background: 
         radial-gradient(circle at 50% 250%, rgb(65, 72, 100), rgba(0, 0, 0, 0.92))padding-box,
         linear-gradient(var(--border-1), var(--border-2))border-box; */
-}
+
 
 
 

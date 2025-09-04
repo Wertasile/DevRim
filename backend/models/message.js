@@ -7,7 +7,7 @@ const messageModel = Schema({
     sender : {type: Schema.Types.ObjectId, ref:"user"},
     content : {type:String, trim:true},
     chat : {type: Schema.Types.ObjectId, ref:"Chat"},
-    messagetype: {type:String},
+    messageType: {type:String},
     url: {type:String}
 },{
     timestamps:true

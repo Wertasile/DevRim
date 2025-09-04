@@ -47,13 +47,12 @@ export default function BlogHome() {
     return (
         <>
             <div id='blog-taskbar'>
-                <button className='primary-btn'><NavLink to="">ADD POST</NavLink></button>
                 <Search onChange={handleSearch}/>
-                <button className='primary-btn'><NavLink to="">ADD POST</NavLink></button>
+                <button className='primary-btn'><NavLink to="/blog/new">ADD POST</NavLink></button>
             </div>
             <section id="blogs">
                 {searchResults.map((b) => (
-                    <BlogPostCard key={b._id} id={b._id} title={b.title} releaseDate={b.releaseDate} summary={b.summary} content={b.content}/>
+                    <BlogPostCard key={b._id} id={b._id} user={b.user} title={b.title} releaseDate={b.releaseDate} summary={b.summary} content={b.content} comments={b.comments} likes={b.likes}/>
                 ))}
             </section>
         </>

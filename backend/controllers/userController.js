@@ -10,8 +10,13 @@ const fetchUser = async (req, res) => {
     try {
         const id = req.params.userid
         const data = await User.findOne({_id:id})
-            .populate("liked")
-            .exec()
+            .populate({
+                path : "liked",
+                populate: {
+                    path: "user",
+                    select: "name picture"
+                }
+            })
         res.send(data)
     } catch (error) {
         console.log(error)

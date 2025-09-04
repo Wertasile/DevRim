@@ -83,9 +83,9 @@ const base = () => {
         <>
         
         
-            <header>
+            <header className='w-full sticky top-0 flex justify-between p-3 text-black backdrop-blur-sm'>
                 <a href='/'><img src="/Images/DevRim_Logo_0.png" height="16"/></a>
-                <nav className='relative text-[rgba(255,255,255,0.7)]'>
+                <nav className='relative flex items-center gap-7'>
                     <NavLink to="/blog" target="_self">BLOGS</NavLink>
                     <NavLink to="/projects" target="_self">PROJECTS</NavLink>
                     {/* <a href="projects/projects.html" target="_self">Projects</a> */}
@@ -104,7 +104,7 @@ const base = () => {
                         (<CustomButton onClick={handleLogin}>LOGIN</CustomButton>)
                     }
                     {menu && 
-                        <div className='absolute shadow-lg right-0 top-20 flex text-black flex-col gap-5 p-3 rounded-3xl w-[200px]'>
+                        <div className='absolute shadow-lg right-0 bg-white top-20 flex text-black flex-col gap-5 p-3 rounded-3xl w-[200px]'>
                             <a href={`/profile/${user?._id}`}>Profile</a>
                             <a>Your Posts</a>
                             <a>Your Library</a>
@@ -121,7 +121,7 @@ const base = () => {
                 <Outlet/>
             </main>
 
-            <footer>
+            <footer className='bg-[#191919] text-white flex justify-around items-center px-[10px] py-[20px] bottom-0 mt-[20px]'>
                 <div>
                     <img src="/Images/DevRim_Logo.png" height="64"/>
                     <p>A platform for developers</p>

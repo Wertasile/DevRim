@@ -27,6 +27,8 @@ export default function BlogPost({ params }: Route.ComponentProps) {
   const [like, setLike] = useState<boolean>(false)
   const [noLikes, setNoLikes] = useState<number>(0)
 
+  const [listModal, setListModal] = useState<boolean>(true)
+
   const getBlog = async () => {
     const response = await fetch(`${API_URL}/posts/${params.id}`, {
       method: 'post'
@@ -158,7 +160,17 @@ export default function BlogPost({ params }: Route.ComponentProps) {
         
         <Share2/>
         <a href="#comments"><MessageSquare/></a>
-        <Bookmark/>
+        <div className="relative">
+          <Bookmark onClick={() => setListModal(!listModal)} className="cursor-pointer" />
+
+          {listModal && (
+            <div className="absolute top-7  bg-white shadow-md rounded-md p-2 flex flex-col gap-2 w-[150px]">
+              <div className="cursor-pointer hover:bg-gray-100 px-2 py-1 rounded">LIST 1</div>
+              <div className="cursor-pointer hover:bg-gray-100 px-2 py-1 rounded">LIST 2</div>
+            </div>
+          )}
+        </div>
+
       </div>
 
       {/* Render full content */}
