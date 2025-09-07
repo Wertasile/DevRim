@@ -4,7 +4,7 @@ const Schema = mongoose.Schema
 
 const listModel = Schema(
     {
-        blog: [{type: Schema.Types.ObjectId, ref: "post"}],
+        blogs: [{type: Schema.Types.ObjectId, ref: "post"}],
         name: {type: String},
         user: {type: Schema.Types.ObjectId, ref:"user"},
     },

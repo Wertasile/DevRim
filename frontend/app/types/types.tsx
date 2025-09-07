@@ -4,7 +4,7 @@ export type List = {
   _id: string;
   user: User;
   name: string;
-  blog: Blog[]
+  blogs: Blog[]
 }
 
 export type User = {

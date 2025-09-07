@@ -192,6 +192,18 @@ li p{margin-top: 0px;}
     background-color: #181818;
 }
 
+.secondary-btn {
+    position: relative;
+    cursor: pointer;
+    background-color: #3d3d3d; /* Base background */
+    padding: .4em 1.2em;
+    border: 1px solid #353535;
+    border-radius: 20px;
+    text-align: center;
+    transition: all 0.3s;
+    color: #ffffffa4;
+}
+
 @keyframes shine {
   0% {
     background-position: 100%;

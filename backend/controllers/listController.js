@@ -48,14 +48,15 @@ const createList = async (req, res) => {
 const addToList = async (req, res) => {
 
     const listId = req.params.listId
+    const blogId = req.params.blogId
+
     const userId = req.user._id
-    const { blogId } = req.body
     
     console.log(req.body)
 
     const addBlogToList = await List.findByIdAndUpdate(
         listId,
-        { $push: { blogs: blogId } },
+        { $addToSet: { blogs: blogId } },
         { new: true }
     )
     

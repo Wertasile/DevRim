@@ -9,8 +9,10 @@ import TextAlign from '@tiptap/extension-text-align';
 import { ListItem } from '@tiptap/extension-list';
 import Image from '@tiptap/extension-image';
 import { useUser } from '~/context/userContext';
-import { Bookmark, MessageSquare, Share, Share2, ThumbsDown, ThumbsUp } from 'lucide-react';
+import { Bookmark, CirclePlusIcon, CircleXIcon, MessageSquare, Share, Share2, ThumbsDown, ThumbsUp } from 'lucide-react';
 import getAllList from '~/apiCalls/list/getAllLists';
+import AddToList from '~/apiCalls/list/addToList';
+import RemoveFromList from '~/apiCalls/list/removeFromList';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -120,6 +122,7 @@ export default function BlogPost({ params }: Route.ComponentProps) {
     if (user?._id) {
       (async () => {
         const lists = await getAllList(user._id)
+        console.log(lists)
         setUsersLists(lists)
       })()
     }
@@ -185,12 +188,46 @@ export default function BlogPost({ params }: Route.ComponentProps) {
           <Bookmark onClick={() => setListModal(!listModal)} className="cursor-pointer" />
 
           {listModal && (
-            <div className="absolute top-7 bg-[#111] shadow-md rounded-xl p-2 gap-2 w-[150px]">
+            <div className="absolute top-15 left-0 flex flex-col bg-[#111] rounded-3xl shadow-md  gap-3 p-2 w-[250px] text-center text-sm">
+              <h3>ADD BLOG TO : </h3>
               {
                 usersLists?.map((list, index) => (
-                  <div key={index} className="cursor-pointer hover:bg-gray-100 px-2 py-1 rounded">{list.name}</div>
+                  <div 
+                    key={list._id ?? index} // ✅ key here!
+                    className='flex gap-2 justify-between'
+                  >
+                    <div 
+                      className="primary-btn hover:none w-full"
+                      onClick={() => {}}
+                    >
+                      {list.name}
+                    </div>
+
+                    {list.blog.some(b => b._id === blog._id) ? (
+                      <div 
+                        className='primary-btn h-fit' 
+                        onClick={() => {
+                          RemoveFromList(list._id, blog._id)
+                          setListModal(false)
+                        }}
+                      >
+                        <CircleXIcon/>
+                      </div>
+                    ) : (
+                      <div 
+                        className='primary-btn h-fit'
+                        onClick={() => {
+                          AddToList(list._id, blog._id) 
+                          setListModal(false)
+                        }}
+                      >
+                        <CirclePlusIcon/>
+                      </div>
+                    )} 
+                  </div>
                 ))
               }
+              <div></div>
             </div>
           )}
         </div>
@@ -207,8 +244,9 @@ export default function BlogPost({ params }: Route.ComponentProps) {
           <div onClick={handleNavProfile}>{blogUser?.name}</div>
           <div>Computer Engineering Graduate, Ex-IT Analyst.</div>
         </div>
-        <div>
-          <button className='primary-btn'>FOLLOW</button>
+        <div className='gap-2 flex h-fit'>
+          <button className='primary-btn'><span>FOLLOW</span></button>
+          <button className='primary-btn'><span>CONNECT</span></button>
         </div>
       </div>
 
@@ -230,8 +268,8 @@ export default function BlogPost({ params }: Route.ComponentProps) {
             }}
             onChange={(event) => (setComment(event.target.value))}
           />
-          <button className='primary-btn' onClick={() => {addComment()}}>Send</button>
-          <button className='primary-btn'>Clear</button>
+          <button className='primary-btn' onClick={() => {addComment()}}><span>SEND</span></button>
+          <button className='secondary-btn'>CLEAR</button>
         </div>
         <div className='flex flex-col'>
           {comments.map( (comment, index) => (
