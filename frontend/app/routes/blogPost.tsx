@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import type { Route } from '../+types/root';
-import type { Blog, Comment, User } from '~/types/types';
+import type { Blog, Comment, List, User } from '~/types/types';
 
 import { generateHTML } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
@@ -10,6 +10,7 @@ import { ListItem } from '@tiptap/extension-list';
 import Image from '@tiptap/extension-image';
 import { useUser } from '~/context/userContext';
 import { Bookmark, MessageSquare, Share, Share2, ThumbsDown, ThumbsUp } from 'lucide-react';
+import getAllList from '~/apiCalls/list/getAllLists';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -27,7 +28,8 @@ export default function BlogPost({ params }: Route.ComponentProps) {
   const [like, setLike] = useState<boolean>(false)
   const [noLikes, setNoLikes] = useState<number>(0)
 
-  const [listModal, setListModal] = useState<boolean>(true)
+  const [listModal, setListModal] = useState<boolean>(false)
+  const [usersLists, setUsersLists] = useState<List[]>()
 
   const getBlog = async () => {
     const response = await fetch(`${API_URL}/posts/${params.id}`, {
@@ -45,6 +47,14 @@ export default function BlogPost({ params }: Route.ComponentProps) {
 
     setBlogUser(userData)
     setNoLikes(data.likes.length)
+
+
+    if (user?._id) {
+      const lists = await getAllList(user._id)
+      setUsersLists(lists)
+    }
+
+    
     console.log("USER IS")
     console.log(userData)
   }
@@ -102,8 +112,19 @@ export default function BlogPost({ params }: Route.ComponentProps) {
   useEffect(() => {
     if (blog && user) {
       console.log(`like status : ${user?.liked?.includes(blog)}`)
+      
     }
   }, [blog, user])
+
+  useEffect(() => {
+    if (user?._id) {
+      (async () => {
+        const lists = await getAllList(user._id)
+        setUsersLists(lists)
+      })()
+    }
+  }, [user])
+
 
 
   if (!blog) return <p>Loading...</p>
@@ -133,7 +154,7 @@ export default function BlogPost({ params }: Route.ComponentProps) {
 
   return (
     <div id='blog-post' className='flex gap-7 flex-col my-5 mx-auto w-[1000px] h-full'>
-      <h1><b>{blog.title}</b></h1>
+      <h1>{blog.title}</h1>
       <h3>
         <i style={{ color: 'gray' }}>{blog.summary}</i>
       </h3>
@@ -164,9 +185,12 @@ export default function BlogPost({ params }: Route.ComponentProps) {
           <Bookmark onClick={() => setListModal(!listModal)} className="cursor-pointer" />
 
           {listModal && (
-            <div className="absolute top-7  bg-white shadow-md rounded-md p-2 flex flex-col gap-2 w-[150px]">
-              <div className="cursor-pointer hover:bg-gray-100 px-2 py-1 rounded">LIST 1</div>
-              <div className="cursor-pointer hover:bg-gray-100 px-2 py-1 rounded">LIST 2</div>
+            <div className="absolute top-7 bg-[#111] shadow-md rounded-xl p-2 gap-2 w-[150px]">
+              {
+                usersLists?.map((list, index) => (
+                  <div key={index} className="cursor-pointer hover:bg-gray-100 px-2 py-1 rounded">{list.name}</div>
+                ))
+              }
             </div>
           )}
         </div>
@@ -190,22 +214,25 @@ export default function BlogPost({ params }: Route.ComponentProps) {
 
       <div id="comments">
         <h2>Comments</h2>
-        <label id="comment" htmlFor='comment' className='hidden'>Comment</label>
-        <input 
-          id='comment' 
-          name='comment' 
-          placeholder='What are your thoughts?'
-          value={comment ?? ""}
-          onKeyDown={(event) => {
-            if (event.key === "Enter"){
-              event.preventDefault()
-              addComment()
-            }
-          }}
-          onChange={(event) => (setComment(event.target.value))}
-        />
-        <button className='primary-btn' onClick={() => {addComment()}}>Send</button>
-        <button className='primary-btn'>Clear</button>
+        <div className='flex gap-5'>  
+          <label id="comment" htmlFor='comment' className='hidden'>Comment</label>
+          <input 
+            id='comment' 
+            name='comment' 
+            className='flex-grow'
+            placeholder='What are your thoughts?'
+            value={comment ?? ""}
+            onKeyDown={(event) => {
+              if (event.key === "Enter"){
+                event.preventDefault()
+                addComment()
+              }
+            }}
+            onChange={(event) => (setComment(event.target.value))}
+          />
+          <button className='primary-btn' onClick={() => {addComment()}}>Send</button>
+          <button className='primary-btn'>Clear</button>
+        </div>
         <div className='flex flex-col'>
           {comments.map( (comment, index) => (
             <div key={index} className='border-solid border-b-[2px] py-5 flex flex-col'>

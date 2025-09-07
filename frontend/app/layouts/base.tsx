@@ -83,8 +83,12 @@ const base = () => {
         <>
         
         
-            <header className='w-full sticky top-0 flex justify-between p-3 text-black backdrop-blur-sm'>
-                <a href='/'><img src="/Images/DevRim_Logo_0.png" height="16"/></a>
+            <header className='w-[1200px] bg-[#0606061a] border-solid border-[1px] border-[#353535] rounded-3xl sticky top-0 flex justify-between p-3 backdrop-blur-sm z-[2] my-5 mx-auto'>
+                <div className='flex gap-2 items-center'>
+                    <a href='/'><img src="/Images/DevRim_Logo_0.png" width="48"/></a>
+                    <h3>DevRim</h3>
+                </div>
+
                 <nav className='relative flex items-center gap-7'>
                     <NavLink to="/blog" target="_self">BLOGS</NavLink>
                     <NavLink to="/projects" target="_self">PROJECTS</NavLink>
@@ -97,20 +101,18 @@ const base = () => {
                             src={user?.picture} 
                             width={48}
                             onClick={() => {setMenu(!menu)}}
-                            className='rounded-3xl relative'
+                            className='rounded-3xl relative cursor-pointer hover:border-[3px] hover:border-solid hover:border-white ease-in-out duration-100'
                             ></img>
                                 
                         ):
-                        (<CustomButton onClick={handleLogin}>LOGIN</CustomButton>)
+                        (<button className="primary-btn" onClick={handleLogin}><span>LOGIN</span></button>)
                     }
                     {menu && 
-                        <div className='absolute shadow-lg right-0 bg-white top-20 flex text-black flex-col gap-5 p-3 rounded-3xl w-[200px]'>
-                            <a href={`/profile/${user?._id}`}>Profile</a>
-                            <a>Your Posts</a>
-                            <a>Your Library</a>
-                            <a>Settings</a>
-                            <a>Help</a>
-                            <div onClick={handleLogout}>SignOut</div>
+                        <div className='absolute p-2 flex flex-col bg-[#111] rounded-3xl shadow-md right-0 top-20 gap-3 p-2 w-[200px]'>
+                            <a className="primary-btn" href={`/profile/${user?._id}`}>Profile</a>
+                            <a className="primary-btn">Settings</a>
+                            <a className="primary-btn">Help</a>
+                            <div className="primary-btn" onClick={handleLogout}>SignOut</div>
                         </div>
                     } 
                     
@@ -121,7 +123,7 @@ const base = () => {
                 <Outlet/>
             </main>
 
-            <footer className='bg-[#191919] text-white flex justify-around items-center px-[10px] py-[20px] bottom-0 mt-[20px]'>
+            <footer className='bg-[#111] text-white flex justify-around items-center px-[10px] py-[20px] bottom-0 mt-[20px]'>
                 <div>
                     <img src="/Images/DevRim_Logo.png" height="64"/>
                     <p>A platform for developers</p>

@@ -48,7 +48,7 @@ export default function BlogHome() {
         <>
             <div id='blog-taskbar'>
                 <Search onChange={handleSearch}/>
-                <button className='primary-btn'><NavLink to="/blog/new">ADD POST</NavLink></button>
+                <button className='primary-btn w-[150px]'><NavLink to="/blog/new"><span>ADD POST</span></NavLink></button>
             </div>
             <section id="blogs">
                 {searchResults.map((b) => (

@@ -5,6 +5,7 @@ import type { Route } from '../+types/root'
 import type { Blog, List, User } from '~/types/types'
 import BlogPostCard from '~/components/blogPostCard'
 import fetchUser from '../apiCalls/fetchUser'
+import CreateListModal from '~/components/CreateListModal'
 
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -63,10 +64,6 @@ const profile = ({params}: Route.ComponentProps) => {
         setLists(data)
     }
 
-    const handleCreateList = () => {
-        setListModal(!listModal)
-    }
-
     const createList = async () => {
         const response = await fetch(`${API_URL}/lists`, {
             method: 'post',
@@ -84,6 +81,8 @@ const profile = ({params}: Route.ComponentProps) => {
         const data = await response.json()
         console.log(data)
 
+        setListModal(false)
+
         fetchLists()
         
     }
@@ -92,19 +91,7 @@ const profile = ({params}: Route.ComponentProps) => {
 
     <div>
         {listModal && 
-        <div className='absolute h-[85vh] w-[100vw] backdrop-blur-sm flex justify-center items-center' onClick={handleCreateList}>
-            <div className='bg-blue-100 w-[300px] h-[300px] flex flex-col items-center justify-center gap-5 p-10 rounded-3xl' onClick={(e) => e.stopPropagation()}>
-                <label className='hidden' id="list" htmlFor='list'></label>
-                <input 
-                    name="list" 
-                    id="list" 
-                    value={newListName ?? ""}
-                    onChange={(event) => {setNewListName(event.target.value)}} 
-                    placeholder='enter list name'
-                />
-                <button className="primary-btn" onClick={createList}>CREATE LIST!</button>
-            </div>
-        </div>
+            <CreateListModal setListModal={setListModal} listModal={listModal} setLists={setLists} profile={profile} />
         }
         <div className='flex flex-col md:flex-row p-2 sm:p-10'>
             <div className='w-[350px] md:border-r-[2px] border-black border-solid flex flex-col gap-3 p-2 '>
@@ -119,22 +106,21 @@ const profile = ({params}: Route.ComponentProps) => {
             <div className='p-5 flex-grow flex flex-col gap-5'>
 
                 <div className='flex flex-row gap-5 border-solid border-b-[2px] border-[#979797]'>
-                    <h3 className='' onClick={() => setView("blogs")}>Blogs</h3>
-                    <h3 className='' onClick={() => setView("lists")}>Lists</h3>
+                    <h3 className={`cursor-pointer p-3 ${view == "blogs" && `bg-[#979797] text-black`}`} onClick={() => setView("blogs")}>Blogs</h3>
+                    <h3 className={`cursor-pointer p-3 ${view == "lists" && `bg-[#979797] text-black`}`} onClick={() => setView("lists")}>Lists</h3>
                     {/* <h3 className='' onClick={() => setView("about")}>About</h3> */}
                     {profile?._id === user?._id && 
-                        <h3 className='' onClick={() => setView("liked")}>Liked</h3>
+                        <h3 className={`cursor-pointer p-3 ${view == "liked" && `bg-[#979797] text-black`}`} onClick={() => setView("liked")}>Liked</h3>
                     }
                 </div>
 
                 <div className='flex justify-between'>
-                    <h2 className='uppercase font-semibold'>{view}</h2>
                     {view === "lists" && profile?._id === user?._id && 
                     <button 
                         className='primary-btn cursor-pointer'
-                        onClick={handleCreateList}
+                        onClick={() => setListModal(!listModal)}
                     >
-                        + CREATE LIST
+                        <span>+ CREATE LIST</span>
                     </button>}
                 </div>
 

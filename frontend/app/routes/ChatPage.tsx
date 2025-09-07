@@ -457,10 +457,14 @@ const ChatPage = () => {
       {/* CHAT MENU */}
       <div className="w-[400px] flex flex-col border-r border-[#979797]">
         <div className="h-[50px] border-b border-[#979797] flex items-center p-2 gap-3 ">
-          <div className="bg-[#EEEEEE] hover:text-white hover:bg-black p-2 rounded-xl cursor-pointer w-full text-center">
-            Find or Start a Conversation
+          <div className="primary-btn p-2 rounded-xl w-full text-center">
+            <span>Find or Start a Conversation</span>
           </div>
-          <div className="flex bg-[#EEEEEE] hover:text-white hover:bg-black p-2 rounded-xl cursor-pointer" onClick={() => {setGroupModal(!groupModal)}}> + <Users/></div>
+          <div className="flex primary-btn p-2 " onClick={() => {setGroupModal(!groupModal)}}>
+              +
+              <Users/>
+
+          </div>
         </div>
         <div className="flex flex-col gap-5 p-5">
           {chats?.map((chat, index) => (
@@ -471,7 +475,7 @@ const ChatPage = () => {
 
       {/* MESSAGES */}
 
-      <div className="flex-grow flex flex-col justify-between h-[100vh] overflow-scroll feed-container">
+      <div className="flex-grow flex flex-col justify-between h-[100vh] overflow-y-scroll feed-container">
         <h1 className="h-[50px] border-b border-[#979797] px-5 sticky top-0 backdrop-blur-md">
           {chat?.chatName === "sender"
             ? chat.users
@@ -486,8 +490,8 @@ const ChatPage = () => {
               key={index}
               className={`rounded-2xl flex flex-col gap-2 p-2 w-fit border border-[#979797] font-semibold ${
                 message.sender._id === user?._id
-                  ? "bg-green-100 self-end"
-                  : "bg-[#9A9CD4] self-start"
+                  ? "bg-green-100 text-black self-end"
+                  : "bg-[#9A9CD4] text-black self-start"
               }`}
             >
               {renderMessageContent(message)}
@@ -527,15 +531,18 @@ const ChatPage = () => {
               onChange={(e) => setNewMessage(e.target.value)}
             />
           )}
-          <SendHorizonal onClick={sendMessage} />
-          <div className="relative">
+          <div className="primary-btn">
+            <SendHorizonal onClick={sendMessage} />
+          </div>
+
+          <div className="relative primary-btn">
             <Paperclip
               className="cursor-pointer"
               onClick={() => setAttachment(!attachment)}
             />
             {attachment && (
-              <div className="bg-[#EEEEEE] p-3 flex flex-col rounded-xl shadow-md absolute gap-3 right-0 bottom-10 w-[200px]">
-                <label className="flex gap-2 cursor-pointer">
+              <div className="p-2 flex flex-col bg-[#111] rounded-3xl z-50 text-white shadow-md absolute gap-2 right-0 bottom-10 w-[200px]">
+                <label className="flex gap-2 primary-btn text-sm">
                   <Image /> UPLOAD IMAGE
                   <input
                     type="file"
@@ -545,12 +552,12 @@ const ChatPage = () => {
                   />
                 </label>
                 <div
-                  className="flex gap-2 cursor-pointer"
                   onClick={startRecording}
+                  className="flex gap-2 primary-btn text-sm"
                 >
                   <Mic /> RECORD AUDIO
                 </div>
-                <label className="flex gap-2 cursor-pointer">
+                <label className="flex gap-2 cursor-pointer primary-btn text-sm">
                   <FileIcon /> UPLOAD FILES
                   <input
                     type="file"
