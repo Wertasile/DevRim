@@ -12,6 +12,7 @@ import "./app.css";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { AppProvider, UserProvider } from "./context/userContext";
 import { ScrollTrigger, SplitText } from "gsap/all";
+import gsap from "gsap";
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
