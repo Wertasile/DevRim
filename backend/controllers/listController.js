@@ -49,10 +49,9 @@ const addToList = async (req, res) => {
 
     const listId = req.params.listId
     const blogId = req.params.blogId
+    console.log(listId)
+    console.log(blogId)
 
-    const userId = req.user._id
-    
-    console.log(req.body)
 
     const addBlogToList = await List.findByIdAndUpdate(
         listId,

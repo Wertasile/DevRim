@@ -11,9 +11,7 @@ import Lenis from "lenis"
 
 // ✅ register plugins ONCE
 // ✅ Only register plugins on client
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger, useGSAP);
-}
+
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -35,87 +33,96 @@ const Home = () => {
         requestAnimationFrame(raf)
     }, [])
 
-    useGSAP( () => {
-        gsap.from("#overview .overview-item", {
-            opacity: 0,
-            y: 40,
-            duration: 0.8,
-            ease: "power3.out",
-            stagger: 0.3,
-            scrollTrigger: {
-                trigger: "#overview",
-                start: "top 80%", // start animation when top of the trigger element hits center of scroller (viewport) 
-                                  // 1st element - position within item , 2nd element, where the element should be within viewport to start animation
-                                  // % always relative to top, here trigger when 80% under the top
-                toggleActions: "play pause complete pause",  // what to do when item on viewpoer - what to do when item exits viewport
-                                                    //  what to do when items reenter viewport after exit (scroll up after scroll down)
-                                                    //what to do when we scroll back up beyond the start
-            },
+      useGSAP(() => {
+    if (typeof window === "undefined") return;
+
+    // Dynamic imports for client-only GSAP plugins
+    let gsapInstance: typeof import("gsap").default;
+    let ScrollTrigger: any;
+
+    import("gsap").then((gsapModule) => {
+      gsapInstance = gsapModule.default;
+      import("gsap/ScrollTrigger").then((scrollTriggerModule) => {
+        ScrollTrigger = scrollTriggerModule.default;
+        gsapInstance.registerPlugin(ScrollTrigger);
+
+        // Overview items fade-in
+        gsapInstance.from("#overview .overview-item", {
+          opacity: 0,
+          y: 40,
+          duration: 0.8,
+          ease: "power3.out",
+          stagger: 0.3,
+          scrollTrigger: {
+            trigger: "#overview",
+            start: "top 80%",
+            toggleActions: "play pause complete pause",
+          },
         });
 
-        gsap.from("#pricing", {
-            opacity: 0,
-            duration: 1,
-            ease: "power3.out",
-            scrollTrigger: {
-                trigger: "#pricing",
-                start: "top 80%",
-                toggleActions: "play none none complete", 
-            },
+        // Pricing section fade-in
+        gsapInstance.from("#pricing", {
+          opacity: 0,
+          duration: 1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: "#pricing",
+            start: "top 80%",
+            toggleActions: "play none none complete",
+          },
         });
 
-        const cards = gsap.utils.toArray(".cards-item")
-        const spacer = 20
-        const minScale = 0.8
+        // Cards animations
+        const cards = gsapInstance.utils.toArray(".cards-item");
+        const spacer = 20;
+        const minScale = 0.8;
+        const distributer = gsapInstance.utils.distribute({ base: minScale, amount: 0.2 });
 
-        const distributer = gsap.utils.distribute({ base: minScale, amount: 0.2 })
+        cards.forEach((card: any, index: number) => {
+          const scaleVal = distributer(index, cards[index], cards);
 
-        cards.forEach( (card : any, index : number) => {
-
-            const scaleVal = distributer(index, cards[index], cards)
-
-            const tween = gsap.to( card, {
-                scrollTrigger : {
-                    trigger: card,
-                    start: `top 300px`,
-                    scrub: true, // ensure that tweens movements are in control by scrollbar depth
-                    // markers: true,
-                    invalidateOnRefresh: true
-                },
-                ease: "power2.inOut",
-                scale: scaleVal
-            } )
-
-            ScrollTrigger.create({
-                trigger: card,
-                start: `top-=${index * spacer} 100px`,
-                endTrigger: ".cards",
-                end: `bottom top+=${300 + (cards.length * spacer)}`, /// by default, when bottom of trigger element hits top of viewport, if we have "bottom 100px" scroller ends 100px down from the top
-                pin: true,
-                pinSpacing: false,
-                //markers: true,
-                id: 'pin',
-                invalidateOnRefresh: true
-            })
-
-        } )
-
-        const sections = gsap.utils.toArray(".message-panel")
-
-        gsap.to( sections, {
-            xPercent: -100 * (sections.length - 1),
-            scrollTrigger : {
-                trigger: ".message-panels-container",
-                scrub: true,
-                start: `top 30%`,
-                markers: true,
-                pin: true,
-                pinSpacing: true,
-                end: () => "+=" + ((document.querySelector(".message-panels-container") as HTMLElement).offsetWidth ?? 100)
+          gsapInstance.to(card, {
+            scrollTrigger: {
+              trigger: card,
+              start: `top 300px`,
+              scrub: true,
+              invalidateOnRefresh: true,
             },
-            ease: "none"
-        })
-    }, [])
+            ease: "power2.inOut",
+            scale: scaleVal,
+          });
+
+          ScrollTrigger.create({
+            trigger: card,
+            start: `top-=${index * spacer} 100px`,
+            endTrigger: ".cards",
+            end: `bottom top+=${300 + cards.length * spacer}`,
+            pin: true,
+            pinSpacing: false,
+            invalidateOnRefresh: true,
+          });
+        });
+
+        // Horizontal message panels
+        const sections = gsapInstance.utils.toArray(".message-panel");
+        gsapInstance.to(sections, {
+          xPercent: -100 * (sections.length - 1),
+          scrollTrigger: {
+            trigger: ".message-panels-container",
+            scrub: true,
+            start: `top 30%`,
+            pin: true,
+            pinSpacing: true,
+            end: () =>
+              "+=" +
+              ((document.querySelector(".message-panels-container") as HTMLElement)
+                .offsetWidth ?? 100),
+          },
+          ease: "none",
+        });
+      });
+    });
+  }, []);
 
     
 
