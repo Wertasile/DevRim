@@ -6,11 +6,8 @@ import type { Route } from "./+types/home.js";
 import type { User } from "~/types/types.js";
 import { Film, Handshake, NotebookPen } from "lucide-react";
 import gsap from "gsap";
-import ScrollTrigger from "gsap/ScrollTrigger";
 import Lenis from "lenis"
 
-// ✅ register plugins ONCE
-// ✅ Only register plugins on client
 
 
 export function meta({}: Route.MetaArgs) {
@@ -32,10 +29,6 @@ const Home = () => {
         }
         requestAnimationFrame(raf)
     }, [])
-
-    if (typeof window !== "undefined") {
-        gsap.registerPlugin(ScrollTrigger, useGSAP);
-    }
 
     useGSAP( () => {
         gsap.from("#overview .overview-item", {
