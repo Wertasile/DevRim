@@ -6,6 +6,7 @@ import type { Blog, List, User } from '~/types/types'
 import BlogPostCard from '~/components/blogPostCard'
 import fetchUser from '../apiCalls/fetchUser'
 import CreateListModal from '~/components/CreateListModal'
+import ScrollTrigger from "gsap/ScrollTrigger";
 
 
 const API_URL = import.meta.env.VITE_API_URL;

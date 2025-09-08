@@ -7,6 +7,7 @@ import type { User } from "~/types/types.js";
 import { Film, Handshake, NotebookPen } from "lucide-react";
 import gsap from "gsap";
 import Lenis from "lenis"
+import ScrollTrigger from "gsap/ScrollTrigger";
 
 
 
@@ -31,6 +32,9 @@ const Home = () => {
     }, [])
 
     useGSAP( () => {
+
+        gsap.registerPlugin(ScrollTrigger); // ensure plugin is registered
+
         gsap.from("#overview .overview-item", {
             opacity: 0,
             y: 40,

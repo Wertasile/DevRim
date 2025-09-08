@@ -11,10 +11,9 @@ import type { Route } from "./+types/root";
 import "./app.css";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { AppProvider, UserProvider } from "./context/userContext";
-import { ScrollTrigger, SplitText } from "gsap/all";
+import ScrollTrigger from "gsap/ScrollTrigger";
 import gsap from "gsap";
-
-gsap.registerPlugin(ScrollTrigger, SplitText);
+import { useEffect } from "react";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -48,6 +47,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+  }, []);
   return(
     <>
     <GoogleOAuthProvider clientId="78002390529-9cuvrn1la1jh1p6rc0n8cksv4ahoii89.apps.googleusercontent.com">
