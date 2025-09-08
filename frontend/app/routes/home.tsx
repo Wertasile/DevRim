@@ -11,9 +11,7 @@ import Lenis from "lenis"
 
 // ✅ register plugins ONCE
 // ✅ Only register plugins on client
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger, useGSAP);
-}
+
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -34,6 +32,10 @@ const Home = () => {
         }
         requestAnimationFrame(raf)
     }, [])
+
+    if (typeof window !== "undefined") {
+        gsap.registerPlugin(ScrollTrigger, useGSAP);
+    }
 
     useGSAP( () => {
         gsap.from("#overview .overview-item", {

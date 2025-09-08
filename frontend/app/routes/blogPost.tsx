@@ -203,7 +203,7 @@ export default function BlogPost({ params }: Route.ComponentProps) {
                       {list.name}
                     </div>
 
-                    {list.blog.some(b => b._id === blog._id) ? (
+                    {list.blogs.some(b => b._id === blog._id) ? (
                       <div 
                         className='primary-btn h-fit' 
                         onClick={() => {

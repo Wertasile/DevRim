@@ -138,7 +138,7 @@ const profile = ({params}: Route.ComponentProps) => {
                         {lists?.map((list) => (
                             <div className='flex flex-col'>
                                 <div>{list.name}</div>
-                                <div className='text-[#979797]'>{list.blog?.length} blog(s)</div>
+                                <div className='text-[#979797]'>{list.blogs?.length} blog(s)</div>
                             </div>
                         ))}
                     </div>
