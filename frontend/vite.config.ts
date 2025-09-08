@@ -6,9 +6,6 @@ import tsconfigPaths from "vite-tsconfig-paths";
 export default defineConfig({
   plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
   build: {
-    sourcemap: true
+    sourcemap: false, // ✅ generate sourcemaps for your code
   },
-  esbuild: {
-    logOverride: { 'unsupported-source-map': 'silent' }
-  }
 });
