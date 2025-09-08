@@ -8,4 +8,7 @@ export default defineConfig({
   build: {
     sourcemap: false, // ✅ generate sourcemaps for your code
   },
+  esbuild: {
+    logOverride: { "unsupported-source-map": "silent" },
+  },
 });
