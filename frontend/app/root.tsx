@@ -48,8 +48,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
+    if (typeof window === "undefined") return; // SSR guard
+
+    (async () => {
+      const gsap = (await import("gsap")).default;
+      const ScrollTrigger = (await import("gsap/ScrollTrigger")).default;
+      gsap.registerPlugin(ScrollTrigger);
+    })();
   }, []);
+  
   return(
     <>
     <GoogleOAuthProvider clientId="78002390529-9cuvrn1la1jh1p6rc0n8cksv4ahoii89.apps.googleusercontent.com">

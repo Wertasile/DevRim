@@ -7,7 +7,7 @@ import type { User } from "~/types/types.js";
 import { Film, Handshake, NotebookPen } from "lucide-react";
 import gsap from "gsap";
 import Lenis from "lenis"
-import ScrollTrigger from "gsap/ScrollTrigger";
+
 
 
 
@@ -23,17 +23,23 @@ const Home = () => {
     const [user, setUser] = useState< User | null >(null)
 
     useEffect(() => {
-        const lenis = new Lenis()
-        function raf(time : any){
-            lenis.raf(time)
-            requestAnimationFrame(raf)
+        if (typeof window === "undefined") return;
+        const lenis = new Lenis();
+        function raf(time: any) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
         }
-        requestAnimationFrame(raf)
-    }, [])
+        requestAnimationFrame(raf);
+    }, []);
 
     useGSAP( () => {
 
-        gsap.registerPlugin(ScrollTrigger); // ensure plugin is registered
+        if (typeof window === "undefined") return;
+
+        (async () => {
+        const gsap = (await import("gsap")).default;
+        const ScrollTrigger = (await import("gsap/ScrollTrigger")).default;
+        gsap.registerPlugin(ScrollTrigger);
 
         gsap.from("#overview .overview-item", {
             opacity: 0,
@@ -114,6 +120,7 @@ const Home = () => {
             },
             ease: "none"
         })
+        })()
     }, [])
 
     
