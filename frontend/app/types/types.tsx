@@ -53,6 +53,7 @@ export type Blog = {
   user: User;
   content: TipTapDoc;  // ✅ now strongly typed
   releaseDate: string;
+  categories: string[] ;
   likes : User[];
   comments: Comment[];
 }

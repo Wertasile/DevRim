@@ -26,6 +26,8 @@ export default function BlogHome() {
 
     const tlRef = useRef<gsap.core.Timeline | null>(null);
 
+    const [categories, setCategories] = useState<string[]>([])
+
     useGSAP(() => {
         const panel = document.querySelector<HTMLElement>(".filter-panel");
         if (!panel) return;
@@ -54,12 +56,21 @@ export default function BlogHome() {
         }
     }, [isOpen]);
 
-    const handleSearch = useCallback((text: string) => {
+    const handleSearch = useCallback((text: string, categories: string[]) => {
         const searchedBlogs = blogs.filter((b) =>
             b.title.toLowerCase().includes(text.toLowerCase())
         );
-        setSearchResults(searchedBlogs);
-    }, [blogs]);
+
+        const filteredBlogs = searchedBlogs.filter((b) =>
+            categories.length === 0 || categories.some((cat) => b.categories.includes(cat))
+        );
+
+        setSearchResults(filteredBlogs);
+    }, [blogs, categories]);
+
+    useEffect( () => {
+        handleSearch(searchInput, categories)
+    }, [categories])
 
     const getBlogs = async () => {
         const response = await fetch(`${API_URL}/posts/`, {
@@ -83,7 +94,15 @@ export default function BlogHome() {
         <>
             <div className="max-w-[1000px] flex flex-col gap-3 mx-auto my-0">
                 <div className="flex gap-3">
-                    <Search onChange={handleSearch} />
+                    <Search 
+                        categories={categories} 
+                        onChange={(text) => 
+                            {
+                                handleSearch(text, categories)
+                                setSearchInput(text)
+                            }
+                        } 
+                    />
                     <button className="primary-btn w-[150px]">
                         <NavLink to="/blog/new">
                             <span>ADD POST</span>
@@ -136,6 +155,7 @@ export default function BlogHome() {
                         onClick={() => {
                             setIsOpen(false);
                             setActiveFilter(null);
+                            setCategories([])
                         }}
                     >
                         X Remove Filters
@@ -149,7 +169,19 @@ export default function BlogHome() {
                                         <h3 className='mb-[5px] border-b-[1px] border-solid border-[#353535]'>Software Development</h3>
                                         <ul className='text-sm'>
                                             {topics.Topics.SoftwareDevelopmentProgramming.map( (topic, index) => (
-                                                <li key={index}>{topic}</li>
+                                                <li 
+                                                    key={index}
+                                                    onClick={() => {
+                                                        if (categories.includes(topic)) {
+                                                            setCategories( (prev) => prev.filter( p => p !== topic))
+                                                        }else{
+                                                            setCategories( (prev) => [...prev, topic])}
+                                                        }
+                                                    }
+                                                    className={`${categories.includes(topic) && ("bg-[#white] text-[#111]")}`}
+                                                >
+                                                    {topic}
+                                                </li>
                                             ))}
                                         </ul>
                                     </div>
@@ -157,7 +189,18 @@ export default function BlogHome() {
                                         <h3 className='mb-[5px] border-b-[1px] border-solid border-[#353535]'>Career & Community</h3>
                                         <ul className='text-sm'>
                                             {topics.Topics.CareerCommunityIndustry.map( (topic, index) => (
-                                                <li key={index}>{topic}</li>
+                                                <li 
+                                                    key={index}
+                                                        onClick={() => {
+                                                        if (categories.includes(topic)) {
+                                                            setCategories( (prev) => prev.filter( p => p !== topic))
+                                                        }else{
+                                                            setCategories( (prev) => [...prev, topic])}
+                                                        }
+                                                    }
+                                                >
+                                                {topic}
+                                                </li>
                                             ))}
                                         </ul>
                                     </div>
@@ -165,7 +208,18 @@ export default function BlogHome() {
                                         <h3 className='mb-[5px] border-b-[1px] border-solid border-[#353535]'>AI and Emerging Tech</h3>
                                         <ul className='text-sm'>
                                             {topics.Topics.AICloudEmergingTech.map( (topic, index) => (
-                                                <li key={index}>{topic}</li>
+                                                <li 
+                                                    key={index}
+                                                    onClick={() => {
+                                                        if (categories.includes(topic)) {
+                                                            setCategories( (prev) => prev.filter( p => p !== topic))
+                                                        }else{
+                                                            setCategories( (prev) => [...prev, topic])}
+                                                        }
+                                                    }
+                                                >
+                                                {topic}
+                                                </li>
                                             ))}
                                         </ul>
                                     </div>
@@ -178,7 +232,18 @@ export default function BlogHome() {
                                         <h3 className='mb-[5px] border-b-[1px] border-solid border-[#353535]'>Frameworks</h3>
                                         <ul className='text-sm'>
                                             {frameworks.Frameworks.FrameworksLibraries.map( (f, index) => (
-                                                <li key={index}>{f}</li>
+                                                <li 
+                                                    key={index}
+                                                    onClick={() => {
+                                                        if (categories.includes(f)) {
+                                                            setCategories( (prev) => prev.filter( p => p !== f))
+                                                        }else{
+                                                            setCategories( (prev) => [...prev, f])}
+                                                        }
+                                                    }
+                                                >
+                                                {f}
+                                                </li>
                                             ) )}
                                         </ul>
                                     </div>
@@ -186,7 +251,18 @@ export default function BlogHome() {
                                         <h3 className='mb-[5px] border-b-[1px] border-solid border-[#353535]'>Languages</h3>
                                         <ul className='text-sm'>
                                             {frameworks.Frameworks.Languages.map( (f, index) => (
-                                                <li key={index}>{f}</li>
+                                                <li 
+                                                    key={index}
+                                                    onClick={() => {
+                                                        if (categories.includes(f)) {
+                                                            setCategories( (prev) => prev.filter( p => p !== f))
+                                                        }else{
+                                                            setCategories( (prev) => [...prev, f])}
+                                                        }
+                                                    }
+                                                >
+                                                {f}
+                                                </li>
                                             ) )}
                                         </ul>
                                     </div>
@@ -194,7 +270,18 @@ export default function BlogHome() {
                                         <h3 className='mb-[5px] border-b-[1px] border-solid border-[#353535]'>DevOps</h3>
                                         <ul className='text-sm'>
                                             {frameworks.Frameworks.CloudDevOps.map( (f, index) => (
-                                                <li key={index}>{f}</li>
+                                                <li 
+                                                    key={index}
+                                                    onClick={() => {
+                                                        if (categories.includes(f)) {
+                                                            setCategories( (prev) => prev.filter( p => p !== f))
+                                                        }else{
+                                                            setCategories( (prev) => [...prev, f])}
+                                                        }
+                                                    }
+                                                >
+                                                {f}
+                                                </li>
                                             ) )}
                                         </ul>
                                     </div>

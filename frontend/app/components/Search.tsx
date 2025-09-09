@@ -2,9 +2,10 @@ import React, { useEffect, memo } from 'react'
 
 type searchProps = {
     onChange : (text: string) => void;
+    categories: string[]
 }
 
-const Search = ({onChange} : searchProps) => {
+const Search = ({onChange, categories} : searchProps) => {
 
     console.log("SEARCH RENDERED")
     return (

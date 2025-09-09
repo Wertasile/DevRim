@@ -3,6 +3,7 @@ import '../../tiptap.css'
 import Highlight from '@tiptap/extension-highlight'
 import TextAlign from '@tiptap/extension-text-align'
 import Image from '@tiptap/extension-image'
+import { Placeholder } from '@tiptap/extensions'
 import { useEditor, EditorContent } from '@tiptap/react'
 import { FloatingMenu, BubbleMenu } from '@tiptap/react/menus'
 import StarterKit from '@tiptap/starter-kit'
@@ -39,6 +40,9 @@ const Tiptap = ({content, handleChange} : TipTapProps) => {
       ListItem,
       Highlight,
       Image,
+      Placeholder.configure({
+        placeholder: "Tell your Story.."
+      }),
       ImageUploadNode.configure({
         accept: 'image/*',
         maxSize: MAX_FILE_SIZE,
@@ -51,7 +55,7 @@ const Tiptap = ({content, handleChange} : TipTapProps) => {
     immediatelyRender: false,
     editorProps: {
         attributes: {
-            class: "bg-[#111] rounded-xl border-solid border-[1px] py-[8px] px-[12px] border-[#353535] min-h-[156px]"
+            class: "bg-[#060010] rounded-xl border-solid text-white border-[1px] py-[8px] px-[12px] border-[#353535] min-h-500"
         }
     },
     onUpdate: ({editor}) => {

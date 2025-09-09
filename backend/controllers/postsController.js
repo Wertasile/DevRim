@@ -24,13 +24,14 @@ const createPost = async(req, res) => {
     try
     {
         const currentUser = req.user._id
-        const {title, summary, content } = req.body
+        const {title, summary, content, categories } = req.body
         const data = await Post.create({
             title : title,
             summary : summary,
             content : content,
             releaseDate : Date.now(),
-            user : currentUser
+            user : currentUser,
+            categories: categories
         })
         res.status(201).json(data)
     } 
