@@ -1,0 +1,28 @@
+{
+  "Topics": {
+    "SoftwareDevelopmentProgramming": [
+      "Frontend Development",
+      "Backend Development",
+      "Full-Stack Development",
+      "Mobile Development",
+      "Game Development",
+      "Testing & QA"
+    ],
+    "AICloudEmergingTech": [
+      "Artificial Intelligence",
+      "Machine Learning",
+      "Cloud Computing",
+      "DevOps",
+      "Cybersecurity",
+      "Blockchain"
+    ],
+    "CareerCommunityIndustry": [
+      "Open Source",
+      "Tech Careers & Interviews",
+      "Productivity & Workflows",
+      "Project Showcases",
+      "Tutorials & How-Tos",
+      "Industry News"
+    ]
+  }
+}

@@ -113,7 +113,6 @@ const Home = () => {
                 trigger: ".message-panels-container",
                 scrub: true,
                 start: `top 30%`,
-                markers: true,
                 pin: true,
                 pinSpacing: true,
                 end: () => "+=" + ((document.querySelector(".message-panels-container") as HTMLElement).offsetWidth ?? 100)
@@ -131,6 +130,8 @@ const Home = () => {
             <div className="flex flex-col gap-5">
                 <h2>Write. Connect. Share. All in one place.</h2>
                 <h3>Devrim is where blogging meets social connection. Publish ideas, follow authors, and connect through direct messages or groups. Combinbing Social - with Educational.</h3>
+                <h3><b>Under Construction! Estimate Completion September 10 (Beta)</b></h3>
+                <h3><b>Mobile version Release 1-2 weeks after Beta Release</b></h3>
                 {user === null && <a className="primary-btn" href="signup.html" target="_self">Sign Up for Free</a>}
                 {/* <img src="/images/placeholder_img.png"/> */}
             </div>
@@ -157,7 +158,7 @@ const Home = () => {
             </div>
         </section>
 
-        <section id="overview" className="grid grid-cols-3 max-w-[1200px] my-15 mx-auto ">
+        <section id="overview" className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 max-w-[1200px] my-15 mx-auto ">
 
             <div className="overview-item flex flex-col justify-between g-3 border-solid border-[0.5px] border-[#979797] p-5 ">
                 <div className="w-fit border-solid border-[0.5px] border-[#979797] p-5 rounded-[200px] bg-[#111]">

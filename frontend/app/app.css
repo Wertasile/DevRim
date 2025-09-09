@@ -268,22 +268,6 @@ input, textarea{
     min-height: 80vh;    
 }
 
-#blog-taskbar{
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 10px;
-    margin: 0 auto;
-    width: 1000px;
-}
-#blog-search{
-    background-color: white;
-    border: 2px solid black;
-    border-radius: 1rem;
-    padding: 10px;
-    width: 100%;
-}
-
     /* background-image:
         radial-gradient(circle at 50% 250%, var(--primary-500), var(--primary-500)),
         linear-gradient(red,blue);
@@ -386,7 +370,7 @@ form{
   border: 1px solid #353535;
   border-radius: 20px;
   gap: 2rem;
-  height: 500px;
+  height: 400px;
 }
 
 
@@ -402,6 +386,11 @@ form{
 }
 
 @media (max-width: 480px) {
+  html{
+    p{
+      font-size: 14px;
+    }
+  }
   .card-swap-container {
     transform: scale(0.55) ;
   }

@@ -1,0 +1,55 @@
+{
+  "Frameworks": {
+    "Languages": [
+      "JavaScript",
+      "TypeScript",
+      "Python",
+      "Java",
+      "C#",
+      "C++",
+      "Go",
+      "Rust",
+      "PHP",
+      "Swift",
+      "Kotlin"
+    ],
+    "FrameworksLibraries": [
+      "React",
+      "Angular",
+      "Vue.js",
+      "Svelte",
+      "Next.js",
+      "Express.js",
+      "NestJS",
+      "Django",
+      "Flask",
+      "FastAPI",
+      "Spring Boot",
+      "Ruby on Rails",
+      "Laravel",
+      ".NET Core",
+      "React Native",
+      "Flutter"
+    ],
+    "CloudDevOps": [
+      "AWS",
+      "Azure",
+      "Google Cloud Platform",
+      "Docker",
+      "Kubernetes",
+      "Terraform",
+      "GitHub Actions"
+    ],
+    "DataAI": [
+      "TensorFlow",
+      "PyTorch",
+      "Scikit-learn",
+      "Pandas",
+      "NumPy",
+      "MongoDB",
+      "PostgreSQL",
+      "MySQL",
+      "Firebase"
+    ]
+  }
+}

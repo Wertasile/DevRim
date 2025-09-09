@@ -12,6 +12,7 @@ const Search = ({onChange} : searchProps) => {
             id="blog-search" 
             onChange={ (e) => {onChange(e.target.value)} }
             placeholder='Enter Search term'
+            className=''
             type='text'            
         />
     )
