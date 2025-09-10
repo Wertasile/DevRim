@@ -143,16 +143,13 @@ const Home = () => {
                 pauseOnHover={false}
             >
                 <Card>
-                <h3>Card 1</h3>
-                <p className="text-white">SOO does this work</p>
+                <img className="rounded-3xl" src="/Images/CardSwap/BlogsHome.png"/>
                 </Card>
                 <Card>
-                <h3>Card 2</h3>
-                <p>Your content here</p>
+                <img className="rounded-3xl" src="/Images/CardSwap/BlogsCreate.png"/>
                 </Card>
                 <Card>
-                <h3>Card 3</h3>
-                <p>Your content here</p>
+                <img className="rounded-3xl" src="/Images/CardSwap/Messaging.png"/>
                 </Card>
             </CardSwap>
             </div>

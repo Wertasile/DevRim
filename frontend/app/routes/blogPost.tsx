@@ -13,6 +13,8 @@ import { Bookmark, CirclePlusIcon, CircleXIcon, MessageSquare, Share, Share2, Th
 import getAllList from '~/apiCalls/list/getAllLists';
 import AddToList from '~/apiCalls/list/addToList';
 import RemoveFromList from '~/apiCalls/list/removeFromList';
+import follow from '~/apiCalls/user/follow';
+import unfollow from '~/apiCalls/user/unfollow';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -33,6 +35,8 @@ export default function BlogPost({ params }: Route.ComponentProps) {
   const [listModal, setListModal] = useState<boolean>(false)
   const [usersLists, setUsersLists] = useState<List[]>()
 
+  const [following, setFollowing] = useState<boolean>(false)
+
   const getBlog = async () => {
     const response = await fetch(`${API_URL}/posts/${params.id}`, {
       method: 'post'
@@ -51,6 +55,7 @@ export default function BlogPost({ params }: Route.ComponentProps) {
     setNoLikes(data.likes.length)
 
 
+    
     if (user?._id) {
       const lists = await getAllList(user._id)
       setUsersLists(lists)
@@ -112,6 +117,12 @@ export default function BlogPost({ params }: Route.ComponentProps) {
   }, [])
 
   useEffect(() => {
+    if (blogUser && user?.following.includes(blogUser._id)){
+      setFollowing(true)
+    }
+  },[user, blogUser])
+
+  useEffect(() => {
     if (blog && user) {
       console.log(`like status : ${user?.liked?.includes(blog)}`)
       
@@ -127,6 +138,19 @@ export default function BlogPost({ params }: Route.ComponentProps) {
       })()
     }
   }, [user])
+
+  const handleFollow = async () => {
+    if (!blogUser?._id) return
+
+    if (following){
+      await unfollow(blogUser?._id)
+      setFollowing(false)
+    } else{
+      await follow(blogUser?._id)
+      setFollowing(true)
+    }
+
+  }
 
 
 
@@ -156,7 +180,7 @@ export default function BlogPost({ params }: Route.ComponentProps) {
   ])
 
   return (
-    <div id='blog-post' className='flex gap-7 flex-col my-5 mx-auto w-[1000px] h-full'>
+    <div id='blog-post' className='flex gap-7 flex-col my-5 mx-auto max-w-[1000px] h-full'>
       <h1>{blog.title}</h1>
       <h3>
         <i style={{ color: 'gray' }}>{blog.summary}</i>
@@ -245,7 +269,12 @@ export default function BlogPost({ params }: Route.ComponentProps) {
           <div>Computer Engineering Graduate, Ex-IT Analyst.</div>
         </div>
         <div className='gap-2 flex h-fit'>
-          <button className='primary-btn'><span>FOLLOW</span></button>
+          <button 
+            className='primary-btn' 
+            onClick={handleFollow}
+          >
+              {following ? (<span>UNFOLLOW</span>) : (<span>FOLLOW</span>)}
+            </button>
           <button className='primary-btn'><span>CONNECT</span></button>
         </div>
       </div>

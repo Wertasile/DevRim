@@ -19,6 +19,8 @@ export type User = {
     liked: Blog[];
     following: User[];
     followers: User[];
+    byline: string;
+    about: string;
 }
 
 export type Token = {

@@ -1,8 +1,11 @@
 import React, { useState } from 'react'
 import {Editor, } from '@tiptap/core';
-import {AlignCenter, AlignJustify, AlignLeft, AlignRight, Bold, Heading1, Heading2, Heading3, Highlighter, Image, Italic, List, ListOrdered, Pilcrow, Strikethrough, Underline} from 'lucide-react'
+import {AlignCenter, AlignJustify, AlignLeft, AlignRight, Bold, Code, CodeIcon, Heading1, Heading2, Heading3, Highlighter, Image, Italic, List, ListOrdered, Pilcrow, Strikethrough, Underline} from 'lucide-react'
 import { Toggle } from '../ui/toggle';
 import TextAlign from '@tiptap/extension-text-align';
+
+const API_URL = import.meta.env.VITE_API_URL;
+console.log("API_URL", API_URL);
 
 
 type MenuBarProps = {
@@ -27,42 +30,24 @@ const MenuBar = ({editor} : MenuBarProps) => {
 
   const [selectedImage, setSelectedImage] = useState<any>()
 
-  const onFileUpload = async (event : any) => {
-    setSelectedImage(event.target.files[0])
+  const onFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files?.length) return;
+    const file = e.target.files[0];
+    console.log("selected file:", file); // ✅
 
-    // const response = await fetch("",{
-    //   method:'POST',
-    //   headers: {}
-    // })
+    const response = await fetch(`${API_URL}/s3/tiptap-image-upload?filename=${encodeURIComponent(file.name)}&contentType=${encodeURIComponent(file.type)}`,{
+      method:'get',
+      credentials: 'include'
+    })
+    const { uploadUrl, fileUrl } = await response.json();
 
-    // const S3_BUCKET = process.env.S3_BUCKET!; // Replace with your bucket name
-    // const REGION = process.env.REGION!; // Replace with your region
+    await fetch(uploadUrl, {
+      method: "PUT",
+      headers: { "Content-Type": file.type },
+      body: file,
+    });
 
-    // AWS.config.update({
-    //   accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY!,
-    //   secretAccessKey: process.env.REACT_APP_AWS_SECRET!,
-    // });
-
-    // const s3 = new S3({
-    //   params: { Bucket: S3_BUCKET },
-    //   region: REGION,
-    // });
-
-    // const params = {
-    //   Bucket: S3_BUCKET,
-    //   Key: selectedImage.name,
-    //   Body: selectedImage,
-    // };
-
-    // try {
-    //   const upload = await s3.putObject(params).promise();
-    //   console.log(upload);
-    //   alert("File uploaded successfully.");
-
-    // } catch (error: any) {
-    //   console.error(error);
-    //   alert("Error uploading file: " + error.message); // Inform user about the error
-    // }
+    editor.chain().focus().setImage({src: fileUrl}).run()
 
   }
 
@@ -142,6 +127,18 @@ const MenuBar = ({editor} : MenuBarProps) => {
       onClick:() => editor.chain().focus().toggleOrderedList().run(),
       pressed:editor.isActive('orderedList')
     },
+    {
+      icon: <CodeIcon className="size-4"/>,
+      onClick:() => editor.chain().focus().toggleCodeBlock().run(),
+      pressed:editor.isActive('codeBlock')
+    },
+    // {
+    //   icon: <Image className="size-4"/>,
+    //   onClick:() => {
+    //     editor.chain().focus().setImage({src: ''}).run()
+    //   },
+    //   pressed:editor.isActive('codeBlock')
+    // },
   ]
 
   return (
@@ -153,7 +150,7 @@ const MenuBar = ({editor} : MenuBarProps) => {
       <label htmlFor="file-upload" className='custom-file-upload'>
         <Image className="size-4"></Image>
       </label>
-      <input type="file" onChange={onFileUpload} id="file-upload"></input>
+      <input type="file" onChange={onFileUpload} id="file-upload"/>
         
     </div>
   )

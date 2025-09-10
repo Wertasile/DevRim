@@ -122,6 +122,8 @@ const getPersonalData = async (req, res) => {
     picture: req.user.picture,
     liked: req.user.liked,
     lists: req.user.lists,
+    following: req.user.following,
+    followers: req.user.followers
   });
 };
 
@@ -233,6 +235,31 @@ app.get("/s3/presign-download", async (req, res) => {
   }
 });
 
+// ----------------------------- GENERATING PRESIGNED URL FOR UPLOADING IMAGE ON TIPTAP--------------------------------------------------------------------------------------------------
+app.get("/s3/tiptap-image-upload", async (req, res) => {
+  console.log("Upload request received:", req.query); // ✅
+  try {
+    
+    const { filename, contentType } = req.query;
+
+    let bucket = process.env.S3_TIPTAP_BUCKET;
+
+    const command = new PutObjectCommand({
+      Bucket: bucket,
+      Key: filename,
+      ContentType: contentType,
+    });
+
+    const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 }); // 5 min
+
+    const fileUrl = `https://${bucket}.s3.${process.env.AWS_REGION}.amazonaws.com/${filename}`;
+
+    res.json({ uploadUrl, fileUrl, key: filename });
+  } catch (err) {
+    console.error("Error generating presigned upload URL:", err);
+    res.status(500).json({ error: "Failed to generate presigned upload URL" });
+  }
+});
 
 // ------------------------------------------ SOME DEFAULT STUFF ------------------------------------------------------------------------------------------------------------
 

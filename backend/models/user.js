@@ -8,7 +8,9 @@ const userSchema = new mongoose.Schema({
   name: String,
   picture: String,
   liked: [{type: mongoose.Schema.Types.ObjectId, ref:"post"}],
-  lists: [{type: mongoose.Schema.Types.ObjectId, ref:"list"}]
+  lists: [{type: mongoose.Schema.Types.ObjectId, ref:"list"}],
+  following: [{type: mongoose.Schema.Types.ObjectId, ref:"user"}],
+  followers: [{type: mongoose.Schema.Types.ObjectId, ref:"user"}]
 });
 
 module.exports = mongoose.model('user', userSchema);

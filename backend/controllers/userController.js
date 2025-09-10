@@ -150,5 +150,57 @@ const allUsers = async (req, res) => {
   }
 };
 
+const follow = async (req, res) => {
 
-module.exports = {fetchUser, createUser, loginUser, logoutUser, deleteUser, likeBlog, unlikeBlog, allUsers}
+    try {
+        const userId = req.user._id
+        const followId = req.params.userId
+        console.log("current user" + userId)
+        console.log("follow id user" + followId)
+
+        await User.findByIdAndUpdate(
+            userId,
+            { $addToSet: { following: followId } },
+            { new: true }
+        )
+
+        await User.findByIdAndUpdate(
+            followId,
+            { $addToSet: { followers: userId } },
+            { new: true }
+        )
+        res.json({ success: true, message: "Followed successfully" })
+    } catch (error) {
+        res.status(500).json({success: false, message: "message: server error"})
+    }
+
+
+}
+
+const unfollow = async (req, res) => {
+    
+    try{
+        const userId = req.user._id
+        const followId = req.params.userId
+
+        await User.findByIdAndUpdate(
+            userId,
+            { $pull: { following: followId } },
+            { new: true }
+        )
+
+        await User.findByIdAndUpdate(
+            followId,
+            { $pull: { followers: userId } },
+            { new: true }
+        )
+
+        res.json({success: true, message: "unfollowed Successfully"})
+    }
+    catch( error ){
+        res.status(500).json({ success: false, message: "Server error" })
+    }
+}
+
+
+module.exports = {fetchUser, createUser, loginUser, logoutUser, deleteUser, likeBlog, unlikeBlog, allUsers, follow, unfollow}

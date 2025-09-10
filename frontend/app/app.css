@@ -152,7 +152,7 @@ html{
 
 }
 
-body{margin: 0px;
+body{margin: 0px; padding: 0px 5px
    /* background:radial-gradient(circle at 50% 50%, rgb(38, 57, 141), rgba(0, 0, 0, 0.92)); */
 }
 
@@ -222,7 +222,6 @@ h2{
 }
 
 .card{
-    padding: 10px;
     border-radius: 20px;
     border: 0.5px solid antiquewhite;
     background-color: var(--surface-1);

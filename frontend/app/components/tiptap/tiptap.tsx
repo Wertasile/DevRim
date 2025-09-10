@@ -12,6 +12,8 @@ import { BulletList, ListItem } from '@tiptap/extension-list'
 import { ImageUploadNode } from '../tiptap-node/image-upload-node'
 import { handleImageUpload, MAX_FILE_SIZE } from '~/lib/tiptap-utils'
 import { ImageUploadButton } from '../tiptap-ui/image-upload-button'
+import CodeBlock from '@tiptap/extension-code-block'
+
 
 type TipTapProps = {
   content : any | null;
@@ -39,7 +41,14 @@ const Tiptap = ({content, handleChange} : TipTapProps) => {
       }),
       ListItem,
       Highlight,
-      Image,
+      Image.configure({
+        inline: true,
+      }),
+      CodeBlock.configure({
+        HTMLAttributes: {
+          class: "bg-white"
+        }
+      }),
       Placeholder.configure({
         placeholder: "Tell your Story.."
       }),
