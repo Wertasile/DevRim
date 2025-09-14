@@ -42,7 +42,7 @@
 }
 
 :root {
-  --background: #060010;
+  --background: #222831;
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
@@ -168,7 +168,7 @@ li p{margin-top: 0px;}
 .primary-btn {
     position: relative;
     cursor: pointer;
-    background-color: #111; /* Base background */
+    background-color: #1e6f74; /* Base background */
     padding: .4em 1.2em;
     border: 1px solid #353535;
     border-radius: 20px;
@@ -189,13 +189,14 @@ li p{margin-top: 0px;}
 
 /* Hover background */
 .primary-btn:hover {
-    background-color: #181818;
+    background-color: #00ADB5;
+    color: black;
 }
 
 .secondary-btn {
     position: relative;
     cursor: pointer;
-    background-color: #3d3d3d; /* Base background */
+    background-color: #393E46; /* Base background */
     padding: .4em 1.2em;
     border: 1px solid #353535;
     border-radius: 20px;

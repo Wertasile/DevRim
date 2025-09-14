@@ -3,6 +3,8 @@ import { NavLink, Outlet } from 'react-router'
 import { useGoogleLogin, GoogleLogin, googleLogout } from '@react-oauth/google'
 import { AppProvider, UserProvider, useUser } from '../context/userContext'
 import CustomButton from '~/components/customButton';
+import { HamburgerIcon, MenuIcon } from 'lucide-react';
+import MenuBar from '~/components/tiptap/menuBar';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -83,15 +85,15 @@ const base = () => {
         <>
         
         
-            <header className='w-full lg:w-[1000px] bg-[#0606061a] border-solid border-[1px] border-[#353535] rounded-3xl sticky top-0 flex justify-between p-3 backdrop-blur-sm z-[2] my-5 mx-auto'>
+            <header className='w-full lg:w-[1000px] bg-[#0606061a] border-solid border-[1px] border-[#353535] rounded-3xl sticky top-0 flex justify-between items-center p-3 backdrop-blur-sm z-[2] my-5 mx-auto'>
                 <div className='flex gap-2 items-center'>
                     <a href='/'><img src="/Images/DevRim_Logo_0.png" width="48"/></a>
                     <h3>DevRim</h3>
                 </div>
 
-                <nav className='relative flex items-center gap-7'>
+                <nav className='hidden sm:flex relative items-center gap-7'>
                     <NavLink to="/blog" target="_self">BLOGS</NavLink>
-                    <NavLink to="/projects" target="_self">PROJECTS</NavLink>
+                    {/* <NavLink to="/projects" target="_self">PROJECTS</NavLink> */}
                     {/* <a href="projects/projects.html" target="_self">Projects</a> */}
                     <NavLink to="/about" target="_self">ABOUT</NavLink>
                     <NavLink to="/chats" target="_self">MESSAGE</NavLink>
@@ -117,13 +119,17 @@ const base = () => {
                     } 
                     
                 </nav>
+
+                <div className='sm:hidden'>
+                    <MenuIcon/>
+                </div>
             </header>
 
             <main>
                 <Outlet/>
             </main>
 
-            <footer className='bg-[#111] text-white flex justify-around items-center px-[10px] py-[20px] bottom-0 mt-[20px]'>
+            <footer className='bg-[#393E46] text-white flex justify-around items-center px-[10px] py-[20px] bottom-0 mt-[20px]'>
                 <div>
                     <img src="/Images/DevRim_Logo.png" height="64"/>
                     <p>A platform for developers</p>

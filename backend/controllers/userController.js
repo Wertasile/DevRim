@@ -202,5 +202,95 @@ const unfollow = async (req, res) => {
     }
 }
 
+const connect = async (req, res) => {
+    try {
+        const userId = req.user._id
+        const otherUserId = req.params.userId
 
-module.exports = {fetchUser, createUser, loginUser, logoutUser, deleteUser, likeBlog, unlikeBlog, allUsers, follow, unfollow}
+        await User.findByIdAndUpdate(otherUserId,
+            { $addToSet: { requests: userId} },
+            { new: true }
+        )
+
+        res.json({ success: true, message: 'Request send successfully' })
+
+    } catch (error) {
+        res.status(500).json({success: false, message: "Failed to send connection request"})
+    }
+}
+
+const disconnect = async (req, res) => {
+    try {
+        const userId = req.user._id
+        const otherUserId = req.params.userId
+
+        await User.findByIdAndUpdate(otherUserId,
+            { $pull: { connections: userId } },
+            { new: true }
+        )
+
+        await User.findByIdAndUpdate(userId,
+            { $pull: { connections: otherUserId } },
+            { new: true }
+        )
+
+        res.json({ success: true, message: 'Request send successfully' })
+        
+    } catch (error) {
+        res.status(500).json({success: false, message: "Failed to remove connection"})
+    }
+}
+
+// from other users end
+const accept = async (req, res) => {
+
+    const userId = req.user._id
+    const otherUserId = req.params.userId    
+
+    try {
+        await User.findByIdAndUpdate(userId,
+            { $pull: { requests: otherUserId} },
+            { new: true }
+        )
+
+        await User.findByIdAndUpdate(otherUserId,
+            { $addToSet: { connections: userId } },
+            { new: true }
+        )
+
+        await User.findByIdAndUpdate(userId,
+            { $addToSet: { connections: otherUserId } },
+            { new: true }
+        )
+        
+        
+        
+    } catch (error) {
+        res.status(500).json({success: false, message: "Failed to send connection request"})
+    }
+}
+
+const decline = async (req, res) => {
+
+    const userId = req.user._id
+    const otherUserId = req.params.userId    
+
+    try {
+        await User.findByIdAndUpdate(userId,
+            { $pull: { requests: otherUserId} },
+            { new: true }
+        )
+        
+        
+    } catch (error) {
+        res.status(500).json({success: false, message: "Failed to send connection request"})
+    }
+}
+
+const fetchRequests = async (req, res) => {
+    
+}
+
+
+module.exports = { fetchUser, createUser, loginUser, logoutUser, deleteUser, likeBlog, unlikeBlog, allUsers, follow, unfollow,
+                   connect, disconnect, accept, decline, fetchRequests }

@@ -7,6 +7,7 @@ import BlogPostCard from '~/components/blogPostCard'
 import fetchUser from '../apiCalls/fetchUser'
 import CreateListModal from '~/components/CreateListModal'
 import ScrollTrigger from "gsap/ScrollTrigger";
+import ListModal from '~/components/listModal'
 
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -22,6 +23,10 @@ const profile = ({params}: Route.ComponentProps) => {
 
     const [lists, setLists] = useState<List[]>()
     const [listModal, setListModal] = useState(false)
+
+    const [viewListModal, setViewListModal] = useState(false)
+    const [listIndex, setListIndex] = useState(0)
+
     const [newListName, setNewListName] = useState<string>("")
 
     const getProfile = async () => {
@@ -52,6 +57,11 @@ const profile = ({params}: Route.ComponentProps) => {
         setBlogs(data)
 
         fetchLists()
+    }
+
+    const handleViewList = (index: number) => {
+        setListIndex(index)
+        setViewListModal(!viewListModal)
     }
 
     const fetchLists = async () => {
@@ -90,9 +100,12 @@ const profile = ({params}: Route.ComponentProps) => {
 
   return (
 
-    <div>
+    <div className='min-h-[80vh]'>
         {listModal && 
             <CreateListModal setListModal={setListModal} listModal={listModal} setLists={setLists} profile={profile} />
+        }
+        {viewListModal && 
+            <ListModal setViewListModal={setViewListModal} list={profile?.lists[listIndex]}/>
         }
         <div className='flex flex-col md:flex-row p-2 sm:p-10'>
             <div className='w-[350px] md:border-r-[2px] border-black border-solid flex flex-col gap-3 p-2 '>
@@ -106,12 +119,15 @@ const profile = ({params}: Route.ComponentProps) => {
             </div>
             <div className='p-5 flex-grow flex flex-col gap-5'>
 
-                <div className='flex flex-row gap-5 border-solid border-b-[2px] border-[#979797]'>
+                <div className='flex flex-row sm:gap-5 border-solid border-b-[2px] border-[#979797]'>
                     <h3 className={`cursor-pointer p-3 ${view == "blogs" && `bg-[#979797] text-black`}`} onClick={() => setView("blogs")}>Blogs</h3>
                     <h3 className={`cursor-pointer p-3 ${view == "lists" && `bg-[#979797] text-black`}`} onClick={() => setView("lists")}>Lists</h3>
                     {/* <h3 className='' onClick={() => setView("about")}>About</h3> */}
                     {profile?._id === user?._id && 
                         <h3 className={`cursor-pointer p-3 ${view == "liked" && `bg-[#979797] text-black`}`} onClick={() => setView("liked")}>Liked</h3>
+                    }
+                    {profile?._id === user?._id && 
+                        <h3 className={`cursor-pointer p-3 ${view == "requests" && `bg-[#979797] text-black`}`} onClick={() => setView("requests")}>Requests</h3>
                     }
                 </div>
 
@@ -136,8 +152,8 @@ const profile = ({params}: Route.ComponentProps) => {
 
                 {view === "lists" && (
                     <div className='flex flex-col gap-5'>
-                        {lists?.map((list) => (
-                            <div className='flex flex-col'>
+                        {lists?.map((list, index) => (
+                            <div className='flex flex-col cursor-pointer hover:bg-[#111] p-2 rounded-3xl' key={index} onClick={() => handleViewList(index)}>
                                 <div>{list.name}</div>
                                 <div className='text-[#979797]'>{list.blogs?.length} blog(s)</div>
                             </div>
@@ -166,7 +182,16 @@ const profile = ({params}: Route.ComponentProps) => {
                     </div>
                     )
                 }
-                    
+
+                {view === "requests" && (
+                    <div className='flex flex-col gap-5'>
+                        {user?.requests ? (<>{user?.requests.map((request, index) => (
+                            <div>{request._id}</div>))}</>) : (<div>No requests</div>)
+                        }
+                    </div>
+                    )
+                }
+
                 
             </div>
         </div>
