@@ -15,6 +15,8 @@ import AddToList from '~/apiCalls/list/addToList';
 import RemoveFromList from '~/apiCalls/list/removeFromList';
 import follow from '~/apiCalls/user/follow';
 import unfollow from '~/apiCalls/user/unfollow';
+import connect from '~/apiCalls/user/connect';
+import disconnect from '~/apiCalls/user/disconnect';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -36,6 +38,7 @@ export default function BlogPost({ params }: Route.ComponentProps) {
   const [usersLists, setUsersLists] = useState<List[]>()
 
   const [following, setFollowing] = useState<boolean>(false)
+  const [connected, setConnected] = useState<boolean>(false)
 
   const getBlog = async () => {
     const response = await fetch(`${API_URL}/posts/${params.id}`, {
@@ -117,8 +120,11 @@ export default function BlogPost({ params }: Route.ComponentProps) {
   }, [])
 
   useEffect(() => {
-    if (blogUser && user?.following.includes(blogUser._id)){
+    if (blogUser && user?.following.includes(blogUser?._id)){
       setFollowing(true)
+    }
+    if (blogUser && user?.connections.includes(blogUser?._id)){
+      setConnected(true)
     }
   },[user, blogUser])
 
@@ -148,6 +154,19 @@ export default function BlogPost({ params }: Route.ComponentProps) {
     } else{
       await follow(blogUser?._id)
       setFollowing(true)
+    }
+
+  }
+
+    const handleConnect = async () => {
+    if (!blogUser?._id) return
+
+    if (connected){
+      await disconnect(blogUser?._id)
+      setConnected(false)
+    } else{
+      await connect(blogUser?._id)
+      setConnected(true)
     }
 
   }
@@ -275,7 +294,12 @@ export default function BlogPost({ params }: Route.ComponentProps) {
           >
               {following ? (<span>UNFOLLOW</span>) : (<span>FOLLOW</span>)}
             </button>
-          <button className='primary-btn'><span>CONNECT</span></button>
+          <button 
+            className='primary-btn'
+            onClick={handleConnect}
+          >
+            {connected ? (<span>DISCONNECT</span>) : (<span>CONNECT</span>)}
+          </button>
         </div>
       </div>
 

@@ -7,10 +7,14 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import topics from "../data/searchFilters/topics.json"
 import frameworks from "../data/searchFilters/frameworks.json"
+import { useUser } from '~/context/userContext'
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 export default function BlogHome() {
+
+    const {user} = useUser()
+
     const [blogs, setBlogs] = useState<Blog []>([])
     const [searchResults, setSearchResults] = useState<Blog[]>([])
 

@@ -14,10 +14,10 @@ const router = express.Router();  // router gets initialised, allowing us to def
 
 router.post("/", authenticateUser, accessChat);
 router.get("/", authenticateUser, fetchChats);
-router.delete("/:chatId", deleteChat);
-router.post("/group", createGroupChat);
-router.put("/rename", renameGroup);
-router.put("/groupremove", removeFromGroup);
-router.put("/groupadd", addToGroup);
+router.delete("/:chatId", authenticateUser, deleteChat);
+router.post("/group", authenticateUser, createGroupChat);
+router.put("/rename", authenticateUser, renameGroup);
+router.put("/groupremove", authenticateUser, removeFromGroup);
+router.put("/groupadd", authenticateUser, addToGroup);
 
 module.exports = router;

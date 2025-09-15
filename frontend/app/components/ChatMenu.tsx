@@ -13,10 +13,10 @@ const ChatMenu = ({Chat} : ChatMenuProps) => {
   const {chat, setChat} = useChat()
 
   return (
-    <div className='border-b-[1px] border-solid border-[#979797] flex flex-row py-2 justify-between' onClick={() => {setChat(Chat)}}>
+    <div className='cursor-pointer border-b-[1px] border-solid border-[#979797] flex flex-row py-2 justify-between' onClick={() => {setChat(Chat)}}>
         <div>
-            {Chat?.chatName === "sender" ? (<h3>{Chat.users.filter((u) => u._id !== user?._id).map( (otherUser) => <h3>{otherUser.name}</h3>)}</h3>) : (<h3>{Chat?._id}</h3>)}
-            <p className='font-light text-sm'>{Chat?.latestMessage.content}</p>
+            {Chat?.chatName === "sender" ? (<h3>{Chat.users.filter((u) => u._id !== user?._id).map( (otherUser) => <h3>{otherUser.name}</h3>)}</h3>) : (<h3>{Chat?.chatName}</h3>)}
+            <p className='font-light text-sm'>{Chat?.latestMessage && (Chat?.latestMessage.content)}</p>
         </div>
         <div>
             {Chat?.chatName === "sender" ? 

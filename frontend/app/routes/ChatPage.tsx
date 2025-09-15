@@ -19,6 +19,7 @@ import type { Chat, Message, User } from "~/types/types";
 import io from "socket.io-client" // io is a function to call an individual socket
 import { socket } from "../components/socket";
 import GroupModal from "~/components/groupModal";
+import FindUserModal from "~/components/findUserModal";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -57,6 +58,9 @@ const ChatPage = () => {
   const [groupName, setGroupName] = useState("")
   const [searchUser, setSearchUser] = useState<User[]>([]) // search results
   const [groupUsers, setGroupUsers] = useState<User[]>([]) // users selected by user
+
+  const [findUsersModal, setFindUsersModal] = useState(false)
+  const [findUsers, setFindUsers] = useState<User[]>([]) // search results
 
   // ---------- LOGIN / LOGOUT ----------
 
@@ -112,6 +116,7 @@ const ChatPage = () => {
     const chatData = await res.json();
     setChats(chatData);
     if (chatData) setChat(chatData[0]);
+    console.log(chatData)
   };
 
   const fetchMessages = async (chatId: string) => {
@@ -434,7 +439,11 @@ const ChatPage = () => {
   return (
     <>
     {groupModal && 
-      <GroupModal groupName={groupName} setGroupName={setGroupName} groupUsers={groupUsers} setGroupUsers={setGroupUsers} searchUser={searchUser} setSearchUser={setSearchUser} setGroupModal={setGroupModal}/>
+      <GroupModal groupName={groupName} setGroupName={setGroupName} groupUsers={groupUsers} setGroupUsers={setGroupUsers} searchUser={searchUser} setSearchUser={setSearchUser} setGroupModal={setGroupModal} setChat={setChat}/>
+    }
+
+    {findUsersModal && 
+      <FindUserModal findUsers={findUsers} setFindUsers={setFindUsers} setFindUsersModal={setFindUsersModal} setChat={setChat}/>
     }
     
     <div className="flex flex-row h-[100vh]">
@@ -457,7 +466,7 @@ const ChatPage = () => {
       {/* CHAT MENU */}
       <div className="w-[400px] flex flex-col border-r border-[#979797]">
         <div className="h-[50px] border-b border-[#979797] flex items-center p-2 gap-3 ">
-          <div className="primary-btn p-2 rounded-xl w-full text-center">
+          <div className="primary-btn p-2 rounded-xl w-full text-center" onClick={() => {setFindUsersModal(!findUsersModal)}}>
             <span>Find or Start a Conversation</span>
           </div>
           <div className="flex primary-btn p-2 " onClick={() => {setGroupModal(!groupModal)}}>
@@ -476,13 +485,17 @@ const ChatPage = () => {
       {/* MESSAGES */}
 
       <div className="flex-grow flex flex-col justify-between h-[100vh] overflow-y-scroll feed-container">
-        <h1 className="h-[50px] border-b border-[#979797] px-5 sticky top-0 backdrop-blur-md">
+        <h2 className="h-[50px] cursor-pointer border-b border-[#979797] px-5 sticky top-0 backdrop-blur-md">
           {chat?.chatName === "sender"
             ? chat.users
                 .filter((u) => u._id !== user?._id)
-                .map((u) => <h2 key={u._id}>{u.name}</h2>)
-            : chat?._id}
-        </h1>
+                .map((u) => 
+                <h2 key={u._id}>{u.name}</h2>
+            )
+            : 
+            <h2>{chat?.chatName}</h2>
+            }
+        </h2>
 
         <div className="flex flex-col gap-2 px-5 flex-grow justify-end">
           {messages?.map((message, index) => (

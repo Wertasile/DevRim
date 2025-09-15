@@ -1,4 +1,4 @@
-const { logoutUser, loginUser, fetchUser, createUser, likeBlog, unlikeBlog, allUsers, follow, unfollow, connect, disconnect, accept, decline, fetchRequests} = require("../controllers/userController");
+const { logoutUser, loginUser, fetchUser, createUser, likeBlog, unlikeBlog, allUsers, follow, unfollow, connect, disconnect, accept, decline} = require("../controllers/userController");
 const authenticateUser = require("../functions/auth");
 // const protect =require("../functions/auth")
 
@@ -19,6 +19,6 @@ router.put('/connect/:userId', authenticateUser, connect)
 router.delete('/connect/:userId', authenticateUser, disconnect)
 router.put('/connect/accept/:userId', authenticateUser, accept)
 router.delete('/connect/decline/:userId', authenticateUser, decline)
-router.get('/requests', authenticateUser, fetchRequests)
+
 
 module.exports = router;

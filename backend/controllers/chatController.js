@@ -21,7 +21,7 @@ const accessChat = asyncHandler(async (req, res) => {
       { users: { $elemMatch: { $eq: userId } } },
     ],
   })
-    .populate("users", "-password")
+    .populate("users")
     .populate("latestMessage");
 
   isChat = await User.populate(isChat, {
@@ -30,10 +30,10 @@ const accessChat = asyncHandler(async (req, res) => {
   });
 
   if (isChat.length > 0) {
-    res.send(isChat[0]);   // if this block runs, then a response is sent and the function finishes here
+    res.send(isChat[0]);   // if chat already exists
   } else {
-    var chatData = {
-      chatName: "sender",
+    var chatData = {        
+      chatName: "sender",   // if chat does not exist it is created here
       isGroupChat: false,
       users: [req.user._id, userId],
     };
@@ -42,7 +42,6 @@ const accessChat = asyncHandler(async (req, res) => {
       const createdChat = await Chat.create(chatData);
       const FullChat = await Chat.findOne({ _id: createdChat._id }).populate(
         "users",
-        "-password"
       );
       res.status(200).json(FullChat);
     } catch (error) {
@@ -107,7 +106,7 @@ const createGroupChat = asyncHandler(async (req, res) => {
     return res.status(400).send({ message: "Please Fill all the feilds" });
   }
 
-  var users = JSON.parse(req.body.users);
+  var users = req.body.users;
 
   if (users.length < 2) {
     return res

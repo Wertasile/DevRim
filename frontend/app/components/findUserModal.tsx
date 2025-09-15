@@ -2,26 +2,22 @@ import React, { useState } from 'react'
 import type { Chat, User } from '~/types/types';
 
 
-type groupModalProps = {
-    groupName: string;
-    setGroupName: React.Dispatch<React.SetStateAction<string>>;
-    searchUser: User[];
-    setSearchUser: React.Dispatch<React.SetStateAction<User[]>>
-    groupUsers: User[];
-    setGroupUsers : React.Dispatch<React.SetStateAction<User[]>>;
-    setGroupModal : React.Dispatch<React.SetStateAction<boolean>>;
+type FindUserModalProps = {
+    findUsers: User[];
+    setFindUsers: React.Dispatch<React.SetStateAction<User[]>>;
+    setFindUsersModal: React.Dispatch<React.SetStateAction<boolean>>;
     setChat : React.Dispatch<React.SetStateAction<Chat | null>>
 
 }
 
 const API_URL = import.meta.env.VITE_API_URL;
-const GroupModal = ({groupName, setGroupName, searchUser, setSearchUser, groupUsers, setGroupUsers, setGroupModal, setChat}: groupModalProps) => {
+const FindUserModal = ({findUsers, setFindUsers, setFindUsersModal, setChat}: FindUserModalProps) => {
 
     const [input, setInput] = useState("")
 
     const handleSearch = async (searchValue: string) => {
         if (searchValue === ""){
-            setSearchUser([])
+            setFindUsers([])
         } else{
             const response = await fetch(`${API_URL}/users?search=${searchValue}`, {
                 method: 'get',
@@ -30,25 +26,25 @@ const GroupModal = ({groupName, setGroupName, searchUser, setSearchUser, groupUs
 
             const data : User[] = await response.json()
             console.log(data)
-            setSearchUser(data)
+            setFindUsers(data)
         }
     }
 
-    const createGroup = async () => {
-        console.log(groupUsers)
-        console.log(groupName)
-        const response = await fetch(`${API_URL}/chats/group`, {
+    const fetchChat = async (userId: string) => {
+        const response = await fetch(`${API_URL}/chats/`, {
             method: 'post',
             credentials: 'include',
             headers: {
                 "Content-Type" : "application/json"
             },
-            body : JSON.stringify({users : groupUsers, name: groupName})
+            body : JSON.stringify({userId : userId})
         })
 
-        const gcData = await response.json()
+        const chatData = await response.json()
 
-        setChat(gcData)
+        setFindUsersModal(false)
+        setChat(chatData)
+
     }
 
   return (
@@ -58,14 +54,7 @@ const GroupModal = ({groupName, setGroupName, searchUser, setSearchUser, groupUs
         className="w-[300px] h-[400px] bg-[#393E46] border-solid border-[1px] border-[#979797] flex flex-col gap-2 items-center justify-center p-2" 
         onClick={(e) => {e.stopPropagation()}}
       >
-        <div><h3>Select Connections</h3></div>
-        <div>
-          <label className="hidden" htmlFor="groupName" id="groupName"></label>
-          <input id="groupName" name="groupName" value={groupName}
-          placeholder='Enter group name'
-            onChange={(e) => setGroupName(e.target.value)}
-          />
-        </div>
+        <div><h3>Select User</h3></div>
         <div>
           <label className="hidden" htmlFor="userSearch" id="userSearch"></label>
           <input
@@ -79,24 +68,13 @@ const GroupModal = ({groupName, setGroupName, searchUser, setSearchUser, groupUs
             }}
             />
         </div>
-        <div className='h-[50px] flex'>
-            {groupUsers.map( (user) => (
-                <div className="flex gap-1 bg-[#111] p-1 text-sm" key={user._id}>
-                    <img src={user.picture} width={24}/>
-                    {user.name}
-                </div>
-            ))}
-        </div>
         <div className="h-[225px] text-sm overflow-y-auto border w-full p-2">
-            {searchUser.length > 0 ? (
-                searchUser.map((user) => (
+            {findUsers.length > 0 ? (
+                findUsers.map((user) => (
                 <div
                     key={user._id}
                     className="cursor-pointer p-1 hover:bg-[#111] flex flex-row gap-2"
-                    onClick={() => {
-                        console.log("Selected user:", user);
-                        setGroupUsers( prev => [...prev, user])
-                    }}
+                    onClick={() => {fetchChat(user._id)}}
                 >   
                         <img width={24} src={user.picture}/>
                         <div>{user.name}</div>
@@ -106,14 +84,10 @@ const GroupModal = ({groupName, setGroupName, searchUser, setSearchUser, groupUs
                 <div className="text-gray-500">No users found</div>
             )}
         </div>
-
-        <div>
-            <button className='primary-btn' onClick={createGroup}>CREATE GROUP</button>
-        </div>
         
       </div>
     </div>
   )
 }
 
-export default GroupModal
+export default FindUserModal

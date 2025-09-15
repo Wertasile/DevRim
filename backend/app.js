@@ -123,7 +123,9 @@ const getPersonalData = async (req, res) => {
     liked: req.user.liked,
     lists: req.user.lists,
     following: req.user.following,
-    followers: req.user.followers
+    followers: req.user.followers,
+    connections: req.user.connections,
+    requests: req.user.requests
   });
 };
 

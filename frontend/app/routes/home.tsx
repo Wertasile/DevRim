@@ -126,7 +126,7 @@ const Home = () => {
 
   return(
     <>
-        <section id="hero" className="flex flex-col min-h-[70vh] justify-between gap-6 p-2 md:flex-row gap-5 mx-auto my-15 max-w-[1200px] ">
+        <section id="hero" className="flex flex-col min-h-[70vh] justify-between gap-6 p-2 lg:flex-row gap-5 mx-auto my-15 max-w-[1200px] ">
             <div className="flex flex-col gap-5">
                 <h2>Write. Connect. Share. All in one place.</h2>
                 <h3>Devrim is where blogging meets social connection. Publish ideas, follow authors, and connect through direct messages or groups. Combinbing Social - with Educational.</h3>

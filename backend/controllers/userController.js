@@ -287,10 +287,6 @@ const decline = async (req, res) => {
     }
 }
 
-const fetchRequests = async (req, res) => {
-    
-}
-
 
 module.exports = { fetchUser, createUser, loginUser, logoutUser, deleteUser, likeBlog, unlikeBlog, allUsers, follow, unfollow,
-                   connect, disconnect, accept, decline, fetchRequests }
+                   connect, disconnect, accept, decline }
