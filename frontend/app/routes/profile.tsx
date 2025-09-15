@@ -197,8 +197,8 @@ const profile = ({params}: Route.ComponentProps) => {
                 {view === "lists" && (
                     <div className='flex flex-col gap-5'>
                         {lists?.map((list, index) => (
-                            <div className='flex flex-col cursor-pointer hover:bg-[#111] p-2 rounded-3xl' key={index} onClick={() => handleViewList(index)}>
-                                <div>{list.name}</div>
+                            <div className='cursor-pointer p-1 hover:bg-[#111] flex flex-col gap-2' key={index} onClick={() => handleViewList(index)}>
+                                <div> - {list.name}</div>
                                 <div className='text-[#979797]'>{list.blogs?.length} blog(s)</div>
                             </div>
                         ))}

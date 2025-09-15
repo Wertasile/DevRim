@@ -13,13 +13,14 @@ import {
   Users,
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
-import ChatMenu from "~/components/ChatMenu";
+import ChatMenu from "~/components/chatComponents/ChatMenu";
 import { useChat, useNotification, useUser } from "~/context/userContext";
 import type { Chat, Message, User } from "~/types/types";
 import io from "socket.io-client" // io is a function to call an individual socket
 import { socket } from "../components/socket";
-import GroupModal from "~/components/groupModal";
-import FindUserModal from "~/components/findUserModal";
+import GroupModal from "~/components/chatComponents/groupModal";
+import FindUserModal from "~/components/chatComponents/findUserModal";
+import Friends from "~/components/chatComponents/Friends";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -61,6 +62,8 @@ const ChatPage = () => {
 
   const [findUsersModal, setFindUsersModal] = useState(false)
   const [findUsers, setFindUsers] = useState<User[]>([]) // search results
+
+  const [section, setSection] = useState<string>("messages")
 
   // ---------- LOGIN / LOGOUT ----------
 
@@ -445,6 +448,8 @@ const ChatPage = () => {
     {findUsersModal && 
       <FindUserModal findUsers={findUsers} setFindUsers={setFindUsers} setFindUsersModal={setFindUsersModal} setChat={setChat}/>
     }
+
+    
     
     <div className="flex flex-row h-[100vh]">
       {/* SIDEBAR */}
@@ -453,17 +458,25 @@ const ChatPage = () => {
           <a href="/">
             <img src="/Images/DevRim_Logo_0.png" width={48} />
           </a>
-          <MessageSquare className="w-[48px] text-[#979797]" />
-          <UserIcon className="w-[48px] text-[#979797]" />
+          <MessageSquare 
+            onClick={() => setSection("messages")} 
+            className={`cursor-pointer w-[48px] text-[#FFF] ${section === "messages" && ('bg-[#229197] rounded-3xl ')}`} 
+          />
+          <UserIcon 
+            onClick={() => setSection("friends")} 
+            className={`cursor-pointer w-[48px] text-[#FFF] ${section === "friends" && ('bg-[#229197] rounded-3xl ')}`}  
+          />
         </div>
         <div className="flex flex-col gap-5">
-          <CircleQuestionMark className="w-[48px] text-[#979797]" />
-          <LayoutGrid className="w-[48px] text-[#979797]" />
+          <CircleQuestionMark className="cursor-pointer w-[48px] text-[#FFF]" />
+          <LayoutGrid className="cursor-pointer w-[48px] text-[#FFF]" />
           <img src={user?.picture} width={48} className="rounded-3xl" />
         </div>
       </div>
 
       {/* CHAT MENU */}
+      { section === "messages" && 
+      
       <div className="w-[400px] flex flex-col border-r border-[#979797]">
         <div className="h-[50px] border-b border-[#979797] flex items-center p-2 gap-3 ">
           <div className="primary-btn p-2 rounded-xl w-full text-center" onClick={() => {setFindUsersModal(!findUsersModal)}}>
@@ -475,16 +488,19 @@ const ChatPage = () => {
 
           </div>
         </div>
-        <div className="flex flex-col gap-5 p-5">
-          {chats?.map((chat, index) => (
-            <ChatMenu key={index} Chat={chat} />
+        <div className="flex flex-col gap-5 p-2">
+          {chats?.map((chatx, index) => (
+            <ChatMenu key={index} Chat={chatx} />
           ))}
         </div>
       </div>
+      
+      }
 
       {/* MESSAGES */}
+      { section === "messages" && 
 
-      <div className="flex-grow flex flex-col justify-between h-[100vh] overflow-y-scroll feed-container">
+      <div className="flex-grow flex flex-col feed-container overflow-y-scroll">
         <h2 className="h-[50px] cursor-pointer border-b border-[#979797] px-5 sticky top-0 backdrop-blur-md">
           {chat?.chatName === "sender"
             ? chat.users
@@ -497,7 +513,7 @@ const ChatPage = () => {
             }
         </h2>
 
-        <div className="flex flex-col gap-2 px-5 flex-grow justify-end">
+        <div className="flex flex-col gap-2 px-5 flex-grow justify-end ">
           {messages?.map((message, index) => (
             <div
               key={index}
@@ -583,7 +599,16 @@ const ChatPage = () => {
           </div>
         </div>
       </div>
+
+      }
+
+      {section === "friends" &&
+        <Friends/>
+      }
     </div>
+    
+
+    
     </>
   );
 };

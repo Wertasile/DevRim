@@ -25,12 +25,12 @@ const ListModal = ({list, setViewListModal}: ListModalProps) => {
   }, [])
 
   return (
-    <div className='absolute h-[85vh] w-[100vw] flex justify-center items-center z-[10]' onClick={() => setViewListModal(false)}>
-        <div className='bg-[#111] w-[300px] h-[300px] flex flex-col gap-5 p-10 rounded-3xl' onClick={(e) => e.stopPropagation()}>
-          <h3>{listData?.name}</h3>
+    <div className='absolute z-1 flex h-[100vh] w-[100vw] justify-center items-center backdrop-blur-xs' onClick={() => setViewListModal(false)}>
+        <div className='w-[300px] h-[400px] bg-[#393E46] border-solid border-[1px] border-[#979797] flex flex-col gap-2 p-2' onClick={(e) => e.stopPropagation()}>
+          <h3 className='text-center'>{listData?.name}</h3>
           <div>
             {listData?.blogs.map( (blog, index)  => (
-              <div key={index} className="cursor-pointer" onClick={() => {window.location.href=`/blog/${blog._id}`}}>
+              <div key={index} className="cursor-pointer p-1 hover:bg-[#111] flex flex-row gap-2" onClick={() => {window.location.href=`/blog/${blog._id}`}}>
                 {blog.title}
               </div>
             ))}

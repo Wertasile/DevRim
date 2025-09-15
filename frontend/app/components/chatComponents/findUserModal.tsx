@@ -48,7 +48,7 @@ const FindUserModal = ({findUsers, setFindUsers, setFindUsersModal, setChat}: Fi
     }
 
   return (
-    <div className="absolute z-1 flex h-[100vh] w-[100vw] justify-center items-center backdrop-blur-xs" onClick={() => {setGroupModal(false)}}>
+    <div className="absolute z-1 flex h-[100vh] w-[100vw] justify-center items-center backdrop-blur-xs" onClick={() => {setFindUsersModal(false)}}>
         
       <div 
         className="w-[300px] h-[400px] bg-[#393E46] border-solid border-[1px] border-[#979797] flex flex-col gap-2 items-center justify-center p-2" 
