@@ -1,6 +1,8 @@
 import { googleLogout, useGoogleLogin } from "@react-oauth/google";
 import {
   CircleQuestionMark,
+  CopyIcon,
+  DeleteIcon,
   FileIcon,
   Image,
   LayoutGrid,
@@ -8,7 +10,10 @@ import {
   Mic,
   MicOff,
   Paperclip,
+  PinIcon,
+  ReplyIcon,
   SendHorizonal,
+  Trash2Icon,
   UserIcon,
   Users,
 } from "lucide-react";
@@ -21,6 +26,9 @@ import { socket } from "../components/socket";
 import GroupModal from "~/components/chatComponents/groupModal";
 import FindUserModal from "~/components/chatComponents/findUserModal";
 import Friends from "~/components/chatComponents/Friends";
+import CustomiseGCModal from "~/components/chatComponents/customiseGCModal";
+import GCUsersPanel from "~/components/chatComponents/GCUsersPanel";
+import AddGCUsers from "~/components/chatComponents/addGCUsersModal";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -63,7 +71,13 @@ const ChatPage = () => {
   const [findUsersModal, setFindUsersModal] = useState(false)
   const [findUsers, setFindUsers] = useState<User[]>([]) // search results
 
+  const [gcModal, setGCModal] = useState(false)
+
+  const [addUsersModal, setAddUsersModal] = useState<boolean>(false)
+
   const [section, setSection] = useState<string>("messages")
+
+  const usersPanel = useRef(null)
 
   // ---------- LOGIN / LOGOUT ----------
 
@@ -449,6 +463,15 @@ const ChatPage = () => {
       <FindUserModal findUsers={findUsers} setFindUsers={setFindUsers} setFindUsersModal={setFindUsersModal} setChat={setChat}/>
     }
 
+    {(chat?.isGroupChat==true && gcModal) &&
+      <CustomiseGCModal groupName={groupName} setGroupName={setGroupName} groupUsers={groupUsers} setGroupUsers={setGroupUsers} setGCModal={setGCModal}/>
+    }
+
+    {addUsersModal &&
+      <AddGCUsers setAddUsersModal={setAddUsersModal}/>
+    }
+
+    
     
     
     <div className="flex flex-row h-[100vh]">
@@ -501,23 +524,32 @@ const ChatPage = () => {
       { section === "messages" && 
 
       <div className="flex-grow flex flex-col feed-container overflow-y-scroll">
-        <h2 className="h-[50px] cursor-pointer border-b border-[#979797] px-5 sticky top-0 backdrop-blur-md">
-          {chat?.chatName === "sender"
-            ? chat.users
-                .filter((u) => u._id !== user?._id)
-                .map((u) => 
-                <h2 key={u._id}>{u.name}</h2>
-            )
-            : 
-            <h2>{chat?.chatName}</h2>
-            }
-        </h2>
+        <div className="h-[50px] flex justify-between cursor-pointer items-center border-b border-[#979797] px-5 sticky top-0 bg-[#222831] z-1">
+          <h2
+            className="w-fit cursor-pointer"
+            onClick={() => {
+              if (chat?.isGroupChat) setGCModal(true);
+            }}
+          >
+            {chat?.chatName === "sender"
+              ? chat.users
+                  .filter((u) => u._id !== user?._id)
+                  .map((u) => 
+                  <h2 key={u._id}>{u.name}</h2>
+              )
+              : 
+              <h2>{chat?.chatName}</h2>
+              }
+          </h2>
+          <div><GCUsersPanel setAddUsersModal={setAddUsersModal} chat={chat}/></div>
+        </div>
 
         <div className="flex flex-col gap-2 px-5 flex-grow justify-end ">
           {messages?.map((message, index) => (
             <div
               key={index}
-              className={`rounded-2xl flex flex-col gap-2 p-2 w-fit border border-[#979797] font-semibold ${
+              
+              className={`relative rounded-2xl flex flex-col gap-2 p-2 w-fit border border-[#979797] font-semibold ${
                 message.sender._id === user?._id
                   ? "bg-green-100 text-black self-end"
                   : "bg-[#9A9CD4] text-black self-start"
@@ -527,6 +559,21 @@ const ChatPage = () => {
               <i className="text-xs text-right font-light">
                 {message.updatedAt.split("T")[1].slice(0, 5)}
               </i>
+
+              <div 
+                className={`absolute flex flex-row gap-2 p-2 -top-10 right-0 bg-[#979797] text-black rounded-3xl 
+                  ${
+                  message.sender._id === user?._id
+                    ? "bg-green-100 text-black self-end"
+                    : "bg-[#9A9CD4] text-black self-start"
+                  } `
+                }
+              >
+                <CopyIcon/>
+                {message.sender._id !== user?._id && <ReplyIcon/>}
+                <PinIcon/>
+                {message.sender._id === user?._id && <Trash2Icon/>}
+              </div>
             </div>
             
           ))}

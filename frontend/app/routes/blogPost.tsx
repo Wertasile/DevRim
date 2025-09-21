@@ -106,7 +106,6 @@ export default function BlogPost({ params }: Route.ComponentProps) {
 
     const data = await response.json()
     console.log(data)
-
     setComments( prev => [...(prev ?? []), data])
     setComment("")
   }
@@ -303,6 +302,8 @@ export default function BlogPost({ params }: Route.ComponentProps) {
         </div>
       </div>
 
+{/* ----------------------- COMMENTS ---------------------------------------------------------------------------------------------------- */}
+
       <div id="comments">
         <h2>Comments</h2>
         <div className='flex gap-5'>  
@@ -322,7 +323,7 @@ export default function BlogPost({ params }: Route.ComponentProps) {
             onChange={(event) => (setComment(event.target.value))}
           />
           <button className='primary-btn' onClick={() => {addComment()}}><span>SEND</span></button>
-          <button className='secondary-btn'>CLEAR</button>
+          <button className='secondary-btn' onClick={() => setComment("")}>CLEAR</button>
         </div>
         <div className='flex flex-col'>
           {comments.map( (comment, index) => (

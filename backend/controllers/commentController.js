@@ -31,7 +31,11 @@ const addComment = async (req, res) => {
         { $push: { comments: addedComment._id } },
         { new: true }
     )
-    res.status(201).json(addedComment)
+
+    const populatedComment = await Comment.findById(addedComment._id)
+      .populate("user", "name picture _id") // only send the fields you need
+
+    res.status(201).json(populatedComment)
 }
 
 const updateComment = async (req, res) => {

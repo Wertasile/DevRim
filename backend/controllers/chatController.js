@@ -64,7 +64,13 @@ const fetchChats = asyncHandler(async (req, res) => {
     .populate("users")
       // .populate("users", "-password")
       // .populate("groupAdmin", "-password")
-      .populate("latestMessage")
+      .populate({
+        path: "latestMessage",
+        populate: {
+          path: "sender",
+          select: "name given_name pic email",
+        },
+      })
       .sort({ updatedAt: -1 })
       // .then(async (results) => {
       //   results = await User.populate(results, {
@@ -141,7 +147,8 @@ const createGroupChat = asyncHandler(async (req, res) => {
 // @route   PUT /api/chat/rename
 // @access  Protected
 const renameGroup = asyncHandler(async (req, res) => {
-  const { chatId, chatName } = req.body;
+  const chatId = req.params.chatId
+  const { chatName } = req.body;
 
   const updatedChat = await Chat.findByIdAndUpdate(
     chatId,
@@ -192,7 +199,7 @@ const removeFromGroup = asyncHandler(async (req, res) => {
 });
 
 // @desc    Add user to Group / Leave
-// @route   PUT /api/chat/groupadd
+// @route   PUT /chats/groupadd
 // @access  Protected
 const addToGroup = asyncHandler(async (req, res) => {
   const { chatId, userId } = req.body;
@@ -219,6 +226,35 @@ const addToGroup = asyncHandler(async (req, res) => {
   }
 });
 
+
+
+// @desc    Modify the users in a group
+// @route   PUT /chats/groupedit
+// @access  Protected
+const editGroupUsers = async (req, res) => {
+  
+  try {
+    const userId = req.user.userId
+    const chatId = req.params.chatId
+    const { users } = req.body.users
+
+    const chatData = await Chat.findById(chatId)
+    chatData.users = users
+
+    const modifiedChat = await chatData.save()
+
+    modifiedChat.populate("users")
+
+    res.status(200).json(modifiedChat)
+  } catch (error) {
+    res.status(500).json({message: "Server Error"})
+  }
+
+
+
+
+}
+
 module.exports = {
   accessChat,
   fetchChats,
@@ -227,4 +263,5 @@ module.exports = {
   renameGroup,
   addToGroup,
   removeFromGroup,
+  editGroupUsers
 };
