@@ -29,6 +29,9 @@ import Friends from "~/components/chatComponents/Friends";
 import CustomiseGCModal from "~/components/chatComponents/customiseGCModal";
 import GCUsersPanel from "~/components/chatComponents/GCUsersPanel";
 import AddGCUsers from "~/components/chatComponents/addGCUsersModal";
+import deleteMessage from "~/apiCalls/message/deleteMessage";
+import PinModal from "~/components/chatComponents/pinModal";
+import pinMessage from "~/apiCalls/message/pinMessage";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -59,6 +62,9 @@ const ChatPage = () => {
 
   const [typing, setTyping] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  
+  // state to maintain replies
+  const [reply, setReply] = useState<Message |null>(null)
 
   const [convoModal, setConvoModal] = useState(false)
   const [convoUser, setConvoUser] = useState("")
@@ -76,6 +82,13 @@ const ChatPage = () => {
   const [addUsersModal, setAddUsersModal] = useState<boolean>(false)
 
   const [section, setSection] = useState<string>("messages")
+
+  const [hoveredMessageId, setHoveredMessageId] = useState<string>("");
+
+  const [imageModal, setImageModal] = useState<boolean>(false)
+  const [ImageSrc, setImageSrc] = useState<string>("")
+
+  const [pinModal, setPinModal] = useState(false)
 
   const usersPanel = useRef(null)
 
@@ -148,6 +161,16 @@ const ChatPage = () => {
     socket.emit("join chat", chat?._id)
   };
 
+  const handleDeleteMessage = async (message: Message) => {
+    const data = await deleteMessage(message._id)
+  }
+
+  const handlePin = async (message: Message) => {
+    if (message && chat){
+      pinMessage(message._id, chat?._id)
+    }
+  }
+
   const sendMessage = async () => {
     socket.emit("stop typing", chat?._id)
     const res = await fetch(`${API_URL}/messages/`, {
@@ -158,7 +181,8 @@ const ChatPage = () => {
         content: newMessage,
         chatId: chat?._id,
         messageType: "text",
-        url: "None"
+        url: "None",
+        reply: reply
       }),
     });
 
@@ -168,6 +192,7 @@ const ChatPage = () => {
     console.log("new message", sentMessage)
     setMessages((prev) => [...(prev ?? []), sentMessage]);
     setNewMessage("");
+    setReply(null)
   };
 
   useEffect(() => {
@@ -178,6 +203,15 @@ const ChatPage = () => {
     if (chat?._id) fetchMessages(chat._id);
     selectedChatCompare = chat
   }, [chat]);
+
+  const copy = (messageId:string) => {
+    var copyElement = document.getElementById(`message:${messageId}`)
+    if (copyElement){
+      const textToCopy = copyElement.textContent || "";
+      navigator.clipboard.writeText(textToCopy)
+    }
+
+  }
 
   // ---------- AUDIO RECORDING ----------
 
@@ -322,6 +356,17 @@ const ChatPage = () => {
     fetchMediaUrls();
   }, [messages]);
 
+  const openImageModal = (src: string) => {
+    setImageModal(true)
+    setImageSrc(src)
+  }
+
+  const closeImageModal = () => {
+    setImageModal(false)
+    setImageSrc("")
+
+  }
+
   // ---------- RENDER MESSAGE ----------
 
   const renderMessageContent = (message: Message) => {
@@ -329,9 +374,11 @@ const ChatPage = () => {
 
     switch (message.messageType) {
       case "image":
-        return <img src={url} width="200" alt="Message content" />;
+        return (
+          <img src={url} className="cursor-pointer" width="200" alt="Message content" onClick={() => openImageModal(url)}/>
+        );
       case "audio":
-        return <audio controls src={url} style={{ maxWidth: "250px" }} />;
+        return (<audio controls src={url} style={{ maxWidth: "250px" }} />);
       case "file":
         return (
           <div className="file-download">
@@ -341,7 +388,17 @@ const ChatPage = () => {
           </div>
         );
       default:
-        return <div>{message.content}</div>;
+        return (
+          <div>
+            {message.reply && 
+            <div className="border-l-[3px] border-[#AAACFF] border-solid border-solid border-[0.5px] p-2 flex-col rounded-[5px]">
+              <div className="text-sm text-[#9A9CEF]">{message.reply.sender.name}</div>
+              <div className="text-xs">{message.reply.content}  </div>            
+            </div>
+            }
+            {message.content}
+          </div>
+        );
     }
   };
 
@@ -455,6 +512,14 @@ const ChatPage = () => {
 
   return (
     <>
+    {imageModal &&
+      <div className="fixed h-full w-full bg-[rgba(0,0,0,0.6)] z-2 cursor-pointer" onClick={() => closeImageModal()}>
+        <div className="w-[90vw] max-h-[90vh] mx-auto bg-[rgba(0,0,0,0.9)] border-solid border-[2px]" onClick={(e) => e.stopPropagation()}>
+          <img src={ImageSrc} className="mx-auto max-w-[90vw] max-h-[90vh] object-contain"/>
+        </div>
+      </div>
+    }
+
     {groupModal && 
       <GroupModal groupName={groupName} setGroupName={setGroupName} groupUsers={groupUsers} setGroupUsers={setGroupUsers} searchUser={searchUser} setSearchUser={setSearchUser} setGroupModal={setGroupModal} setChat={setChat}/>
     }
@@ -470,6 +535,8 @@ const ChatPage = () => {
     {addUsersModal &&
       <AddGCUsers setAddUsersModal={setAddUsersModal}/>
     }
+
+
 
     
     
@@ -541,39 +608,49 @@ const ChatPage = () => {
               <h2>{chat?.chatName}</h2>
               }
           </h2>
-          <div><GCUsersPanel setAddUsersModal={setAddUsersModal} chat={chat}/></div>
+          <div className="flex gap-2">
+            <PinModal pinModal={pinModal} setPinModal={setPinModal}/>
+            <GCUsersPanel setAddUsersModal={setAddUsersModal} chat={chat}/>
+          </div>
         </div>
 
         <div className="flex flex-col gap-2 px-5 flex-grow justify-end ">
           {messages?.map((message, index) => (
             <div
               key={index}
-              
-              className={`relative rounded-2xl flex flex-col gap-2 p-2 w-fit border border-[#979797] font-semibold ${
+              id={`message:${message._id}`}
+              className={`relative rounded-[5px] flex flex-col gap-2 p-2 w-fit border border-[#979797] font-semibold ${
                 message.sender._id === user?._id
-                  ? "bg-green-100 text-black self-end"
+                  ? "bg-green-300 text-black self-end"
                   : "bg-[#9A9CD4] text-black self-start"
               }`}
+
+              onMouseEnter={() => {setHoveredMessageId(message?._id)}}
+              onMouseLeave={() => {setHoveredMessageId("")}}
             >
               {renderMessageContent(message)}
               <i className="text-xs text-right font-light">
                 {message.updatedAt.split("T")[1].slice(0, 5)}
               </i>
+              
+              {/* ------------------------------- HOVER MENU ---------------------------------------- */}
 
+              { message._id === hoveredMessageId &&
               <div 
-                className={`absolute flex flex-row gap-2 p-2 -top-10 right-0 bg-[#979797] text-black rounded-3xl 
+                className={`absolute flex flex-row gap-2 p-2 -top-10 ${message.sender._id === user?._id ? ("right-0") : ("left-0")} text-black rounded-[5px] 
                   ${
                   message.sender._id === user?._id
-                    ? "bg-green-100 text-black self-end"
-                    : "bg-[#9A9CD4] text-black self-start"
+                    ? "bg-green-500 text-black self-end"
+                    : "bg-[#9A9CEF] text-black self-start"
                   } `
                 }
               >
-                <CopyIcon/>
-                {message.sender._id !== user?._id && <ReplyIcon/>}
-                <PinIcon/>
-                {message.sender._id === user?._id && <Trash2Icon/>}
+                <CopyIcon className="cursor-pointer" strokeWidth={1} onClick={() => copy(message._id)}/>
+                {message.sender._id !== user?._id && <ReplyIcon className="cursor-pointer" strokeWidth={1} onClick={() => {setReply(message)}}/>}
+                <PinIcon strokeWidth={1} className="cursor-pointer" onClick={() => handlePin(message)}/>
+                {message.sender._id === user?._id && <Trash2Icon strokeWidth={1} className="cursor-pointer" onClick={() => {handleDeleteMessage(message)}}/>}
               </div>
+              }
             </div>
             
           ))}
@@ -585,7 +662,7 @@ const ChatPage = () => {
         </div>
 
         {/* INPUT */}
-        <div className="flex flex-row items-center gap-2 px-2 sticky bottom-0 backdrop-blur-md">
+        <div className="flex flex-row items-center relative gap-2 px-2 sticky bottom-0 backdrop-blur-md">
           {isRecording ? (
             <div className="flex justify-around">
               <div>VOICE IS BEING RECORDED</div>
@@ -644,6 +721,15 @@ const ChatPage = () => {
               </div>
             )}
           </div>
+          {reply && 
+          <div className="absolute bottom-[50px] mx-5 rounded-[5px] w-[75%] bg-[#9A9CEF] text-black px-3 py-1">
+            <div className="flex justify-between">
+              <div>from {reply.sender.name}</div>
+              <div onClick={() => setReply(null)} className="text-sm font-bold cursor-pointer">X</div>
+            </div>  
+            <div className="bg-[#9A9CD4] border-[0.5px] p-1">{reply.content}</div>
+          </div>  
+          }
         </div>
       </div>
 

@@ -7,7 +7,9 @@ const {
   removeFromGroup,
   addToGroup,
   renameGroup,
-  editGroupUsers
+  editGroupUsers,
+  pinMessage,
+  unpinMessage
 } = require("../controllers/chatController");
 const authenticateUser = require("../functions/auth");
 
@@ -21,5 +23,7 @@ router.put("/rename/:chatId", authenticateUser, renameGroup);
 // router.put("/groupremove", authenticateUser, removeFromGroup);
 // router.put("/groupadd", authenticateUser, addToGroup);
 router.put("/groupedit/:chatId", authenticateUser, editGroupUsers);
+router.put("/pin/:chatId", authenticateUser, pinMessage)
+router.put("/unpin/:chatid", authenticateUser, unpinMessage)
 
 module.exports = router;

@@ -8,7 +8,8 @@ const messageModel = Schema({
     content : {type:String, trim:true},
     chat : {type: Schema.Types.ObjectId, ref:"Chat"},
     messageType: {type:String},
-    url: {type:String}
+    url: {type:String},
+    reply: {type: Schema.Types.ObjectId, ref:"Message"}
 },{
     timestamps:true
 })

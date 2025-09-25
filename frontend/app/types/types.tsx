@@ -68,6 +68,7 @@ export type Chat = {
     isGroupChat: boolean;
     latestMessage: Message;
     users: User[];
+    pinned: Message[];
     created_at: string;
     updatedAt: string;
 }
@@ -81,4 +82,5 @@ export type Message = {
     url: string;
     createdAt: string;
     updatedAt: string;
+    reply: Message;
 }

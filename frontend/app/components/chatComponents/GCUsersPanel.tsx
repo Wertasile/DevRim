@@ -20,13 +20,14 @@ const GCUsersPanel = ({chat, setAddUsersModal}:GCUsersPanelProps) => {
     const openPanel = () => {
         gsap.to(usersPanel.current, {
             x: "0%",
-            duration: 0.8
+            duration: 0.4
         })
     }
 
     const closePanel = () => {
         gsap.to(usersPanel.current, {
-            x: "100%"
+            x: "100%",
+            duration: 0.4
         })
     }
 

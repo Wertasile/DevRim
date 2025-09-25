@@ -71,14 +71,14 @@ const fetchChats = asyncHandler(async (req, res) => {
           select: "name given_name pic email",
         },
       })
+      .populate({
+        path: "pinned",
+        populate: {
+          path: "sender",
+          select: "name given_name pic email",
+        },
+      })
       .sort({ updatedAt: -1 })
-      // .then(async (results) => {
-      //   results = await User.populate(results, {
-      //     path: "latestMessage.sender",
-      //     select: "name pic email",
-      //   });
-      //   res.status(200).send(results);
-      // });
       res.status(200).json(chats);
     
   } catch (error) {
@@ -249,10 +249,50 @@ const editGroupUsers = async (req, res) => {
   } catch (error) {
     res.status(500).json({message: "Server Error"})
   }
+}
 
+const pinMessage = async (req, res) => {
+  try {
+    const chatId = req.params.chatId
+    const messageId = req.body.messageId
+    
+    const pinMessage = await Chat.findByIdAndUpdate(
+      chatId,
+      {
+      $push: { pinned: messageId },
+      },
+      {
+        new: true,
+      }
+    )
 
+    res.status(200).json(pinMessage)
+    
+  } catch (error) {
+    res.status(500).json({message: "Server Error"})
+  }
+}
 
+const unpinMessage = async (req, res) => {
+  try {
+    const chatId = req.params.chatId
+    const messageId = req.body.messageId
+    
+    const unpinMessage = await Chat.findByIdAndUpdate(
+      chatId,
+      {
+      $pull: { pinned: messageId },
+      },
+      {
+        new: true,
+      }
+    )
 
+    res.status(200).json(unpinMessage)
+    
+  } catch (error) {
+    res.status(500).json({message: "Server Error"})
+  }
 }
 
 module.exports = {
@@ -263,5 +303,7 @@ module.exports = {
   renameGroup,
   addToGroup,
   removeFromGroup,
-  editGroupUsers
+  editGroupUsers,
+  pinMessage,
+  unpinMessage
 };

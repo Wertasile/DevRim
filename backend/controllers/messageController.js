@@ -11,6 +11,10 @@ const allMessages = asyncHandler(async (req, res) => {
     // JSON response being sent back to console.
     const messages = await Message.find({ chat: req.params.chatId })
       .populate("sender", "name picture email")
+      .populate({
+        path: "reply",
+        populate: { path: "sender", select: "name picture email" },
+      })
       .populate("chat");
     res.json(messages);
   } catch (error) {
@@ -24,7 +28,7 @@ const allMessages = asyncHandler(async (req, res) => {
 //@access          Protected
 const sendMessage = asyncHandler(async (req, res) => {
   console.log("request body" + req.body)
-  const { content, chatId, messageType, url } = req.body;
+  const { content, chatId, messageType, url, reply } = req.body;
 
   if (!content || !chatId) {
     console.log("Invalid data passed into request");
@@ -39,19 +43,25 @@ const sendMessage = asyncHandler(async (req, res) => {
     chat: chatId,
   };
 
-  try {
-    var message = await Message.create(newMessage);
+  if (reply){
+    newMessage.reply = reply
+  }
 
-    console.log("Message stored in MongoDB:", message); // Log MongoDB insert result
+  try {
+    var created = await Message.create(newMessage);
+
+    console.log("Message stored in MongoDB:", created); // Log MongoDB insert result
 
 
     //JSON response being sent back to console.
-    message = await message.populate("sender", "name pic")
-    message = await message.populate("chat")
-    message = await User.populate(message, {
-      path: "chat.users",
-      select: "name pic email",
-    });
+  const message = await Message.findById(created._id)
+    .populate("sender", "name picture")
+    .populate({
+      path: "chat",
+      populate: { path: "users", select: "name picture email" },
+    })
+    .populate("reply");
+
 
     await Chat.findByIdAndUpdate(req.body.chatId, { latestMessage: message });
 
@@ -63,4 +73,42 @@ const sendMessage = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { allMessages, sendMessage };
+//@description     delkete Message
+//@route           DELETE /message/
+//@access          Protected
+
+const deleteMessage = async (req,res) => {
+  const userId = req.user._id
+  const messageId = req.params.messageId
+  try {
+    const deletedMessage = await Message.findByIdAndDelete(messageId).populate("chat")
+    console.log("deleted message is")
+    console.log(deletedMessage)
+    if (deletedMessage.chat.latestMessage && deletedMessage.chat.latestMessage.toString() === messageId)
+    {
+      // get latest message after deletion
+      const latestMessage = await Message.findOne({chat: deletedMessage.chat._id})
+      .sort({ createdAt: -1 })
+  
+      if (latestMessage) {
+        await Chat.findByIdAndUpdate(deletedMessage.chat._id, {
+          latestMessage: latestMessage._id,
+        })
+      } else {
+        
+        await Chat.findByIdAndUpdate(deletedMessage.chat._id, {
+          $unset: { latestMessage: "" },
+        })
+      }     
+    }
+
+    res.json({
+      success: true,
+      deletedMessage,
+    })
+   
+  } catch (error) {
+    res.status(500).json({success:false, message:error.message})
+  }
+}
+module.exports = { allMessages, sendMessage, deleteMessage };

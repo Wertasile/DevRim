@@ -11,7 +11,8 @@ const chatModel = Schema(
             ref: "user",
         }],
         latestMessage: {type: Schema.Types.ObjectId, ref: "Message"},
-        groupAdmin: {type: Schema.Types.ObjectId, ref: "user"}
+        groupAdmin: {type: Schema.Types.ObjectId, ref: "user"},
+        pinned: [{type: Schema.Types.ObjectId, ref: "Message"}]
  
     },
     {
