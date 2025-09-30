@@ -60,6 +60,8 @@ export default function BlogHome() {
         }
     }, [isOpen]);
 
+
+    {/* ----------------------- HANDLING USER INPUT ON SEARCH ---------------------------------------------------------------------------------------------------- */}   
     const handleSearch = useCallback((text: string, categories: string[]) => {
         const searchedBlogs = blogs.filter((b) =>
             b.title.toLowerCase().includes(text.toLowerCase())
@@ -72,9 +74,13 @@ export default function BlogHome() {
         setSearchResults(filteredBlogs);
     }, [blogs, categories]);
 
+    {/* ----------------------- WHEN FILTERS (CATEGORIES) ARE ADDED, TRIGGER SEARCH AGAIN BASED ON FILTERS ---------------------------------------------------------------------------------------------------- */}   
+
     useEffect( () => {
         handleSearch(searchInput, categories)
     }, [categories])
+
+    {/* ----------------------- TO GET BLOGS ON INITIAL PAGE LOAD ---------------------------------------------------------------------------------------------------- */}   
 
     const getBlogs = async () => {
         const response = await fetch(`${API_URL}/posts/`, {
@@ -97,6 +103,9 @@ export default function BlogHome() {
     return (
         <>
             <div className="max-w-[1000px] flex flex-col gap-3 mx-auto my-0">
+
+        {/* ----------------------- SEARCH ---------------------------------------------------------------------------------------------------- */}   
+
                 <div className="flex gap-3">
                     <Search 
                         categories={categories} 
@@ -113,6 +122,9 @@ export default function BlogHome() {
                         </NavLink>
                     </button>
                 </div>
+
+            {/* ----------------------- FILTER BUTTONS ---------------------------------------------------------------------------------------------------- */}   
+
                 <div className="gap-3 flex flex-row justify-between relative">
                     <div
                         className="primary-btn filter h-fit"
@@ -165,13 +177,15 @@ export default function BlogHome() {
                         X Remove Filters
                     </div>
 
+{/* ----------------------- PANELS FOR THE FILERS ---------------------------------------------------------------------------------------------------- */}   
+
                     <div className="filter-panel absolute left-0 top-full w-full bg-[#111] border-solid border-[0.5px] border-[#353535] rounded-[20px] mt-1 shadow-lg overflow-hidden h-0 ">
                             <div className="filter-panel-content p-4">
                                 {activeFilter === "topic" && 
                                 <div className='flex flex-row justify-between'>
                                     <div className=''>
                                         <h3 className='mb-[5px] border-b-[1px] border-solid border-[#353535]'>Software Development</h3>
-                                        <ul className='text-sm'>
+                                        <ul className='text-sm cursor-pointer'>
                                             {topics.Topics.SoftwareDevelopmentProgramming.map( (topic, index) => (
                                                 <li 
                                                     key={index}
@@ -182,7 +196,7 @@ export default function BlogHome() {
                                                             setCategories( (prev) => [...prev, topic])}
                                                         }
                                                     }
-                                                    className={`${categories.includes(topic) && ("bg-[#white] text-[#111]")}`}
+                                                    className={`${categories.includes(topic) && ("bg-[#white] text-[#00ADB5]")}`}
                                                 >
                                                     {topic}
                                                 </li>
@@ -190,8 +204,8 @@ export default function BlogHome() {
                                         </ul>
                                     </div>
                                     <div className=''>
-                                        <h3 className='mb-[5px] border-b-[1px] border-solid border-[#353535]'>Career & Community</h3>
-                                        <ul className='text-sm'>
+                                        <h3 className='mb-[5px] border-b-[1px] border-solid border-[#353535] cursor-pointer'>Career & Community</h3>
+                                        <ul className='text-sm cursor-pointer'>
                                             {topics.Topics.CareerCommunityIndustry.map( (topic, index) => (
                                                 <li 
                                                     key={index}
@@ -202,6 +216,7 @@ export default function BlogHome() {
                                                             setCategories( (prev) => [...prev, topic])}
                                                         }
                                                     }
+                                                    className={`${categories.includes(topic) && ("bg-[#white] text-[#00ADB5]")}`}
                                                 >
                                                 {topic}
                                                 </li>
@@ -210,7 +225,7 @@ export default function BlogHome() {
                                     </div>
                                     <div className=''>
                                         <h3 className='mb-[5px] border-b-[1px] border-solid border-[#353535]'>AI and Emerging Tech</h3>
-                                        <ul className='text-sm'>
+                                        <ul className='text-sm cursor-pointer'>
                                             {topics.Topics.AICloudEmergingTech.map( (topic, index) => (
                                                 <li 
                                                     key={index}
@@ -221,6 +236,7 @@ export default function BlogHome() {
                                                             setCategories( (prev) => [...prev, topic])}
                                                         }
                                                     }
+                                                    className={`${categories.includes(topic) && ("bg-[#white] text-[#00ADB5]")}`}
                                                 >
                                                 {topic}
                                                 </li>
@@ -234,7 +250,7 @@ export default function BlogHome() {
                                 <div className='flex flex-row justify-between'>
                                     <div className=''>
                                         <h3 className='mb-[5px] border-b-[1px] border-solid border-[#353535]'>Frameworks</h3>
-                                        <ul className='text-sm'>
+                                        <ul className='text-sm cursor-pointer'>
                                             {frameworks.Frameworks.FrameworksLibraries.map( (f, index) => (
                                                 <li 
                                                     key={index}
@@ -245,15 +261,17 @@ export default function BlogHome() {
                                                             setCategories( (prev) => [...prev, f])}
                                                         }
                                                     }
+                                                    className={`${categories.includes(f) && ("bg-[#white] text-[#00ADB5]")}`}
+
                                                 >
-                                                {f}
+                                                    {f}
                                                 </li>
                                             ) )}
                                         </ul>
                                     </div>
                                     <div className=''>
-                                        <h3 className='mb-[5px] border-b-[1px] border-solid border-[#353535]'>Languages</h3>
-                                        <ul className='text-sm'>
+                                        <h3 className='mb-[5px] border-b-[1px] border-solid border-[#353535] cursor-pointer'>Languages</h3>
+                                        <ul className='text-sm cursor-pointer'>
                                             {frameworks.Frameworks.Languages.map( (f, index) => (
                                                 <li 
                                                     key={index}
@@ -264,6 +282,8 @@ export default function BlogHome() {
                                                             setCategories( (prev) => [...prev, f])}
                                                         }
                                                     }
+                                                    className={`${categories.includes(f) && ("bg-[#white] text-[#00ADB5]")}`}
+
                                                 >
                                                 {f}
                                                 </li>
@@ -272,7 +292,7 @@ export default function BlogHome() {
                                     </div>
                                     <div className=''>
                                         <h3 className='mb-[5px] border-b-[1px] border-solid border-[#353535]'>DevOps</h3>
-                                        <ul className='text-sm'>
+                                        <ul className='text-sm cursor-pointer'>
                                             {frameworks.Frameworks.CloudDevOps.map( (f, index) => (
                                                 <li 
                                                     key={index}
@@ -283,6 +303,8 @@ export default function BlogHome() {
                                                             setCategories( (prev) => [...prev, f])}
                                                         }
                                                     }
+                                                    className={`${categories.includes(f) && ("bg-[#white] text-[#00ADB5]")}`}
+
                                                 >
                                                 {f}
                                                 </li>
@@ -324,12 +346,14 @@ export default function BlogHome() {
                 </div>
             </div>
 
+            {/* ----------------------- THE BLOGS! ---------------------------------------------------------------------------------------------------- */}   
+
             <section id="blogs">
                 {searchResults.map((b) => (
                     <BlogPostCard
                         key={b._id}
                         id={b._id}
-                        user={b.user}
+                        postUser={b.user}
                         title={b.title}
                         releaseDate={b.releaseDate}
                         summary={b.summary}

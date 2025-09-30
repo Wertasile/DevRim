@@ -130,9 +130,9 @@ const Home = () => {
             <div className="flex flex-col gap-5">
                 <h2>Write. Connect. Share. All in one place.</h2>
                 <h3>Devrim is where blogging meets social connection. Publish ideas, follow authors, and connect through direct messages or groups. Combinbing Social - with Educational.</h3>
-                <h3><b>Under Construction! Estimate Completion September 10 (Beta)</b></h3>
+                <h3><b>Under Construction! Estimated Release October (Beta)</b></h3>
                 <h3><b>Mobile version Release 1-2 weeks after Beta Release</b></h3>
-                {user === null && <a className="primary-btn" href="signup.html" target="_self">Sign Up for Free</a>}
+                {/* {user === null && <a className="primary-btn" href="signup.html" target="_self">Sign Up for Free</a>} */}
                 {/* <img src="/images/placeholder_img.png"/> */}
             </div>
             <div>

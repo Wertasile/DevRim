@@ -269,7 +269,7 @@ const ChatPage = () => {
         `${API_URL}/s3/presign-upload?filename=${encodeURIComponent(file.name)}&contentType=${encodeURIComponent(file.type)}`,{
                 method: "get",
                 credentials: "include" 
-            }
+          }
       );
       const { uploadUrl, key } = await res.json();
 

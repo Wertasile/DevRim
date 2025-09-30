@@ -174,7 +174,8 @@ export default function BlogPost({ params }: Route.ComponentProps) {
 
   if (!blog) return <p>Loading...</p>
 
-  // Generate full HTML from Tiptap JSON using StarterKit
+  {/* ----------------------- CONFIG TIPTAP STARTER KIT ---------------------------------------------------------------------------------------------------- */}   
+
   const html = generateHTML(blog.content, [
     StarterKit.configure({
         bulletList: {
@@ -199,6 +200,9 @@ export default function BlogPost({ params }: Route.ComponentProps) {
 
   return (
     <div id='blog-post' className='flex gap-7 flex-col my-5 mx-auto max-w-[1000px] h-full'>
+
+{/* ----------------------- HEADING SECTION ---------------------------------------------------------------------------------------------------- */}
+
       <h1>{blog.title}</h1>
       <h3>
         <i style={{ color: 'gray' }}>{blog.summary}</i>
@@ -208,24 +212,27 @@ export default function BlogPost({ params }: Route.ComponentProps) {
         <div onClick={handleNavProfile}>{blogUser?.name}</div>
         <div>{blog.releaseDate.split("T")[0]}</div>
       </div>
-      <div className='flex gap-5 border-y-[1px] border-solid border-[#979797] text-[#979797] p-6'>
+
+{/* ----------------------- INTERACTION BUTTONS ---------------------------------------------------------------------------------------------------- */}   
+
+      <div className='flex gap-5 border-y-[1px] border-solid border-[#979797] text-[#979797] p-6'>   
         <div className='flex gap-2'>
           {like ? (
             <>
-              <ThumbsUp className='text-black' onClick={handleDislike}/>
+              <ThumbsUp className='text-black cursor-pointer' onClick={handleDislike}/>
               <b className='text-black'>{noLikes}</b>
             </>
           ) : (
             <>
-              <ThumbsUp className='' onClick={handleLike}/>
+              <ThumbsUp className='cursor-pointer' onClick={handleLike}/>
               {noLikes}
             </>
           )}
           
         </div>
         
-        <Share2/>
-        <a href="#comments"><MessageSquare/></a>
+        <Share2 className='cursor-pointer'/>
+        <a href="#comments" className='cursor-pointer'><MessageSquare/></a>
         <div className="relative">
           <Bookmark onClick={() => setListModal(!listModal)} className="cursor-pointer" />
 
@@ -276,6 +283,8 @@ export default function BlogPost({ params }: Route.ComponentProps) {
 
       </div>
 
+{/* ----------------------- ACTUAL BLOG POST ---------------------------------------------------------------------------------------------------- */}
+
       {/* Render full content */}
       <div dangerouslySetInnerHTML={{ __html: html }} />
       <div className='flex gap-5 border-y-[1px] border-solid border-[#979797] p-6'>
@@ -286,6 +295,7 @@ export default function BlogPost({ params }: Route.ComponentProps) {
           <div onClick={handleNavProfile}>{blogUser?.name}</div>
           <div>Computer Engineering Graduate, Ex-IT Analyst.</div>
         </div>
+        {!user && 
         <div className='gap-2 flex h-fit'>
           <button 
             className='primary-btn' 
@@ -300,6 +310,8 @@ export default function BlogPost({ params }: Route.ComponentProps) {
             {connected ? (<span>DISCONNECT</span>) : (<span>CONNECT</span>)}
           </button>
         </div>
+        }
+
       </div>
 
 {/* ----------------------- COMMENTS ---------------------------------------------------------------------------------------------------- */}

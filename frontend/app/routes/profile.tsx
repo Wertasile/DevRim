@@ -188,7 +188,7 @@ const profile = ({params}: Route.ComponentProps) => {
                 {view === "blogs" && (
                     <div className='flex flex-col gap-5'>
                         {blogs.map((b) => (
-                            <BlogPostCard key={b._id} id={b._id} user={b.user} title={b.title} releaseDate={b.releaseDate} summary={b.summary} comments={b.comments} likes={b.likes}/>
+                            <BlogPostCard key={b._id} id={b._id} postUser={b.user} title={b.title} releaseDate={b.releaseDate} summary={b.summary} comments={b.comments} likes={b.likes}/>
                         ))}
                     </div>
                     )
@@ -221,7 +221,7 @@ const profile = ({params}: Route.ComponentProps) => {
                 {view === "liked" && (
                     <div className='flex flex-col gap-5'>
                         {profile?.liked.map((b, index) => (
-                            <BlogPostCard key={index} id={b._id} user={b.user} title={b.title} releaseDate={b.releaseDate} summary={b.summary} comments={b.comments} likes={b.likes}/>
+                            <BlogPostCard key={index} id={b._id} postUser={b.user} title={b.title} releaseDate={b.releaseDate} summary={b.summary} comments={b.comments} likes={b.likes}/>
                         ))}
                     </div>
                     )
