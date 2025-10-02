@@ -32,6 +32,8 @@ export default function BlogHome() {
 
     const [categories, setCategories] = useState<string[]>([])
 
+    const [section, setSection] = useState<"For You" | "Featured" | "Search Results">("For You")
+
     useGSAP(() => {
         const panel = document.querySelector<HTMLElement>(".filter-panel");
         if (!panel) return;
@@ -102,11 +104,11 @@ export default function BlogHome() {
 
     return (
         <>
-            <div className="max-w-[1000px] flex flex-col gap-3 mx-auto my-0">
+            {/* <div className="max-w-[1000px] flex flex-col gap-3 mx-auto my-0"> */}
 
         {/* ----------------------- SEARCH ---------------------------------------------------------------------------------------------------- */}   
 
-                <div className="flex gap-3">
+                {/* <div className="flex gap-3">
                     <Search 
                         categories={categories} 
                         onChange={(text) => 
@@ -121,11 +123,11 @@ export default function BlogHome() {
                             <span>ADD POST</span>
                         </NavLink>
                     </button>
-                </div>
+                </div> */}
 
             {/* ----------------------- FILTER BUTTONS ---------------------------------------------------------------------------------------------------- */}   
 
-                <div className="gap-3 flex flex-row justify-between relative">
+                {/* <div className="gap-3 flex flex-row justify-between relative">
                     <div
                         className="primary-btn filter h-fit"
                         onClick={() => {
@@ -175,11 +177,11 @@ export default function BlogHome() {
                         }}
                     >
                         X Remove Filters
-                    </div>
+                    </div> */}
 
 {/* ----------------------- PANELS FOR THE FILERS ---------------------------------------------------------------------------------------------------- */}   
 
-                    <div className="filter-panel absolute left-0 top-full w-full bg-[#111] border-solid border-[0.5px] border-[#353535] rounded-[20px] mt-1 shadow-lg overflow-hidden h-0 ">
+                    {/* <div className="filter-panel absolute left-0 top-full w-full bg-[#111] border-solid border-[0.5px] border-[#353535] rounded-[20px] mt-1 shadow-lg overflow-hidden h-0 ">
                             <div className="filter-panel-content p-4">
                                 {activeFilter === "topic" && 
                                 <div className='flex flex-row justify-between'>
@@ -344,11 +346,17 @@ export default function BlogHome() {
                             </div>
                     </div>
                 </div>
-            </div>
+            </div> */}
 
             {/* ----------------------- THE BLOGS! ---------------------------------------------------------------------------------------------------- */}   
 
             <section id="blogs">
+                <div className='border-b-[1px] flex gap-5'>
+                    <div className={`${section == "For You" ? ("bg-[#229197]") : ("")} p-2 cursor-pointer`} onClick={() => {setSection('For You')}}>For you</div>
+                    <div className={`${section == "Featured" ? ("bg-[#229197]") : ("")} p-2 cursor-pointer`} onClick={() => {setSection('Featured')}}>Featured</div>
+                    <div className={`${section == "Search Results" ? ("bg-[#229197]") : ("")} p-2 cursor-pointer`} onClick={() => {setSection('Search Results')}}>Search Results</div>
+                </div>
+                
                 {searchResults.map((b) => (
                     <BlogPostCard
                         key={b._id}

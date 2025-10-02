@@ -40,6 +40,43 @@ export default function BlogPost({ params }: Route.ComponentProps) {
   const [following, setFollowing] = useState<boolean>(false)
   const [connected, setConnected] = useState<boolean>(false)
 
+  {/* ----------------------- TRACKING ACTIVITY ---------------------------------------------------------------------------------------------------- */}
+
+  useEffect(() => {
+    let active = true
+    let lastActivity = Date.now()
+
+    const updateActivity = () => {
+      lastActivity = Date.now()
+    }
+
+    const activityInterval = setInterval(async() => {
+      if (Date.now() - lastActivity < 60000){
+        await fetch(`${API_URL}/userAction`, {
+          method: 'post',
+          headers: {
+            "Content-Type":"application/json"
+          },
+          credentials: "include",
+          body: JSON.stringify({action: "view", blog:blog })
+        })
+      }
+    }, (30000))
+
+    window.addEventListener("mousemove", updateActivity)
+    window.addEventListener("keydown", updateActivity)
+    window.addEventListener("scroll", updateActivity)
+
+    return () => {
+      window.addEventListener("mousemove", updateActivity)
+      window.addEventListener("keydown", updateActivity)
+      window.addEventListener("scroll", updateActivity)
+
+      clearInterval(activityInterval)
+    }
+  })
+  
+  {/* ----------------------- LOADING BLOG IN ---------------------------------------------------------------------------------------------------- */}
   const getBlog = async () => {
     const response = await fetch(`${API_URL}/posts/${params.id}`, {
       method: 'post'
@@ -63,11 +100,11 @@ export default function BlogPost({ params }: Route.ComponentProps) {
       const lists = await getAllList(user._id)
       setUsersLists(lists)
     }
-
-    
     console.log("USER IS")
     console.log(userData)
   }
+
+  {/* ----------------------- LIKES AND DISLIKES ---------------------------------------------------------------------------------------------------- */}
 
   const handleLike = async () => {
     const res = await fetch(`${API_URL}/users/like/${blog?._id}`, {
@@ -88,6 +125,8 @@ export default function BlogPost({ params }: Route.ComponentProps) {
     setNoLikes(noLikes - 1)
     setLike(!like)
   }
+
+  {/* ----------------------- ADDING COMMENTS ---------------------------------------------------------------------------------------------------- */}
 
   const addComment = async () => {
     const response = await fetch(`${API_URL}/comments/${blog?._id}`, {
@@ -114,12 +153,24 @@ export default function BlogPost({ params }: Route.ComponentProps) {
     window.location.href = `/profile/${blogUser?._id}`
   }
 
+  {/* ----------------------- LOAD USERS LISTS WHEN THEY LOAD IN ---------------------------------------------------------------------------------------------------- */}
+
+  useEffect(() => {
+    if (user?._id) {
+      (async () => {
+        const lists = await getAllList(user._id)
+        console.log(lists)
+        setUsersLists(lists)
+      })()
+    }
+  }, [user])
+
   useEffect(() => {
     getBlog()
   }, [])
 
   useEffect(() => {
-    if (blogUser && user?.following.includes(blogUser?._id)){
+    if (blogUser && user?.following.includes(blogUser)){
       setFollowing(true)
     }
     if (blogUser && user?.connections.includes(blogUser?._id)){
@@ -134,15 +185,7 @@ export default function BlogPost({ params }: Route.ComponentProps) {
     }
   }, [blog, user])
 
-  useEffect(() => {
-    if (user?._id) {
-      (async () => {
-        const lists = await getAllList(user._id)
-        console.log(lists)
-        setUsersLists(lists)
-      })()
-    }
-  }, [user])
+  {/* ----------------------- HANDLING FOLLOW CLICKS ---------------------------------------------------------------------------------------------------- */}
 
   const handleFollow = async () => {
     if (!blogUser?._id) return
@@ -157,16 +200,19 @@ export default function BlogPost({ params }: Route.ComponentProps) {
 
   }
 
-    const handleConnect = async () => {
-    if (!blogUser?._id) return
+  {/* ----------------------- HANDLING CONNECT CLICKS ---------------------------------------------------------------------------------------------------- */}
 
-    if (connected){
-      await disconnect(blogUser?._id)
-      setConnected(false)
-    } else{
-      await connect(blogUser?._id)
-      setConnected(true)
-    }
+
+  const handleConnect = async () => {
+  if (!blogUser?._id) return
+
+  if (connected){
+    await disconnect(blogUser?._id)
+    setConnected(false)
+  } else{
+    await connect(blogUser?._id)
+    setConnected(true)
+  }
 
   }
 
@@ -293,23 +339,23 @@ export default function BlogPost({ params }: Route.ComponentProps) {
         </div>
         <div className='flex flex-col flex-grow'>
           <div onClick={handleNavProfile}>{blogUser?.name}</div>
-          <div>Computer Engineering Graduate, Ex-IT Analyst.</div>
+          <div>About user</div>
         </div>
-        {!user && 
-        <div className='gap-2 flex h-fit'>
-          <button 
-            className='primary-btn' 
-            onClick={handleFollow}
-          >
-              {following ? (<span>UNFOLLOW</span>) : (<span>FOLLOW</span>)}
+        {user?._id !== blogUser?._id && 
+          <div className='gap-2 flex h-fit'>
+            <button 
+              className='primary-btn' 
+              onClick={handleFollow}
+            >
+                {following ? (<span>UNFOLLOW</span>) : (<span>FOLLOW</span>)}
+              </button>
+            <button 
+              className='primary-btn'
+              onClick={handleConnect}
+            >
+              {connected ? (<span>DISCONNECT</span>) : (<span>CONNECT</span>)}
             </button>
-          <button 
-            className='primary-btn'
-            onClick={handleConnect}
-          >
-            {connected ? (<span>DISCONNECT</span>) : (<span>CONNECT</span>)}
-          </button>
-        </div>
+          </div>
         }
 
       </div>

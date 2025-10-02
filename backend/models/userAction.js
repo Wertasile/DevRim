@@ -7,7 +7,9 @@ const userActionSchema = new mongoose.Schema({
         enum: ["like", "comment", "share", "follow", "view"],
         required: true
     },
-    post: {type: mongoose.Schema.Types.ObjectId, ref:"post"}
+    blog: {type: mongoose.Schema.Types.ObjectId, ref:"post"},
+    timestamp: { type: Date, default: Date.now()},
+    duration: { type: Number, default: 0}
 })
 
 module.exports = mongoose.Model("userAction", userActionSchema)

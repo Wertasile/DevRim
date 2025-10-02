@@ -211,7 +211,16 @@ const BlogAdd = () => {
         {selected === "types" &&
         <div className='absolute top-10 bg-[#111] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 p-3 h-auto w-full z-20 justify-between'>
           {topics.Topics.CareerCommunityIndustry.map( (type, index) => (            
-              <div className='primary-btn text-sm w-[200px] mx-auto'>
+              <div 
+                className={`primary-btn text-sm w-[200px]`}
+                onClick={() => {
+                  if (categories.includes(type)) {
+                    setCategories( (prev) => prev.filter( p => p !== type))
+                  }else{
+                    setCategories( (prev) => [...prev, type])}
+                  }
+                }
+              >
                 {type}
               </div>
           ))}
@@ -221,7 +230,16 @@ const BlogAdd = () => {
         {selected === "ai" &&
         <div className='absolute top-10 bg-[#111] rounded-3xl grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 p-3 h-auto w-full z-20 justify-between'>
           {topics.Topics.AICloudEmergingTech.map( (el, index) => (            
-              <div className='primary-btn text-sm w-[200px]'>
+              <div 
+                className={`primary-btn text-sm w-[200px]`}
+                onClick={() => {
+                  if (categories.includes(el)) {
+                    setCategories( (prev) => prev.filter( p => p !== el))
+                  }else{
+                    setCategories( (prev) => [...prev, el])}
+                  }
+                }
+              >
                 {el}
               </div>
           ))}
@@ -231,7 +249,16 @@ const BlogAdd = () => {
         {selected === "frameworks" &&
         <div className='absolute top-10 bg-[#111] rounded-3xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 p-3 h-auto w-full z-20 justify-between'>
           {frameworks.Frameworks.FrameworksLibraries.map( (framework, index) => (            
-              <div className='primary-btn text-sm w-[200px]'>
+              <div 
+                className={`primary-btn text-sm w-[200px]`}
+                onClick={() => {
+                  if (categories.includes(framework)) {
+                    setCategories( (prev) => prev.filter( p => p !== framework))
+                  }else{
+                    setCategories( (prev) => [...prev, framework])}
+                  }
+                }
+              >
                 {framework}
               </div>
           ))}
@@ -241,7 +268,16 @@ const BlogAdd = () => {
         {selected === "languages" &&
         <div className='absolute top-10 bg-[#111] rounded-3xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 p-3 h-auto w-full z-20 justify-between'>
           {frameworks.Frameworks.Languages.map( (language, index) => (            
-              <div className='primary-btn text-sm w-[200px]'>
+              <div 
+                className={`primary-btn text-sm w-[200px]`}
+                onClick={() => {
+                  if (categories.includes(language)) {
+                    setCategories( (prev) => prev.filter( p => p !== language))
+                  }else{
+                    setCategories( (prev) => [...prev, language])}
+                  }
+                }
+              >
                 {language}
               </div>
           ))}
@@ -251,7 +287,16 @@ const BlogAdd = () => {
         {selected === "cloud" &&
         <div className='absolute top-10 bg-[#111] rounded-3xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 p-3 h-auto w-full z-20 justify-between'>
           {frameworks.Frameworks.CloudDevOps.map( (cloud, index) => (            
-              <div className='primary-btn text-sm w-[200px]'>
+              <div 
+                className={`primary-btn text-sm w-[200px]`}
+                onClick={() => {
+                  if (categories.includes(cloud)) {
+                    setCategories( (prev) => prev.filter( p => p !== cloud))
+                  }else{
+                    setCategories( (prev) => [...prev, cloud])}
+                  }
+                }
+              >
                 {cloud}
               </div>
           ))}
@@ -261,7 +306,16 @@ const BlogAdd = () => {
         {selected === "data" &&
         <div className='absolute top-10 bg-[#111] rounded-3xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 p-3 h-auto w-full z-20 justify-between'>
           {frameworks.Frameworks.DataAI.map( (data, index) => (            
-              <div className='primary-btn text-sm w-[200px]'>
+              <div 
+                className={`primary-btn text-sm w-[200px]`}
+                onClick={() => {
+                  if (categories.includes(data)) {
+                    setCategories( (prev) => prev.filter( p => p !== data))
+                  }else{
+                    setCategories( (prev) => [...prev, data])}
+                  }
+                }
+              >
                 {data}
               </div>
           ))}

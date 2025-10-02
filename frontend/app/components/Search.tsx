@@ -13,7 +13,8 @@ const Search = ({onChange, categories} : searchProps) => {
             id="blog-search" 
             onChange={ (e) => {onChange(e.target.value)} }
             placeholder='Enter Search term'
-            className=''
+            className='w-[full]'
+            width={200}
             type='text'            
         />
     )
