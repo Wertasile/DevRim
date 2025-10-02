@@ -1,5 +1,5 @@
 import { googleLogout, useGoogleLogin } from '@react-oauth/google';
-import { Filter, MenuIcon, SlidersHorizontalIcon } from 'lucide-react';
+import { Filter, MenuIcon, NotebookPenIcon, SlidersHorizontalIcon } from 'lucide-react';
 import React, { useCallback, useDeferredValue, useEffect, useRef, useState } from 'react'
 import { NavLink, Outlet } from 'react-router'
 import FilterModal from '~/components/filterModal';
@@ -176,12 +176,9 @@ const Blog = () => {
                 </div>
 
                 <nav className='hidden sm:flex relative items-center gap-7'>
+                    <NavLink to="/blog/new" target="_self" className='flex gap-1 cursor-pointer'><NotebookPenIcon/>WRITE</NavLink>
                     <NavLink to="/blog" target="_self">BLOGS</NavLink>
-                    {/* <NavLink to="/projects" target="_self">PROJECTS</NavLink> */}
-                    {/* <a href="projects/projects.html" target="_self">Projects</a> */}
-                    <NavLink to="/about" target="_self">ABOUT</NavLink>
                     <NavLink to="/chats" target="_self">MESSAGE</NavLink>
-                    {/* <a href="../Login/login.html" target="_self">Log In</a> */}
                     {user ? 
                         (<img 
                             src={user?.picture} 

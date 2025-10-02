@@ -357,7 +357,7 @@ export default function BlogHome() {
                     <div className={`${section == "Search Results" ? ("bg-[#229197]") : ("")} p-2 cursor-pointer`} onClick={() => {setSection('Search Results')}}>Search Results</div>
                 </div>
                 
-                {searchResults.map((b) => (
+                {section == "For You" && searchResults.map((b) => (
                     <BlogPostCard
                         key={b._id}
                         id={b._id}
