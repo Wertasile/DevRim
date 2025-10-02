@@ -1,7 +1,7 @@
 import { googleLogout, useGoogleLogin } from '@react-oauth/google';
 import { Filter, MenuIcon, NotebookPenIcon, SlidersHorizontalIcon } from 'lucide-react';
 import React, { useCallback, useDeferredValue, useEffect, useRef, useState } from 'react'
-import { NavLink, Outlet } from 'react-router'
+import { NavLink, Outlet, useNavigate } from 'react-router'
 import FilterModal from '~/components/filterModal';
 import Search from '~/components/Search';
 import { useUser } from '~/context/userContext'
@@ -33,9 +33,23 @@ const Blog = () => {
     const [showFilters, setShowFilters] = useState(false)
     const [categories, setCategories] = useState<string[]>([])
 
-    
+    const navigate = useNavigate()
 
     {/* ----------------------- HANDLING USER INPUT ON SEARCH ---------------------------------------------------------------------------------------------------- */}   
+    const handleKeyDown = (e:any) => {
+        if (e.key === "Enter" && searchInput.trim()){
+            navigate('/blog', { 
+                state: 
+                {
+                    searchResults: searchResults,
+                    section: "Search Results"
+                },
+                
+            })
+            setSearchResults([]);
+        }
+    }
+    
     const handleSearch = useCallback((text: string, categories: string[]) => {
         const searchedBlogs = blogs.filter((b) =>
             b.title.toLowerCase().includes(text.toLowerCase())
@@ -158,15 +172,20 @@ const Blog = () => {
                                 handleSearch(text, categories)
                                 setSearchInput(text)
                             }
-                        } 
+                        }
+                        onKeyDown={handleKeyDown} 
                     />
                     <FilterModal categories={categories} setCategories={setCategories}/>
                     
                     {
                     (searchResults.length !== 0 && searchInput) && 
-                    <div className='absolute top-[64px] w-[400px] h-fit flex flex-col gap-2 bg-[#111] rounded-3xl border-solid border-[0.5px] border-[#353535] shadow-md p-3'>
+                    <div className='absolute top-[64px] w-[400px] h-fit flex flex-col gap-2 bg-[#111] rounded-[5px] border-solid border-[0.5px] border-[#353535] shadow-md p-3'>
                         {searchResults.map((result, index) => (
-                            <div className="bg-[#111] rounded-[5px] border-solid border-[0.5px] border-[#353535] shadow-md p-1 flex flex-col gap-2" key={index}>
+                            <div 
+                                className="bg-[#111] rounded-[5px] border-solid border-[0.5px] border-[#353535] shadow-md p-1 flex cursor-pointer hover:bg-[#353535] duration-200 ease-in flex-col gap-2" 
+                                key={index}
+                                onClick={() => {window.location.href = `/blog/${result._id}`}}
+                            >
                                 <div>{result.title}</div>
                                 <i className='text-sm text-[#979797]'>{result.summary}</i>
                             </div>    

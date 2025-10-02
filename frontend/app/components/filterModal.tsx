@@ -41,7 +41,7 @@ const FilterModal = ({categories, setCategories}:FilterModalProps) => {
             <SlidersHorizontalIcon className=''/>
         </div>
         <div 
-            className='fixed overflow-auto w-full sm:max-w-[675px] bg-[#111] rounded-[5px] flex flex-col gap-7 border-l-solid border-[0.5px] border-[#353535] top-0 right-0 shadow-md p-2 h-full z-1' 
+            className='fixed overflow-auto w-full sm:max-w-[675px] bg-[#111] rounded-[5px] flex flex-col gap-7 border-l-solid border-[0.5px] border-[#353535] top-0 right-0 shadow-md p-2 h-full z-2' 
             style={{transform:"translateX(100%)"}}
             ref={filterPanel}
         >

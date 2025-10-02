@@ -2,7 +2,7 @@ import React, { useDeferredValue, useCallback, useEffect, useState, useRef } fro
 import BlogPostCard from '../components/blogPostCard'
 import type { Blog } from '~/types/types'
 import Search from '~/components/Search'
-import { NavLink } from 'react-router'
+import { NavLink, useLocation } from 'react-router'
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import topics from "../data/searchFilters/topics.json"
@@ -17,9 +17,6 @@ export default function BlogHome() {
 
     const [blogs, setBlogs] = useState<Blog []>([])
     const [searchResults, setSearchResults] = useState<Blog[]>([])
-
-    const [searchInput, setSearchInput] = useState<string>("")
-    const deferredInput = useDeferredValue(searchInput)
 
     // Panel control
     const [isOpen, setIsOpen] = useState(false);
@@ -62,25 +59,18 @@ export default function BlogHome() {
         }
     }, [isOpen]);
 
+    {/* ----------------------- TO RECEIVE STATE(SEARCH RESULTS FROM LAYOUT) ----------------------------------------------------------------------------------------- */}  
+    
+    const location = useLocation();
+    useEffect(() => {
+        if (location.state?.section === 'Search Results') {
+        setSection('Search Results');
+        }
 
-    {/* ----------------------- HANDLING USER INPUT ON SEARCH ---------------------------------------------------------------------------------------------------- */}   
-    const handleSearch = useCallback((text: string, categories: string[]) => {
-        const searchedBlogs = blogs.filter((b) =>
-            b.title.toLowerCase().includes(text.toLowerCase())
-        );
-
-        const filteredBlogs = searchedBlogs.filter((b) =>
-            categories.length === 0 || categories.some((cat) => b.categories.includes(cat))
-        );
-
-        setSearchResults(filteredBlogs);
-    }, [blogs, categories]);
-
-    {/* ----------------------- WHEN FILTERS (CATEGORIES) ARE ADDED, TRIGGER SEARCH AGAIN BASED ON FILTERS ---------------------------------------------------------------------------------------------------- */}   
-
-    useEffect( () => {
-        handleSearch(searchInput, categories)
-    }, [categories])
+        if (location.state?.searchResults) {
+        setSearchResults(location.state.searchResults);
+        }
+    }, [location.state]);
 
     {/* ----------------------- TO GET BLOGS ON INITIAL PAGE LOAD ---------------------------------------------------------------------------------------------------- */}   
 
@@ -91,16 +81,12 @@ export default function BlogHome() {
         });
         const data = await response.json();
         setBlogs(data);
-        setSearchResults(data);
+        
     };
 
     useEffect(() => {
         getBlogs();
     }, []);
-
-    useEffect( () => {
-        console.log(dateRange)
-    }, [dateRange])
 
     return (
         <>
@@ -350,14 +336,14 @@ export default function BlogHome() {
 
             {/* ----------------------- THE BLOGS! ---------------------------------------------------------------------------------------------------- */}   
 
-            <section id="blogs">
+            <div id="blogs">
                 <div className='border-b-[1px] flex gap-5'>
                     <div className={`${section == "For You" ? ("bg-[#229197]") : ("")} p-2 cursor-pointer`} onClick={() => {setSection('For You')}}>For you</div>
                     <div className={`${section == "Featured" ? ("bg-[#229197]") : ("")} p-2 cursor-pointer`} onClick={() => {setSection('Featured')}}>Featured</div>
                     <div className={`${section == "Search Results" ? ("bg-[#229197]") : ("")} p-2 cursor-pointer`} onClick={() => {setSection('Search Results')}}>Search Results</div>
                 </div>
                 
-                {section == "For You" && searchResults.map((b) => (
+                {section == "For You" && blogs.map((b) => (
                     <BlogPostCard
                         key={b._id}
                         id={b._id}
@@ -370,7 +356,21 @@ export default function BlogHome() {
                         likes={b.likes}
                     />
                 ))}
-            </section>
+
+                {section == "Search Results" && searchResults.map((b:Blog) => (
+                    <BlogPostCard
+                        key={b._id}
+                        id={b._id}
+                        postUser={b.user}
+                        title={b.title}
+                        releaseDate={b.releaseDate}
+                        summary={b.summary}
+                        content={b.content}
+                        comments={b.comments}
+                        likes={b.likes}
+                    />
+                ))}
+            </div>
         </>
     );
 }

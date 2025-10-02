@@ -4,6 +4,7 @@ import Tiptap from '~/components/tiptap/tiptap'
 import { useUser } from '~/context/userContext'
 import topics from "../data/searchFilters/topics.json"
 import frameworks from "../data/searchFilters/frameworks.json"
+import FilterModal from '~/components/filterModal';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -46,6 +47,10 @@ const BlogAdd = () => {
   
   return (
     <div className='max-w-[80vw] my-0 flex flex-col gap-3 mx-auto'>
+      <div className='flex flex-row gap-2 justify-end'>
+        <button className='primary-btn w-[150px]' onClick={savePost}>SAVE</button>
+        <FilterModal categories={categories} setCategories={setCategories}/>
+      </div>
       <div>
         <label htmlFor="title" id="title" className='hidden'>TITLE</label>
         <input 
@@ -68,14 +73,14 @@ const BlogAdd = () => {
         />
       </div>
 
-      <div className='flex gap-2 text-[#979797]'>
+      {/* <div className='flex gap-2 text-[#979797]'>
         SELECTED : 
         {categories.map( (category, index) => (
           <div className='italic border-r-[2px] border-[#353535] border-solid pr-2' key={index}>{category}</div>
         ))}
-      </div>
+      </div> */}
 
-      <div className='flex justify-between relative'>
+      {/* <div className='flex justify-between relative'>
         <div className='self-center text-[#979797]'>CATEGORIES: </div>
 
         <div className='primary-btn' 
@@ -321,11 +326,10 @@ const BlogAdd = () => {
           ))}
         </div>
         }
-      </div>
+      </div> */}
       <div className='flex-grow'>
         <Tiptap content={post} handleChange={handleChange}/>
       </div>
-      <button className='primary-btn w-[150px] mx-auto my-0' onClick={savePost}>SAVE</button>
     </div>
   )
 }
