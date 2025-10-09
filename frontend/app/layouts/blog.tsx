@@ -2,6 +2,7 @@ import { googleLogout, useGoogleLogin } from '@react-oauth/google';
 import { Filter, MenuIcon, NotebookPenIcon, SlidersHorizontalIcon } from 'lucide-react';
 import React, { useCallback, useDeferredValue, useEffect, useRef, useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router'
+import FetchOwnDetails from '~/apiCalls/user/fetchOwnDetails';
 import FilterModal from '~/components/filterModal';
 import Search from '~/components/Search';
 import { useUser } from '~/context/userContext'
@@ -65,7 +66,7 @@ const Blog = () => {
     {/* ----------------------- WHEN FILTERS (CATEGORIES) ARE ADDED, TRIGGER SEARCH AGAIN BASED ON FILTERS ---------------------------------------------------------------------------------------------------- */}   
 
     useEffect( () => {
-        handleSearch(searchInput, categories)
+        handleSearch(deferredInput, categories)
     }, [categories])
 
     {/* ----------------------- TO GET BLOGS ON INITIAL PAGE LOAD ---------------------------------------------------------------------------------------------------- */}   
@@ -119,7 +120,7 @@ const Blog = () => {
 
     async function handleLogout() {
         try {
-            const res = await fetch(`${API_URL}/logout`, {
+            const response = await fetch(`${API_URL}/logout`, {
                 method:'post',
                 credentials: 'include'
             })
@@ -135,25 +136,14 @@ const Blog = () => {
     }
 
     const fetchUser = async () => {
-
-        const user = await fetch(`${API_URL}/me`, {
-            method:'get',
-            credentials: 'include'
-        })
-
-        if (!user.ok) {
-            console.error("Failed to fetch user info")
-            return
-        }
-
-        const userData = await user.json()
-        console.log(userData)
-        setUser(userData)
+        const data = await FetchOwnDetails()
+        setUser(data)
     }
 
     useEffect( () => {
         fetchUser()
     }, [])
+
   return (
     <>      
             <header className='w-full bg-[#111111] border-solid border-[1px] border-[#353535] sticky top-0 flex justify-between items-center p-3 z-[2] mb-5'>
