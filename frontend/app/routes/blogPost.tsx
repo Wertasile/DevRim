@@ -90,11 +90,7 @@ export default function BlogPost({ params }: Route.ComponentProps) {
       method: 'get'
     })
     const userData = await userResponse.json()
-
     setBlogUser(userData)
-    setNoLikes(data.likes.length)
-
-
     
     if (user?._id) {
       const lists = await getAllList(user._id)
@@ -107,24 +103,23 @@ export default function BlogPost({ params }: Route.ComponentProps) {
   {/* ----------------------- LIKES AND DISLIKES ---------------------------------------------------------------------------------------------------- */}
 
   const handleLike = async () => {
-    const res = await fetch(`${API_URL}/users/like/${blog?._id}`, {
-      method: 'put',
+    if (!blog?._id) return
+    
+    const method = like ? 'delete' : 'put'
+
+    const res = await fetch(`${API_URL}/users/like/${blog._id}`, {
+      method,
       credentials: 'include'
     })
-    const data = await res.json()
-    setNoLikes(noLikes + 1)
+
+    if (!res.ok) return
+    const updated = await res.json()
+    
+    // Use backend’s latest like count if it returns it
     setLike(!like)
+    setNoLikes(prev => like ? prev - 1 : prev + 1)
   }
 
-  const handleDislike = async () => {
-    const res = await fetch(`${API_URL}/users/like/${blog?._id}`, {
-      method: 'delete',
-      credentials: 'include'
-    })
-    const data = await res.json()
-    setNoLikes(noLikes - 1)
-    setLike(!like)
-  }
 
   {/* ----------------------- ADDING COMMENTS ---------------------------------------------------------------------------------------------------- */}
 
@@ -179,9 +174,9 @@ export default function BlogPost({ params }: Route.ComponentProps) {
   },[user, blogUser])
 
   useEffect(() => {
-    if (blog && user) {
-      console.log(`like status : ${user?.liked?.includes(blog)}`)
-      
+    if (blog && user?._id) {
+      setLike(blog.likes.includes(user?._id))
+      setNoLikes(blog.likes.length)
     }
   }, [blog, user])
 
@@ -262,10 +257,10 @@ export default function BlogPost({ params }: Route.ComponentProps) {
 {/* ----------------------- INTERACTION BUTTONS ---------------------------------------------------------------------------------------------------- */}   
 
       <div className='flex gap-5 border-y-[1px] border-solid border-[#979797] text-[#979797] p-6'>   
-        <div className='flex gap-2'>
+        <div className={`flex gap-2 ${like && ("text-black") }`}>
           {like ? (
             <>
-              <ThumbsUp className='text-black cursor-pointer' onClick={handleDislike}/>
+              <ThumbsUp className='text-black cursor-pointer' onClick={handleLike}/>
               <b className='text-black'>{noLikes}</b>
             </>
           ) : (

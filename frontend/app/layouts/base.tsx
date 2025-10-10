@@ -131,8 +131,12 @@ const base = () => {
 
             <footer className='bg-[#393E46] text-white flex justify-around items-center px-[10px] py-[20px] bottom-0 mt-[20px]'>
                 <div>
-                    <img src="/Images/DevRim_Logo.png" height="64"/>
-                    <p>A platform for developers</p>
+                    <div className='flex gap-2 items-center'>
+                        <img src="/Images/DevRim_Logo_0.png" height="64"/>
+                        <h2>DevRim</h2>
+                    </div>
+                    
+                    <i>A platform for developers</i>
                 </div>
                     
                 <div style={{display:'flex', gap:100}}>    

@@ -22,14 +22,7 @@ const Blog = () => {
     const [searchInput, setSearchInput] = useState<string>("")
     const deferredInput = useDeferredValue(searchInput)
 
-    // Panel control
-    const [isOpen, setIsOpen] = useState(false);
-    const [activeFilter, setActiveFilter] = useState<"topic" | "framework" | "date" | null>(null);
-    const [showContent, setShowContent] = useState(false); // controls when content appears
-
     const [dateRange, setDateRange] = useState({from: new Date(2025, 7, 31), to: new Date(Date.now())})
-
-    const tlRef = useRef<gsap.core.Timeline | null>(null);
 
     const [showFilters, setShowFilters] = useState(false)
     const [categories, setCategories] = useState<string[]>([])
@@ -222,8 +215,11 @@ const Blog = () => {
 
             <footer className='bg-[#393E46] text-white flex justify-around items-center px-[10px] py-[20px] bottom-0 mt-[20px]'>
                 <div>
-                    <img src="/Images/DevRim_Logo.png" height="64"/>
-                    <p>A platform for developers</p>
+                    <div className='flex gap-2 items-center'>
+                        <img src="/Images/DevRim_Logo_0.png" height="64"/>
+                        <h2>DevRim</h2>
+                    </div>
+                    <i>A platform for developers</i>
                 </div>
                     
                 <div style={{display:'flex', gap:100}}>    

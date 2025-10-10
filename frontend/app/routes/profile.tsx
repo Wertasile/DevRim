@@ -160,18 +160,18 @@ const profile = ({params}: Route.ComponentProps) => {
             </div>
             <div className='p-5 flex-grow flex flex-col gap-5'>
 
-                <div className='flex flex-row sm:gap-5 border-solid border-b-[2px] border-[#979797]'>
-                    <h3 className={`cursor-pointer p-3 ${view == "blogs" && `bg-[#979797] text-black`}`} onClick={() => setView("blogs")}>Blogs</h3>
-                    <h3 className={`cursor-pointer p-3 ${view == "lists" && `bg-[#979797] text-black`}`} onClick={() => setView("lists")}>Lists</h3>
+                <div className='flex flex-row sm:gap-5 border-solid border-b-[1px]'>
+                    <h3 className={`cursor-pointer p-2 ${view == "blogs" && `bg-[#229197]`}`} onClick={() => setView("blogs")}>Blogs</h3>
+                    <h3 className={`cursor-pointer p-2 ${view == "lists" && `bg-[#229197]`}`} onClick={() => setView("lists")}>Lists</h3>
                     {/* <h3 className='' onClick={() => setView("about")}>About</h3> */}
                     {profile?._id === user?._id && 
-                        <h3 className={`cursor-pointer p-3 ${view == "liked" && `bg-[#979797] text-black`}`} onClick={() => setView("liked")}>Liked</h3>
+                        <h3 className={`cursor-pointer p-2 ${view == "liked" && `bg-[#229197]`}`} onClick={() => setView("liked")}>Liked</h3>
                     }
                     {profile?._id === user?._id && 
-                        <h3 className={`cursor-pointer p-3 ${view == "requests" && `bg-[#979797] text-black`}`} onClick={() => setView("requests")}>Requests</h3>
+                        <h3 className={`cursor-pointer p-2 ${view == "requests" && `bg-[#229197]`}`} onClick={() => setView("requests")}>Requests</h3>
                     }
                     {profile?._id === user?._id && 
-                        <h3 className={`cursor-pointer p-3 ${view == "connections" && `bg-[#979797] text-black`}`} onClick={() => setView("connections")}>Connections</h3>
+                        <h3 className={`cursor-pointer p-2 ${view == "connections" && `bg-[#229197]`}`} onClick={() => setView("connections")}>Connections</h3>
                     }
                 </div>
 
@@ -250,7 +250,10 @@ const profile = ({params}: Route.ComponentProps) => {
                 {view === "connections" && (
                     <div className='flex flex-col gap-5'>
                         {user?.connections ? (<>{connectionUsers.map((user, index) => (
-                            <div className='flex flex-row gap-5 items-center'>
+                            <div 
+                                className='flex flex-row gap-5 items-center cursor-pointer'
+                                onClick={() => window.location.href = `/profile/${user._id}`}
+                            >
                                 <div><img className="rounded-3xl" src={user.picture} width={48}/></div>
                                 <div>{user.name}</div>
                             </div>
