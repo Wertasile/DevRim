@@ -6,7 +6,7 @@ const getAllList = async (req, res) => {
     
     const userId = req.params.userId
 
-    const data = await List.find({user: userId})
+    const data = await List.find({user: userId}).populate("blogs")
     .exec()
 
     res.send(data)

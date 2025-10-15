@@ -158,20 +158,20 @@ const profile = ({params}: Route.ComponentProps) => {
 
                 <p>About</p>
             </div>
-            <div className='p-5 flex-grow flex flex-col gap-5'>
+            <div className='sm:p-5 flex-grow flex flex-col gap-5'>
 
                 <div className='flex flex-row sm:gap-5 border-solid border-b-[1px]'>
-                    <h3 className={`cursor-pointer p-2 ${view == "blogs" && `bg-[#229197]`}`} onClick={() => setView("blogs")}>Blogs</h3>
-                    <h3 className={`cursor-pointer p-2 ${view == "lists" && `bg-[#229197]`}`} onClick={() => setView("lists")}>Lists</h3>
+                    <div className={`cursor-pointer p-2 ${view == "blogs" && `bg-[#229197]`}`} onClick={() => setView("blogs")}>Blogs</div>
+                    <div className={`cursor-pointer p-2 ${view == "lists" && `bg-[#229197]`}`} onClick={() => setView("lists")}>Lists</div>
                     {/* <h3 className='' onClick={() => setView("about")}>About</h3> */}
                     {profile?._id === user?._id && 
-                        <h3 className={`cursor-pointer p-2 ${view == "liked" && `bg-[#229197]`}`} onClick={() => setView("liked")}>Liked</h3>
+                        <div className={`cursor-pointer p-2 ${view == "liked" && `bg-[#229197]`}`} onClick={() => setView("liked")}>Liked</div>
                     }
                     {profile?._id === user?._id && 
-                        <h3 className={`cursor-pointer p-2 ${view == "requests" && `bg-[#229197]`}`} onClick={() => setView("requests")}>Requests</h3>
+                        <div className={`cursor-pointer p-2 ${view == "requests" && `bg-[#229197]`}`} onClick={() => setView("requests")}>Requests</div>
                     }
                     {profile?._id === user?._id && 
-                        <h3 className={`cursor-pointer p-2 ${view == "connections" && `bg-[#229197]`}`} onClick={() => setView("connections")}>Connections</h3>
+                        <div className={`cursor-pointer p-2 ${view == "connections" && `bg-[#229197]`}`} onClick={() => setView("connections")}>Connections</div>
                     }
                 </div>
 

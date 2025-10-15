@@ -17,6 +17,7 @@ import follow from '~/apiCalls/user/follow';
 import unfollow from '~/apiCalls/user/unfollow';
 import connect from '~/apiCalls/user/connect';
 import disconnect from '~/apiCalls/user/disconnect';
+import logEvent from '~/utils/logEvent';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -75,8 +76,20 @@ export default function BlogPost({ params }: Route.ComponentProps) {
       clearInterval(activityInterval)
     }
   })
+
+  // view_post, like_post, comment_post, bookmark_post, follow_user, connect_user, send_message
+  useEffect(() => {
+    if (blog && blog._id){
+      logEvent("view_blog" , {
+        blog: blog?._id
+      })
+    }
+    
+  }, [blog])
+  
   
   {/* ----------------------- LOADING BLOG IN ---------------------------------------------------------------------------------------------------- */}
+  
   const getBlog = async () => {
     const response = await fetch(`${API_URL}/posts/${params.id}`, {
       method: 'post'
@@ -199,19 +212,16 @@ export default function BlogPost({ params }: Route.ComponentProps) {
 
 
   const handleConnect = async () => {
-  if (!blogUser?._id) return
+    if (!blogUser?._id) return
 
-  if (connected){
-    await disconnect(blogUser?._id)
-    setConnected(false)
-  } else{
-    await connect(blogUser?._id)
-    setConnected(true)
+    if (connected){
+      await disconnect(blogUser?._id)
+      setConnected(false)
+    } else{
+      await connect(blogUser?._id)
+      setConnected(true)
+    }
   }
-
-  }
-
-
 
   if (!blog) return <p>Loading...</p>
 

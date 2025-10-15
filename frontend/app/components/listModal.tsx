@@ -3,7 +3,7 @@ import fetchList from '~/apiCalls/list/fetchList';
 import type { List } from '~/types/types'
 
 type ListModalProps = {
-    list : string | undefined;
+    list : List | undefined;
     setViewListModal: React.Dispatch<React.SetStateAction<boolean>>
 }
 
@@ -14,14 +14,12 @@ const ListModal = ({list, setViewListModal}: ListModalProps) => {
   const fetchListData = async (list: string) => {
     console.log("ACTIVATED LIST MODAL")
     const data = await fetchList(list)
+    console.log(data)
     setListData(data)
   }
 
   useEffect(() => {
-    if (list) {
-      fetchListData(list)
-    }
-
+    fetchListData(list?._id)
   }, [])
 
   return (

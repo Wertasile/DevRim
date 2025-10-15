@@ -173,6 +173,8 @@ app.use('/chats', require('./routes/chatRoutes'));
 app.use('/comments', require('./routes/commentRoutes'));
 app.use('/messages', require('./routes/messageRoutes'));
 app.use('/lists', require('./routes/listRoutes'));
+app.use('/logs', require('./routes/logRoutes'));
+app.use('/analytics', require('./routes/userAnalyticsRoutes'));
 // app.use('/aws', require('./routes/awsRoutes'));
 
 //google authentication

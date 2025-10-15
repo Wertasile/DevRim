@@ -213,7 +213,7 @@ const Blog = () => {
                 <Outlet/>
             </main>
 
-            <footer className='bg-[#393E46] text-white flex justify-around items-center px-[10px] py-[20px] bottom-0 mt-[20px]'>
+            <footer className='bg-[#393E46] text-white flex flex-col sm:flex-row justify-around items-center px-[10px] py-[20px] bottom-0 mt-[20px]'>
                 <div>
                     <div className='flex gap-2 items-center'>
                         <img src="/Images/DevRim_Logo_0.png" height="64"/>

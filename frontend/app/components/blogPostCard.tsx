@@ -23,7 +23,7 @@ const BlogPostCard = ({id, title, releaseDate, summary, content, postUser, comme
   }
 
   return (
-    <div className='py-5 border-b-[1px] border-solid border-[#979797] flex flex-col gap-2 cursor-pointer' onClick={handleNav}>
+    <div className='sm:py-5 border-b-[1px] border-solid border-[#979797] flex flex-col gap-2 cursor-pointer' onClick={handleNav}>
       {postUser._id == user?._id ? 
       (
       <div className='items-center flex gap-5'>
