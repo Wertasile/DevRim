@@ -514,7 +514,7 @@ const ChatPage = () => {
     <>
     {imageModal &&
       <div className="fixed h-full w-full bg-[rgba(0,0,0,0.6)] z-2 cursor-pointer" onClick={() => closeImageModal()}>
-        <div className="w-[90vw] max-h-[90vh] mx-auto bg-[rgba(0,0,0,0.9)] border-solid border-[2px]" onClick={(e) => e.stopPropagation()}>
+        <div className="w-[90vw] max-h-[90vh] mx-auto bg-[rgba(0,0,0,0.9)] border-solid border-[1px]" onClick={(e) => e.stopPropagation()}>
           <img src={ImageSrc} className="mx-auto max-w-[90vw] max-h-[90vh] object-contain"/>
         </div>
       </div>
@@ -543,7 +543,7 @@ const ChatPage = () => {
     
     <div className="flex flex-row h-[100vh]">
       {/* SIDEBAR */}
-      <div className="w-[80px] flex flex-col items-center h-full border-r border-[#979797] justify-between py-5">
+      <div className="w-[80px] flex flex-col items-center h-full border-[1px] border-r border-[#353535] justify-between py-5">
         <div className="flex flex-col gap-5">
           <a href="/">
             <img src="/Images/DevRim_Logo_0.png" width={48} />
@@ -567,8 +567,8 @@ const ChatPage = () => {
       {/* CHAT MENU */}
       { section === "messages" && 
       
-      <div className="w-[400px] flex flex-col border-r border-[#979797]">
-        <div className="h-[50px] border-b border-[#979797] flex items-center p-2 gap-3 ">
+      <div className="w-[400px] flex flex-col border-r border-[#353535]">
+        <div className="h-[50px] border-b border-[#353535] flex items-center p-2 gap-3 ">
           <div className="primary-btn p-2 rounded-xl w-full text-center" onClick={() => {setFindUsersModal(!findUsersModal)}}>
             <span>Find or Start a Conversation</span>
           </div>
@@ -591,7 +591,7 @@ const ChatPage = () => {
       { section === "messages" && 
 
       <div className="flex-grow flex flex-col feed-container overflow-y-scroll">
-        <div className="h-[50px] flex justify-between cursor-pointer items-center border-b border-[#979797] px-5 sticky top-0 bg-[#222831] z-1">
+        <div className="h-[50px] flex justify-between cursor-pointer items-center border-b border-[#353535] px-5 sticky top-0 bg-[#13111C] z-1">
           <h2
             className="w-fit cursor-pointer"
             onClick={() => {

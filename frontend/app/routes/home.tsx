@@ -139,7 +139,7 @@ const Home = () => {
                 {/* <img src="/images/placeholder_img.png"/> */}
             </div>
             <div>
-            <CardSwap
+            {/* <CardSwap
                 cardDistance={60}
                 verticalDistance={70}
                 delay={5000}
@@ -154,13 +154,13 @@ const Home = () => {
                 <Card>
                 <img className="rounded-3xl" src="/Images/CardSwap/Messaging.png"/>
                 </Card>
-            </CardSwap>
+            </CardSwap> */}
             </div>
         </section>
 
-        <section id="overview" className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 max-w-[1200px] my-15 mx-auto ">
+        <section id="overview" className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 max-w-[1200px] my-15 mx-auto bg-[#211F2D]">
 
-            <div className="overview-item flex flex-col justify-between g-3 border-solid border-[0.5px] border-[#979797] p-5 ">
+            <div className="overview-item flex flex-col justify-between g-3 border-solid border-[0.5px] border-[#353535] p-5 ">
                 <div className="w-fit border-solid border-[0.5px] border-[#979797] p-5 rounded-[200px] bg-[#111]">
                     <NotebookPen/>
                 </div>
@@ -172,7 +172,7 @@ const Home = () => {
                     {/* <img src="/images/placeholder_img.png" width="100px"/> */}
                 </div>
             </div>
-            <div className="overview-item flex flex-col justify-between g-3 border-solid border-[0.5px] border-[#979797] p-5 ">
+            <div className="overview-item flex flex-col justify-between g-3 border-solid border-[0.5px] border-[#353535] p-5 ">
                 <div className="w-fit border-solid border-[0.5px] border-[#979797] p-5 rounded-[200px] bg-[#111]">
                     <Handshake/>
                 </div>
@@ -184,7 +184,7 @@ const Home = () => {
                     {/* <img src="/images/placeholder_img.png" width="200px"/> */}
                 </div>
             </div>
-            <div className="overview-item flex flex-col justify-between g-3 border-solid border-[0.5px] border-[#979797] p-5">
+            <div className="overview-item flex flex-col justify-between g-3 border-solid border-[0.5px] border-[#353535] p-5">
                 <div className="w-fit border-solid border-[0.5px] border-[#979797] p-5 rounded-[200px] bg-[#111]">
                     <Film/>
                 </div>
@@ -204,7 +204,7 @@ const Home = () => {
             <div className="card-container pt-[20vh]">
                 <div className="cards">
 
-                    <div className="cards-item bg-[#111] border-solid border-[0.5px] border-[#979797] p-5 flex g-5">
+                    <div className="cards-item bg-[#211F2D] border-solid border-[0.5px] border-[#353535] p-5 flex g-5">
                         <div>
                             <h2 className="border-solid border-[0.5px] border-[#979797] p-5 rounded-[200px] bg-[#111] w-[100px] text-center"> 1 </h2>
                             <h2>Rich Text Editor</h2>
@@ -215,7 +215,7 @@ const Home = () => {
                         </div>
                     </div>
 
-                    <div className="cards-item bg-[#111] border-solid border-[0.5px] border-[#979797] p-5 flex g-5">
+                    <div className="cards-item bg-[#211F2D] border-solid border-[0.5px] border-[#353535] p-5 flex g-5">
                         <div>
                             <h2 className="border-solid border-[0.5px] border-[#979797] p-5 rounded-[200px] bg-[#111] w-[100px] text-center"> 2 </h2>
                             <h2>Follow your favourite Authors</h2>
@@ -226,7 +226,7 @@ const Home = () => {
                         </div>
                     </div>
 
-                    <div className="cards-item bg-[#111] border-solid border-[0.5px] border-[#979797] p-5 flex g-5">
+                    <div className="cards-item bg-[#211F2D] border-solid border-[0.5px] border-[#353535] p-5 flex g-5">
                         <div>
                             <h2 className="border-solid border-[0.5px] border-[#979797] p-5 rounded-[200px] bg-[#111] w-[100px] text-center"> 3 </h2>
                             <h2>Categories and Lists</h2>
@@ -268,7 +268,7 @@ const Home = () => {
         <section id="pricing" className=" max-w-[1200px] my-15 mx-auto ">
             <h1 className="text-center">Pricing</h1>
             <div className="flex flex-row justify-center gap-5">
-                <div className="pricing-item border-solid border-[0.5px] border-[#979797]">
+                <div className="pricing-item border-solid border-[0.5px] border-[#353535]">
                     <div className="border-solid border-b-[0.5px] border-[#979797] p-5">
                         <h2>Free</h2>
                         <p className="text-[#979797] italic">Get Started with Blogs and Messaging</p>
@@ -282,7 +282,7 @@ const Home = () => {
                         </ul>
                     </div>
                 </div>
-                <div className="pricing-item border-solid border-[0.5px] border-[#979797]">
+                <div className="pricing-item border-solid border-[0.5px] border-[#353535]">
                     
                     <div className="border-solid border-b-[0.5px] border-[#979797] p-5">
                         <h2>Enterprise</h2>

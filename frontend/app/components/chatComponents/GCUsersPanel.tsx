@@ -36,7 +36,7 @@ const GCUsersPanel = ({chat, setAddUsersModal}:GCUsersPanelProps) => {
         <div className='primary-btn' onClick={openPanel}><Users/></div>
         <div 
             ref={usersPanel} 
-            className='fixed flex flex-col gap-2 h-[100vh] top-0 right-0 max-w-[400px] sm:w-[400px] border-l-[2px] border-solid border-[#979797] p-2 bg-[#222831]'
+            className='fixed flex flex-col gap-2 h-[100vh] top-0 right-0 max-w-[400px] sm:w-[400px] border-l-[2px] border-solid border-[#979797] p-2 bg-[#13111C]'
             style={{transform: "translateX(100%)"}}
         >   
             <div className='flex justify-between'>

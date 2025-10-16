@@ -139,7 +139,7 @@ const Blog = () => {
 
   return (
     <>      
-            <header className='w-full bg-[#111111] border-solid border-[1px] border-[#353535] sticky top-0 flex justify-between items-center p-3 z-[2] mb-5'>
+            <header className='w-full bg-[#13111C] border-solid border-[1px] text-[#878593] border-[#353535] sticky top-0 flex justify-between items-center p-3 z-[2] mb-5'>
 
                 
                 <div className='flex gap-2 items-center'>
@@ -213,7 +213,7 @@ const Blog = () => {
                 <Outlet/>
             </main>
 
-            <footer className='bg-[#393E46] text-white flex flex-col sm:flex-row justify-around items-center px-[10px] py-[20px] bottom-0 mt-[20px]'>
+            <footer className='bg-[#211F2D] text-white flex flex-col sm:flex-row justify-around items-center px-[10px] py-[20px] bottom-0 mt-[20px]'>
                 <div>
                     <div className='flex gap-2 items-center'>
                         <img src="/Images/DevRim_Logo_0.png" height="64"/>

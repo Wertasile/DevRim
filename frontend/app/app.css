@@ -42,7 +42,7 @@
 }
 
 :root {
-  --background: #222831;
+  --background: #13111C;
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
@@ -384,7 +384,7 @@ form{
 
 .message-panel{
   min-width: 700px;
-  background-color: #111; /* Base background */
+  background-color: #211F2D; /* Base background */
   padding: .4em 1.2em;
   border: 1px solid #353535;
   border-radius: 20px;
