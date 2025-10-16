@@ -1,13 +1,10 @@
-const mongoose = require("mongoose");
+const trendingSchema = new mongoose.Schema({
+  type: { type: String, enum: ["hourly", "daily", "weekly"], required: true },
+  posts: [{
+    blog: { type: mongoose.Schema.Types.ObjectId, ref: "post" },
+    score: Number
+  }],
+  updatedAt: { type: Date, default: Date.now }
+});
 
-const Schema = mongoose.Schema;
-
-const trendingSchema = new Schema({
-    type: { type: String, required:true}, // hourly (or) daily
-    posts: [{ blog: Schema.Types.ObjectId, score: Number }],
-    updatedAt: { type: Date, default: Date.now() }
-})
-
-const trending = mongoose.model("trending", trendingSchema)
-
-module.exports = trending;
+module.exports = mongoose.model("trending", trendingSchema);

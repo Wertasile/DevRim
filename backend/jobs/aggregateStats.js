@@ -8,11 +8,11 @@ function aggregateStats () {
     cron.schedule("0 * * * *", async () => {
 
         try {
-            const oneDayAgo = new Date( Date.now() - ( 1000 * 60 * 60 * 24 ))
+            const ONE_WEEK_AGO = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
             const trending = await Log.aggregate([
                 {
-                    $match: { event : { $in : ["view_blog","like_blog"] }, timestamp: { $gte: oneDayAgo }}
+                    $match: { event : { $in : ["view_blog","like_blog"] }, timestamp: { $gte: ONE_WEEK_AGO }}
                 },
                 {
                     $group: { _id:"$metadata.blog" , score: { $sum:1 } }
@@ -31,7 +31,7 @@ function aggregateStats () {
 
                 await Trending.replaceOne(
                     { 
-                        type: "hourly" 
+                        type: "hourly" // replace the oen which has type weekly to the one below
                     },
                     { 
                         type: "hourly", posts: trending.map(t => ({ blog: t._id, score: t.score })), updatedAt: new Date() 
