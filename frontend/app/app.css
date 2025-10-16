@@ -378,9 +378,9 @@ form{
   }
 }
 
-.message-panels-container{
+/* .message-panels-container{
   overflow: hidden;
-}
+} */
 
 .message-panel{
   min-width: 700px;

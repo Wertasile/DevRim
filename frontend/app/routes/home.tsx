@@ -105,20 +105,23 @@ const Home = () => {
 
         } )
 
-        const sections = gsap.utils.toArray(".message-panel")
+        const container = document.querySelector(".message-panels-container")!  // ! indicates non null assertion
 
-        gsap.to( sections, {
-            xPercent: -100 * (sections.length - 1),
+        const totalScroll = container.scrollWidth - document.documentElement.clientWidth + 300;
+
+        gsap.to( container, {
+            x: -totalScroll,
             scrollTrigger : {
-                trigger: ".message-panels-container",
+                trigger: container,
                 scrub: true,
                 start: `top 30%`,
                 pin: true,
                 pinSpacing: true,
-                end: () => "+=" + ((document.querySelector(".message-panels-container") as HTMLElement).offsetWidth ?? 100)
+                end: () => "+=" + totalScroll
             },
             ease: "none"
         })
+
         })()
     }, [])
 
