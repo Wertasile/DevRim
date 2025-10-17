@@ -52,4 +52,9 @@ function aggregateStats () {
 
 }
 
+setInterval(() => {
+  console.log("⏱️ Cron worker alive at", new Date().toISOString());
+}, 60 * 1000);
+
+
 module.exports = aggregateStats
