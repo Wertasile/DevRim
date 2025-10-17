@@ -30,20 +30,29 @@ function aggregateStats () {
             if (trending && trending.length) {
 
                 await Trending.replaceOne(
-                    { 
-                        type: "hourly" // replace the oen which has type weekly to the one below
-                    },
-                    { 
-                        type: "hourly", posts: trending.map(t => ({ blog: t._id, score: t.score })), updatedAt: new Date() 
-                    },
-                    { 
-                        upsert: true 
-                    }
-                )
+                { type: "hourly" },
+                { 
+                    type: "hourly",
+                    posts: trending.map(t => ({ blog: t._id, score: t.score })),
+                    updatedAt: new Date()
+                },
+                { upsert: true }
+                );
 
+                // 2️⃣ Fetch and populate the newly updated document
+                const populatedTrending = await Trending.findOne({ type: "hourly" })
+                .populate({
+                    path: "posts.blog",
+                    select: "title summary releaseDate user comments likes",
+                    populate: {
+                    path: "user",
+                    select: "name picture"
+                    }
+                })
+                .exec();
             }
 
-            console.log("aggregateStats: trending updated", trending.slice(0, 5));
+            console.log("aggregateStats: trending updated", populatedTrending.slice(0, 5));
         } catch (error) {
             console.error("aggregateStats error:", error);
         }

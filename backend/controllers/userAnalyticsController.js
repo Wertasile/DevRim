@@ -1,5 +1,6 @@
 const Log = require('../models/log')
 const Post = require("../models/post");
+const Trending = require("../models/trending");
 
 
 // GET /analytics/history
@@ -109,4 +110,17 @@ const getRecommendation = async ( req,res ) => {
   }
 };
 
-module.exports = { getSummary, getHistory, getRecommendation }
+const getTrending = async ( req,res ) => {
+
+  try {
+    const trending = await Trending.find().exec()  
+    return res.json(trending) 
+
+  } catch (error) {
+    return res.status(500).json({ success:false, message:"Server Error!"})
+
+  }
+
+}
+
+module.exports = { getSummary, getHistory, getRecommendation, getTrending }

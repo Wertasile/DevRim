@@ -4,7 +4,7 @@ const fetchPosts = async(req, res) => {
     try
     {   
         const currentUser = req.user
-        const data = await Post.find().populate("user").exec()
+        const data = await Post.find().populate("user").sort({ releaseDate: -1 }).exec()
         res.send(data)
     } 
     catch(e){console.log(e)}     

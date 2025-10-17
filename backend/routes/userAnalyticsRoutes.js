@@ -1,4 +1,4 @@
-const { getSummary, getHistory, getRecommendation } = require("../controllers/userAnalyticsController");
+const { getSummary, getHistory, getRecommendation, getTrending } = require("../controllers/userAnalyticsController");
 const authenticateUser = require("../functions/auth");
 // const protect =require("../functions/auth")
 
@@ -9,6 +9,7 @@ var router = express.Router();
 router.get('/summary', authenticateUser, getSummary)
 router.get('/history', authenticateUser, getHistory)
 router.get('/recommendations', authenticateUser, getRecommendation)
+router.get('/trending', authenticateUser, getTrending)
 
 
 module.exports = router;
