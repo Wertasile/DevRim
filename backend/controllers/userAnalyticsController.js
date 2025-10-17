@@ -96,7 +96,8 @@ const getRecommendation = async ( req,res ) => {
       categories: { $in: topTags },
       _id: { $nin: seen }
     })
-      .populate("title summary releaseDate user comments likes")
+      .select("title summary releaseDate user comments likes")
+      .populate("user")
       .sort({ releaseDate: -1 })
       .limit(limit)
       .lean();
