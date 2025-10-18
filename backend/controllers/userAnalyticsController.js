@@ -85,7 +85,7 @@ const getRecommendation = async ( req,res ) => {
         { $limit: limit }
       ]);
       const ids = trending.map(t => t._id).filter(Boolean);
-      const posts = await Post.find({ _id: { $in: ids } }).limit(limit).lean();
+      const posts = await Post.find({ _id: { $in: ids } }).select("title summary releaseDate user comments likes").populate("user").limit(limit);
       return res.json(posts);
     }
 
@@ -101,7 +101,7 @@ const getRecommendation = async ( req,res ) => {
       .populate("user")
       .sort({ releaseDate: -1 })
       .limit(limit)
-      .lean();
+  
 
     return res.json(recommendations);
   } catch (err) {
@@ -113,7 +113,16 @@ const getRecommendation = async ( req,res ) => {
 const getTrending = async ( req,res ) => {
 
   try {
-    const trending = await Trending.find().exec()  
+    const trending = await Trending.find({ type: "hourly" })
+    .populate({
+        path: "posts.blog",
+        select: "title summary releaseDate user comments likes",
+        populate: {
+        path: "user",
+        select: "name picture"
+        }
+    })
+    .exec()  
     return res.json(trending) 
 
   } catch (error) {

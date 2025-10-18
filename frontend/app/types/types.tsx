@@ -84,3 +84,16 @@ export type Message = {
     updatedAt: string;
     reply: Message;
 }
+
+export type BlogScore = {
+  _id: string;
+  score: number;
+  blog: Blog;
+}
+
+export type Trending = {
+    _id: string;
+    type: string;
+    posts: BlogScore[];
+    updatedAt: string;
+}

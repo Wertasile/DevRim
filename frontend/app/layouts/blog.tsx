@@ -213,31 +213,17 @@ const Blog = () => {
                 <Outlet/>
             </main>
 
-            <footer className='bg-[#211F2D] text-white flex flex-col sm:flex-row justify-around items-center px-[10px] py-[20px] bottom-0 mt-[20px]'>
-                <div>
-                    <div className='flex gap-2 items-center'>
-                        <img src="/Images/DevRim_Logo_0.png" height="64"/>
-                        <h2>DevRim</h2>
-                    </div>
-                    <i>A platform for developers</i>
-                </div>
-                    
-                <div style={{display:'flex', gap:100}}>    
-                    <div style={{display:'flex', flexDirection:'column'}}>
-                        CONTACT
-                        <a href="emailto:ahmedmharfan@gmail.com" target="_blank">Email Developer(s)</a>
-                        <a href="github.com/Wertasile" target="_blank">GitHub</a>
-                        <a href="https://www.linkedin.com/in/ahmed-mohamed-haniffa-arfan-989267202/" target="_blank">LinkedIn</a>
-                        <a href="ahmedarfan.netlify.app" target="_blank">Developer's Website</a>
-                    </div>
-                    <div style={{display:'flex', flexDirection:'column'}}>
-                        Terms & Policies
+            <footer className='bg-[#211F2D] text-[gray] flex flex-wrap flex-col sm:flex-row justify-around items-center px-[10px] py-[20px] bottom-0 mt-[20px]'>
+                                       
+                        <div><a href="emailto:ahmedmharfan@gmail.com" target="_blank">Email Developer(s)</a></div>
+                        <div><a href="github.com/Wertasile" target="_blank">GitHub</a></div>
+                        <div><a href="https://www.linkedin.com/in/ahmed-mohamed-haniffa-arfan-989267202/" target="_blank">LinkedIn</a></div>
+                        <div><a href="ahmedarfan.netlify.app" target="_blank">Developer's Website</a></div>
+                        
                         <a>Policies</a>
                         <a>Terms of Use</a>
                         <a>Code of Conduct</a>
-                        <a>Privacy</a>
-                    </div>
-                </div>
+                        <a>Privacy</a> 
             </footer>
     </>
   )
