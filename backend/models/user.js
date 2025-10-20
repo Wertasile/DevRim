@@ -12,7 +12,8 @@ const userSchema = new mongoose.Schema({
   following: [{type: mongoose.Schema.Types.ObjectId, ref:"user"}],
   followers: [{type: mongoose.Schema.Types.ObjectId, ref:"user"}],
   connections: [{type: mongoose.Schema.Types.ObjectId, ref:"user"}],
-  requests: [{type: mongoose.Schema.Types.ObjectId, ref:"user"}]
+  requestsSent: [{type: mongoose.Schema.Types.ObjectId, ref:"user"}],
+  requestsReceived: [{type: mongoose.Schema.Types.ObjectId, ref:"user"}]
 });
 
 module.exports = mongoose.model('user', userSchema);

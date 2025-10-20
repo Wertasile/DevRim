@@ -21,7 +21,8 @@ export type User = {
     followers: User[];
     byline: string;
     about: string;
-    requests: string[]
+    requestsSent: string[]
+    requestsReceived: string[]
     connections : string[]
 }
 

@@ -207,8 +207,13 @@ const connect = async (req, res) => {
         const userId = req.user._id
         const otherUserId = req.params.userId
 
+        await User.findByIdAndUpdate(userId,
+            { $addToSet: { requestsSent: otherUserId} },
+            { new: true }
+        )
+        
         await User.findByIdAndUpdate(otherUserId,
-            { $addToSet: { requests: userId} },
+            { $addToSet: { requestsReceived: userId} },
             { new: true }
         )
 
@@ -234,7 +239,7 @@ const disconnect = async (req, res) => {
             { new: true }
         )
 
-        res.json({ success: true, message: 'Request send successfully' })
+        res.json({ success: true, message: 'Disconnected successfully' })
         
     } catch (error) {
         res.status(500).json({success: false, message: "Failed to remove connection"})
@@ -249,7 +254,12 @@ const accept = async (req, res) => {
 
     try {
         await User.findByIdAndUpdate(userId,
-            { $pull: { requests: otherUserId} },
+            { $pull: { requestsReceived: otherUserId} },
+            { new: true }
+        )
+
+        await User.findByIdAndUpdate(otherUserId,
+            { $pull: { requestsSent: userId} },
             { new: true }
         )
 

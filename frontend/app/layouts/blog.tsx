@@ -216,9 +216,9 @@ const Blog = () => {
             <footer className='bg-[#211F2D] text-[gray] flex flex-wrap flex-col sm:flex-row justify-around items-center px-[10px] py-[20px] bottom-0 mt-[20px]'>
                                        
                         <div><a href="emailto:ahmedmharfan@gmail.com" target="_blank">Email Developer(s)</a></div>
-                        <div><a href="github.com/Wertasile" target="_blank">GitHub</a></div>
+                        <div><a href="https://github.com/Wertasile" target="_blank">GitHub</a></div>
                         <div><a href="https://www.linkedin.com/in/ahmed-mohamed-haniffa-arfan-989267202/" target="_blank">LinkedIn</a></div>
-                        <div><a href="ahmedarfan.netlify.app" target="_blank">Developer's Website</a></div>
+                        <div><a href="https://ahmedarfan.netlify.app" target="_blank">Developer's Website</a></div>
                         
                         <a>Policies</a>
                         <a>Terms of Use</a>

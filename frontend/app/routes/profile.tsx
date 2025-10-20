@@ -10,6 +10,8 @@ import ScrollTrigger from "gsap/ScrollTrigger";
 import ListModal from '~/components/listModal'
 import accept from '~/apiCalls/user/accept'
 import decline from '~/apiCalls/user/decline'
+import { UserXIcon } from 'lucide-react'
+import disconnect from '~/apiCalls/user/disconnect'
 
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -31,7 +33,11 @@ const profile = ({params}: Route.ComponentProps) => {
 
     const [newListName, setNewListName] = useState<string>("")
 
-    const [requestUsers, setRequestUsers] = useState<User[]>([])
+    const [requestReceivedUsers, setRequestReceivedUsers] = useState<User[]>([])
+    const [requestSentUsers, setRequestSentUsers] = useState<User[]>([])
+
+    const  [requestView, setRequestView] = useState<"RequestsSent" | "RequestsReceived">("RequestsReceived")
+
     const [connectionUsers, setConnectionUsers] = useState<User[]>([])
 
     const getProfile = async () => {
@@ -104,20 +110,34 @@ const profile = ({params}: Route.ComponentProps) => {
     }
 
     const acceptConnection = async (userId: string) => {
-        await accept(userId)
-        
-        
+        await accept(userId)  
     }
 
     const declineConnection = async (userId: string) => {
         await decline(userId)
     }
 
-    const fetchRequests = async () => {
-        if (user?.requests) {
-            for (const request of user.requests) {
+    const disconnect = async (userId:string) => {
+        await disconnect(userId)
+        setConnectionUsers((prev) => prev.filter(user => user._id !== userId));
+    }
+
+    const fetchRequestsSent = async () => {
+        if (user?.requestsSent) {
+            for (const request of user.requestsSent) {
                 const userData = await fetchUser(request);
-                setRequestUsers((prev) => [...prev, userData]); // append without mutating
+                setRequestSentUsers((prev) => [...prev, userData]); // append without mutating
+                console.log(requestSentUsers)
+            }
+        }
+    };
+
+    const fetchRequestsReceived = async () => {
+        if (user?.requestsReceived) {
+            for (const request of user.requestsReceived) {
+                const userData = await fetchUser(request);
+                setRequestReceivedUsers((prev) => [...prev, userData]); // append without mutating
+                console.log(requestReceivedUsers)
             }
         }
     };
@@ -134,7 +154,8 @@ const profile = ({params}: Route.ComponentProps) => {
     // user's request list has a list of user who have sent requests, this is to retreive each users data
     useEffect(() => {
 
-    fetchRequests();
+    fetchRequestsSent();
+    fetchRequestsReceived();
     fetchConnections();
     }, [user]);
 
@@ -158,7 +179,7 @@ const profile = ({params}: Route.ComponentProps) => {
 
                 <p>About</p>
             </div>
-            <div className='sm:p-5 flex-grow flex flex-col gap-5'>
+            <div className='sm:p-5 flex-grow flex flex-col gap-2'>
 
                 <div className='flex flex-row sm:gap-5 border-solid border-b-[1px]'>
                     <div className={`cursor-pointer p-2 ${view == "blogs" && `bg-[#229197]`}`} onClick={() => setView("blogs")}>Blogs</div>
@@ -228,20 +249,48 @@ const profile = ({params}: Route.ComponentProps) => {
                 }
 
                 {view === "requests" && (
-                    <div className='flex flex-col gap-5'>
-                        {user?.requests ? (<>{requestUsers?.map((user, index) => (
-                            <div className='flex flex-col gap-3 '>
-                                <div className='flex flex-row gap-5 items-center'>
-                                    <div><img className="rounded-3xl" src={user.picture} width={48}/></div>
-                                    <div>{user.name}</div>
-                                </div>
-                                <div className='flex gap-3'>
-                                    <button className="primary-btn" onClick={() => {acceptConnection(user._id)}}><span>ACCEPT</span></button>
-                                    <button className="secondary-btn" onClick={() => {declineConnection(user._id)}}>DECLINE</button>
-                                </div>
 
-                            </div>))}</>) : 
-                            (<div>No requests</div>)
+                    <div>
+
+                        <div className='flex flex-row sm:gap-5 border-solid border-b-[1px]'>
+
+                                <div className={`cursor-pointer p-2 ${requestView == "RequestsReceived" && `bg-[#229197]`}`} onClick={() => setRequestView("RequestsReceived")}>Requests Received</div>
+                                <div className={`cursor-pointer p-2 ${requestView == "RequestsSent" && `bg-[#229197]`}`} onClick={() => setRequestView("RequestsSent")}>Requests Sent</div>
+                            
+                        </div>
+
+                        { requestView == "RequestsReceived" &&
+                        <div className='flex flex-col gap-5'>
+                            {user?.requestsReceived ? (<>{requestReceivedUsers?.map((user, index) => (
+                                <div className='flex flex-row gap-3 '>
+                                    <div className='flex flex-row gap-5 items-center'>
+                                        <div><img className="rounded-3xl" src={user.picture} width={48}/></div>
+                                        <div>{user.name}</div>
+                                    </div>
+                                    <div className='flex gap-3'>
+                                        <button className="primary-btn" onClick={() => {acceptConnection(user._id)}}><span>ACCEPT</span></button>
+                                        <button className="secondary-btn" onClick={() => {declineConnection(user._id)}}>DECLINE</button>
+                                    </div>
+
+                                </div>))}</>) : 
+                                (<div>No requests Received</div>)
+                            }
+                        </div>
+                        }
+
+                        { requestView == "RequestsSent" &&
+                        <div className='flex flex-col gap-5'>
+                            {user?.requestsSent ? (<>{requestSentUsers?.map((user, index) => (
+                                <div className='flex flex-col gap-3 '>
+                                    <div className='flex flex-row gap-5 items-center'>
+                                        <div><img className="rounded-3xl" src={user.picture} width={48}/></div>
+                                        <div>{user.name}</div>
+                                    </div>
+
+                                </div>))}</>) : 
+                                (<div>No requests Sent</div>)
+                            }
+                        </div>
                         }
                     </div>
                     )
@@ -249,13 +298,21 @@ const profile = ({params}: Route.ComponentProps) => {
 
                 {view === "connections" && (
                     <div className='flex flex-col gap-5'>
-                        {user?.connections ? (<>{connectionUsers.map((user, index) => (
+                        {user?.connections ? (<>{connectionUsers.map((connection, index) => (
                             <div 
-                                className='flex flex-row gap-5 items-center cursor-pointer'
-                                onClick={() => window.location.href = `/profile/${user._id}`}
+                                className='flex flex-row gap-5 justify-between items-center cursor-pointer'
                             >
-                                <div><img className="rounded-3xl" src={user.picture} width={48}/></div>
-                                <div>{user.name}</div>
+                                <div className='flex gap-3 items-center' onClick={() => window.location.href = `/profile/${connection._id}`}>
+                                    <div><img className="rounded-3xl" src={connection.picture} width={48}/></div>
+                                    <div>{connection.name}</div>
+                                </div>
+                                <div>
+                                    <UserXIcon
+                                        onClick={() => {disconnect(connection._id)}}
+                                        className='p-0.5 hover:bg-[#211F2D] hover:duration-400 hover:Ease-in-out'
+                                    />
+                                </div>
+
                             </div>
                         ))}</>) : 
                         (<div>No Connections</div>)

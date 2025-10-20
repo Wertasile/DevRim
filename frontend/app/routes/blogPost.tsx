@@ -219,7 +219,9 @@ export default function BlogPost({ params }: Route.ComponentProps) {
       setConnected(false)
     } else{
       await connect(blogUser?._id)
+      await follow(blogUser?._id)
       setConnected(true)
+      setFollowing(true)
     }
   }
 

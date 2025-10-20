@@ -123,10 +123,10 @@
     @apply bg-background text-foreground;
   }
   h1 {
-    @apply text-2xl font-bold;
+    @apply text-2xl font-semibold;
   }
   h2 {
-    @apply text-lg ;
+    @apply text-lg font-medium ;
   }
   h3 {
     @apply text-[20px] font-medium;
@@ -166,9 +166,11 @@ box-sizing: border-box;
 
 html{
     box-sizing: border-box;
-    font-family:'Inter', 'Arial Narrow', Arial, sans-serif;
-    background-color: #FFF5ED;
+}
 
+p{
+  font-family:'Space Grotesk', 'Arial Narrow', Arial, sans-serif;
+  opacity: 0.9;
 }
 
 body{margin: 0px;

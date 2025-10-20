@@ -105,12 +105,22 @@ export default function BlogHome() {
         setTrending(data);
     }
 
+        const getHistory = async () => {
+        const response = await fetch(`${API_URL}/analytics/history`, {
+            method: "get",
+            credentials: 'include'
+        })
+        const data = await response.json()
+        console.log(data)
+    }
+
     {/* ----------------------- TO GET FOR YOU SECTION BLOGS ---------------------------------------------------------------------------------------------------- */}   
 
     useEffect(() => {
         getBlogs();
         getTrending();
         getRecommendations();
+        getHistory();
     }, []);
 
     useEffect(() => {

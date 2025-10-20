@@ -21,7 +21,7 @@ const getHistory = async ( req, res ) => {
         // preservijng the order of history
         const blogsById = blogs.reduce((acc, p) => { acc[p._id.toString()] = p; return acc; }, {});
         const result = blogIds.map(id => blogsById[id.toString()] || null).filter(Boolean);
-        res.json(result)
+        res.json(blogs)
     } catch (error) {
         res.status(500).json({ success:false, message: "server error"})
     }

@@ -125,7 +125,8 @@ const getPersonalData = async (req, res) => {
     following: req.user.following,
     followers: req.user.followers,
     connections: req.user.connections,
-    requests: req.user.requests
+    requestsSent: req.user.requestsSent,
+    requestsReceived: req.user.requestsReceived
   });
 };
 

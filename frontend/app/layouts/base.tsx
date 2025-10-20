@@ -143,9 +143,9 @@ const base = () => {
                     <div style={{display:'flex', flexDirection:'column'}}>
                         CONTACT
                         <a href="emailto:ahmedmharfan@gmail.com" target="_blank">Email Developer(s)</a>
-                        <a href="github.com/Wertasile" target="_blank">GitHub</a>
+                        <a href="https://github.com/Wertasile" target="_blank">GitHub</a>
                         <a href="https://www.linkedin.com/in/ahmed-mohamed-haniffa-arfan-989267202/" target="_blank">LinkedIn</a>
-                        <a href="ahmedarfan.netlify.app" target="_blank">Developer's Website</a>
+                        <a href="https://ahmedarfan.netlify.app" target="_blank">Developer's Website</a>
                     </div>
                     <div style={{display:'flex', flexDirection:'column'}}>
                         Terms & Policies
