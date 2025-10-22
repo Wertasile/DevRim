@@ -120,7 +120,7 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
   }
   h1 {
     @apply text-2xl font-bold;
@@ -173,8 +173,10 @@ p{
   opacity: 0.9;
 }
 
-body{margin: 0px;
-   /* background:radial-gradient(circle at 50% 50%, rgb(38, 57, 141), rgba(0, 0, 0, 0.92)); */
+body{
+  margin: 0px;
+  --surface:#000;
+  background:var(--surface);
 }
 
 
@@ -401,7 +403,7 @@ form{
     filter: blur(.75em);
     z-index: -1;
     background-image:conic-gradient(from var(--rotation), #212EAA, rgb(174, 0, 255), #212EAA, rgb(255, 0, 140), rgb(111, 0, 255), #212EAA);
-    animation: 20s hue-rotation infinite;
+    animation: 10s hue-rotation infinite;
     
     mask-image: radial-gradient(hsl(0 0 0 / 0.1) 50%, rgb(255, 255, 255));
 
@@ -424,16 +426,59 @@ form{
 } */
 
 .message-panel{
-  min-width: 700px;
-  background-color: #211F2D; /* Base background */
-  padding: .4em 1.2em;
-  border: 1px solid #353535;
-  border-radius: 20px;
+  --gradient-glow: red, yellow, green, blue, purple, red;
+
+  max-width: 700px;
+  padding: 2em 3.2em;
+  background: 
+    linear-gradient(var(--surface, Canvas) 0 0) padding-box,
+    conic-gradient(from -90deg, var(--gradient-glow)) border-box;
+  border: 3px solid transparent;
+  border-left: 0;
+  border-radius: 0 100vw 100vw 0;
   gap: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   height: 400px;
+  position: relative;
+  isolation: isolate;
+  
+  &::before, &::after{
+    content:'';
+    position: absolute;
+    border-radius: inherit;
+  }
+
+  &::before{
+    background: var(--surface, canvas);
+    inset: 0.5rem;
+    z-index: -1;
+    scale:1.2 1; 
+    transform-origin: right;
+    filter: blur(1.5rem);
+  }
+  
+  &::after{
+    background: conic-gradient(from -90deg, var(--gradient-glow));
+    inset:-1.5rem;
+    z-index: -2;
+    filter: blur(2rem);
+    opacity: 0.2;
+  }
+
 }
 
+.message-panel.right{
+  margin-inline-start: auto; /* pushes item to the right */
+  border-radius: 100vw 0 0 100vw;
+    border: 3px solid transparent;
+  border-right: 0;
 
+  &::before {
+    transform-origin: left;
+  }
+}
 
 @media (max-width: 768px) {
   .card-swap-container {

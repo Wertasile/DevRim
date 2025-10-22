@@ -106,22 +106,22 @@ const Home = () => {
 
         } )
 
-        const container = document.querySelector(".message-panels-container")!  // ! indicates non null assertion
+        // const container = document.querySelector(".message-panels-container")!  // ! indicates non null assertion
 
-        const totalScroll = container.scrollWidth - document.documentElement.clientWidth + 300;
+        // const totalScroll = container.scrollWidth - document.documentElement.clientWidth + 300;
 
-        gsap.to( container, {
-            x: -totalScroll,
-            scrollTrigger : {
-                trigger: container,
-                scrub: true,
-                start: `top 30%`,
-                pin: true,
-                pinSpacing: true,
-                end: () => "+=" + totalScroll
-            },
-            ease: "none"
-        })
+        // gsap.to( container, {
+        //     x: -totalScroll,
+        //     scrollTrigger : {
+        //         trigger: container,
+        //         scrub: true,
+        //         start: `top 30%`,
+        //         pin: true,
+        //         pinSpacing: true,
+        //         end: () => "+=" + totalScroll
+        //     },
+        //     ease: "none"
+        // })
 
         })()
     }, [])
@@ -229,13 +229,13 @@ const Home = () => {
 
         </section>
 
-        <section id="messages" className="max-w-[1200px] my-45 mx-auto">
-            <div className="message-panels-container flex flex-row gap-5">
-                <div className="message-panel">
+        <section id="messages" className="my-45">
+            <div className="message-panels-container flex flex-col gap-15">
+                <div className="message-panel ">
                     <h2>Direct Message with Authors</h2>
                     <p>Intersted in an Author's work and wanna get some insight, message them directly by connecting with them and use our messaging platform.</p>
                 </div>
-                <div className="message-panel">
+                <div className="message-panel right">
                     <h2>Group Chats</h2>
                     <div>Wanna hold discussions with members of a community, create a Group Chat and share ideas, multimedia and vibes.</div>
                 </div>
@@ -243,7 +243,7 @@ const Home = () => {
                     <h2>MultiMedia Sharing</h2>
                     <div>Collaborate ideas by sharing Audios, Files and Images</div>
                 </div>
-                <div className="message-panel">
+                <div className="message-panel right">
                     <h2>Connect and Follow</h2>
                     <div>Connect with Authors and Collaborate with them, by adding them into your profiles and more.</div>
                 </div>
