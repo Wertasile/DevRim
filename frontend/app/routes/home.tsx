@@ -132,14 +132,15 @@ const Home = () => {
     <>
         <section id="hero" className=" min-h-[100vh]">
             <HeroBackground/>
-            <div className="relative flex h-[100vh] items-center text-center justify-between gap-6 p-2 gap-5 mx-auto max-w-[1200px] z-3">
-                <div className="flex flex-col gap-5">
+            <div className="relative flex flex-col h-[100vh] items-center text-center justify-end gap-2 p-2 gap-5 mx-auto max-w-[1200px] z-3">
+                <div className="flex flex-col justify-end gap-5">
                     <h2>Write. Connect. Share. All in one place.</h2>
                     <h3>Devrim is where blogging meets social connection. Publish ideas, follow authors, and connect through direct messages or groups. Combinbing Social - with Educational.</h3>
-                    <h3><b>Under Construction! Estimated Release October (Beta)</b></h3>
-                    <h3><b>Mobile version Release 1-2 weeks after Beta Release</b></h3>
                     {/* {user === null && <a className="primary-btn" href="signup.html" target="_self">Sign Up for Free</a>} */}
                     {/* <img src="/images/placeholder_img.png"/> */}
+                </div>
+                <div>
+                    <img src="/Images/HomePage/hero-image.png" className="hero-image w-1000px"/>
                 </div>
             </div>
         </section>
@@ -252,7 +253,7 @@ const Home = () => {
         </section>
 
 
-        <section id="pricing" className=" max-w-[1200px] my-15 mx-auto ">
+        {/* <section id="pricing" className=" max-w-[1200px] my-15 mx-auto ">
             <h1 className="text-center">Pricing</h1>
             <div className="flex flex-row justify-center gap-5">
                 <div className="pricing-item border-solid border-[0.5px] border-[#353535]">
@@ -280,7 +281,7 @@ const Home = () => {
                     </div>
                 </div>
             </div>
-        </section>
+        </section> */}
     </>
     
   )

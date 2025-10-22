@@ -425,14 +425,50 @@ form{
   overflow: hidden;
 } */
 
+@property --clr-1 {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: red;
+}
+
+@property --clr-2 {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: yellow;
+}
+
+@property --clr-3 {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: green;
+}
+
+@property --clr-4 {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: blue;
+}
+
+@property --clr-5 {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: purple;
+}
+
+@property --glow-deg {
+  syntax: '<angle>';
+  inherits: true;
+  initial-value: -90deg;
+}
+
 .message-panel{
-  --gradient-glow: red, yellow, green, blue, purple, red;
+  --gradient-glow: var(--clr-1), var(--clr-2), var(--clr-3), var(--clr-4), var(--clr-5), var(--clr-1);
 
   max-width: 700px;
   padding: 2em 3.2em;
   background: 
     linear-gradient(var(--surface, Canvas) 0 0) padding-box,
-    conic-gradient(from -90deg, var(--gradient-glow)) border-box;
+    conic-gradient(from var(--glow-deg), var(--gradient-glow)) border-box;
   border: 3px solid transparent;
   border-left: 0;
   border-radius: 0 100vw 100vw 0;
@@ -443,6 +479,7 @@ form{
   height: 400px;
   position: relative;
   isolation: isolate;
+  animation: glow 10s infinite linear;
   
   &::before, &::after{
     content:'';
@@ -460,13 +497,19 @@ form{
   }
   
   &::after{
-    background: conic-gradient(from -90deg, var(--gradient-glow));
+    background: conic-gradient(from var(--glow-deg), var(--gradient-glow));
     inset:-1.5rem;
     z-index: -2;
     filter: blur(2rem);
     opacity: 0.2;
   }
 
+}
+
+@keyframes glow {
+  100%{
+    --glow-deg: 270deg;
+  }
 }
 
 .message-panel.right{
@@ -503,5 +546,12 @@ form{
   .card{
     left: -50%;
 
+  }
+}
+
+@media (max-height: 800px) {
+  .hero-image{ 
+    max-height: 55vh;
+    width:  auto;
   }
 }
