@@ -144,7 +144,7 @@ const Home = () => {
             </div>
         </section>
 
-        <section id="overview" className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 max-w-[1200px] my-15 mx-auto bg-[#211F2D]">
+        <section id="overview" className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 max-w-[1200px] gap-2 p-2 my-15 mx-auto ">
 
             <div className="overview-item flex flex-col justify-between g-3 border-solid border-[0.5px] border-[#353535] p-5 ">
                 <div className="w-fit border-solid border-[0.5px] border-[#979797] p-5 rounded-[200px] bg-[#111]">
