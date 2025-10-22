@@ -139,9 +139,8 @@ const Blog = () => {
 
   return (
     <>      
-            <header className='w-full bg-[#13111C] border-solid border-[1px] text-[#878593] border-[#353535] sticky top-0 flex justify-between items-center p-3 z-[2] mb-5'>
+            <header className='w-full bg-[#13111C] border-solid border-b-[1px] text-[#878593] border-[#353535] sticky top-0 flex justify-between items-center p-3 z-[2] mb-5'>
 
-                
                 <div className='flex gap-2 items-center'>
                     <a href='/'><img src="/Images/DevRim_Logo_0.png" width="48"/></a>
                     <h3>DevRim</h3>

@@ -1,2 +1,0 @@
-const { createClient } = require("redis")
-

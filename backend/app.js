@@ -176,6 +176,7 @@ app.use('/messages', require('./routes/messageRoutes'));
 app.use('/lists', require('./routes/listRoutes'));
 app.use('/logs', require('./routes/logRoutes'));
 app.use('/analytics', require('./routes/userAnalyticsRoutes'));
+app.use('/status', require('./routes/statusRoutes'));
 
 //google authentication
 app.post("/auth/google", connectToGoogle)

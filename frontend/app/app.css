@@ -123,10 +123,10 @@
     @apply bg-background text-foreground;
   }
   h1 {
-    @apply text-2xl font-semibold;
+    @apply text-2xl font-bold;
   }
   h2 {
-    @apply text-lg font-medium ;
+    @apply text-lg font-semibold ;
   }
   h3 {
     @apply text-[20px] font-medium;
@@ -237,10 +237,12 @@ li p{margin-top: 0px;}
 
 h1{
     font-size: 48px;
+    font-family: 'Figtree','Arial Narrow', Arial, sans-serif;
 }
 
 h2{
     font-size: 36px;
+    font-family: 'Figtree','Arial Narrow', Arial, sans-serif;
 }
 
 .card{

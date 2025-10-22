@@ -13,7 +13,9 @@ const userSchema = new mongoose.Schema({
   followers: [{type: mongoose.Schema.Types.ObjectId, ref:"user"}],
   connections: [{type: mongoose.Schema.Types.ObjectId, ref:"user"}],
   requestsSent: [{type: mongoose.Schema.Types.ObjectId, ref:"user"}],
-  requestsReceived: [{type: mongoose.Schema.Types.ObjectId, ref:"user"}]
+  requestsReceived: [{type: mongoose.Schema.Types.ObjectId, ref:"user"}],
+  status: {type:String, enum: ["online","offline"], default:"offline"},
+  lastSeen: {type: Date, default:null}
 });
 
 module.exports = mongoose.model('user', userSchema);

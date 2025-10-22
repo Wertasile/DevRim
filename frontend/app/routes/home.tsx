@@ -7,6 +7,7 @@ import type { User } from "~/types/types.js";
 import { Film, Handshake, NotebookPen } from "lucide-react";
 import gsap from "gsap";
 import Lenis from "lenis"
+import HeroBackground from "~/components/heroBackground.js";
 
 
 
@@ -129,32 +130,17 @@ const Home = () => {
 
   return(
     <>
-        <section id="hero" className="flex flex-col min-h-[70vh] justify-between gap-6 p-2 lg:flex-row gap-5 mx-auto my-15 max-w-[1200px] ">
-            <div className="flex flex-col gap-5">
-                <h2>Write. Connect. Share. All in one place.</h2>
-                <h3>Devrim is where blogging meets social connection. Publish ideas, follow authors, and connect through direct messages or groups. Combinbing Social - with Educational.</h3>
-                <h3><b>Under Construction! Estimated Release October (Beta)</b></h3>
-                <h3><b>Mobile version Release 1-2 weeks after Beta Release</b></h3>
-                {/* {user === null && <a className="primary-btn" href="signup.html" target="_self">Sign Up for Free</a>} */}
-                {/* <img src="/images/placeholder_img.png"/> */}
-            </div>
-            <div>
-            {/* <CardSwap
-                cardDistance={60}
-                verticalDistance={70}
-                delay={5000}
-                pauseOnHover={false}
-            >
-                <Card>
-                <img className="rounded-3xl" src="/Images/CardSwap/BlogsHome.png"/>
-                </Card>
-                <Card>
-                <img className="rounded-3xl" src="/Images/CardSwap/BlogsCreate.png"/>
-                </Card>
-                <Card>
-                <img className="rounded-3xl" src="/Images/CardSwap/Messaging.png"/>
-                </Card>
-            </CardSwap> */}
+        <section id="hero" className=" min-h-[100vh]">
+            <HeroBackground/>
+            <div className="relative flex h-[100vh] items-center text-center justify-between gap-6 p-2 gap-5 mx-auto max-w-[1200px] z-3">
+                <div className="flex flex-col gap-5">
+                    <h2>Write. Connect. Share. All in one place.</h2>
+                    <h3>Devrim is where blogging meets social connection. Publish ideas, follow authors, and connect through direct messages or groups. Combinbing Social - with Educational.</h3>
+                    <h3><b>Under Construction! Estimated Release October (Beta)</b></h3>
+                    <h3><b>Mobile version Release 1-2 weeks after Beta Release</b></h3>
+                    {/* {user === null && <a className="primary-btn" href="signup.html" target="_self">Sign Up for Free</a>} */}
+                    {/* <img src="/images/placeholder_img.png"/> */}
+                </div>
             </div>
         </section>
 
@@ -196,6 +182,7 @@ const Home = () => {
                     {/* <img src="/images/placeholder_img.png" width="200px"/> */}
                 </div>
             </div>
+            
 
         </section>
 

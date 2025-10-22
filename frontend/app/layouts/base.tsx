@@ -85,7 +85,7 @@ const base = () => {
         <>
         
         
-            <header className='w-full lg:w-[1000px] bg-[#0606061a] border-solid border-[1px] border-[#353535] rounded-3xl sticky top-0 flex justify-between items-center p-3 backdrop-blur-sm z-[2] my-5 mx-auto'>
+            <header className='w-full lg:w-[1000px] bg-[#0606061a] lg:left-1/2 lg:transform lg:-translate-x-1/2 border-solid border-[1px] border-[#353535] rounded-[50px] fixed top-5 flex justify-between items-center px-5 py-3 backdrop-blur-sm my-5 mx-auto z-5'>
                 <div className='flex gap-2 items-center'>
                     <a href='/'><img src="/Images/DevRim_Logo_0.png" width="48"/></a>
                     <h3>DevRim</h3>

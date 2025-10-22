@@ -444,6 +444,11 @@ const ChatPage = () => {
         setSocketConnected(true)
       })
 
+      socket.on("userStatusUpdate", ({ userId, status }) => {
+        console.log(`User ${userId} is now ${status}`);
+        // You can store in state to show “Online”/“Offline” badges
+      });
+
       // for typing checking
       socket.on("typing", () => setIsTyping(true))
       socket.on("stop typing", () => setIsTyping(false))
@@ -453,6 +458,8 @@ const ChatPage = () => {
         socket.off("connected");
         socket.off("typing");
         socket.off("stop typing");
+        socket.off("userStatusUpdate");
+        socket.disconnect();
       };
     }
   }, [])
