@@ -139,12 +139,14 @@ const Blog = () => {
 
   return (
     <>      
-            <header className='w-full bg-[#13111C] border-solid border-b-[1px] text-[#878593] border-[#353535] sticky top-0 flex justify-between items-center p-3 z-[2] mb-5'>
+            <header className='w-full bg-[#13111C] border-solid border-b-[1px] border-[#353535] sticky top-0 flex justify-between items-center p-3 z-[2] mb-5'>
 
-                <div className='flex gap-2 items-center'>
-                    <a href='/'><img src="/Images/DevRim_Logo_0.png" width="48"/></a>
+                
+                <a href='/' className='flex gap-2 items-center'>
+                    <img src="/Images/DevRim_Logo_0.png" width="48"/>
                     <h3>DevRim</h3>
-                </div>
+                </a>
+                
 
                 <div className='flex items-center gap-2 relative'>
                     <Search
@@ -177,9 +179,9 @@ const Blog = () => {
                 </div>
 
                 <nav className='hidden sm:flex relative items-center gap-7'>
-                    <NavLink to="/blog/new" target="_self" className='flex gap-1 cursor-pointer'><NotebookPenIcon/>WRITE</NavLink>
-                    <NavLink to="/blog" target="_self">BLOGS</NavLink>
-                    <NavLink to="/chats" target="_self">MESSAGE</NavLink>
+                    <NavLink to="/blog/new" target="_self" className='flex gap-1 cursor-pointer'><NotebookPenIcon  strokeWidth={'1.25px'}/></NavLink>
+                    <NavLink to="/blog" target="_self">Blogs</NavLink>
+                    <NavLink to="/chats" target="_self">Message</NavLink>
                     {user ? 
                         (<img 
                             src={user?.picture} 
@@ -193,11 +195,11 @@ const Blog = () => {
                     }
 
                     {menu && 
-                        <div className='absolute p-2 flex flex-col bg-[#111] rounded-3xl border-solid border-[0.5px] border-[#353535] shadow-md right-0 top-14 gap-3 p-2 w-[200px]'>
-                            <a className="primary-btn" href={`/profile/${user?._id}`}>Profile</a>
-                            <a className="primary-btn">Settings</a>
-                            <a className="primary-btn">Help</a>
-                            <div className="primary-btn" onClick={handleLogout}>SignOut</div>
+                        <div className='absolute p-2 flex flex-col bg-[#111] border-solid border-[1px] border-[#353535] rounded-3xl shadow-md right-0 top-20 gap-3 p-2 w-[200px]'>
+                            <a className="hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer" href={`/profile/${user?._id}`}>Profile</a>
+                            <a className="hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer">Settings</a>
+                            <a className="hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer">Help</a>
+                            <div className="hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer" onClick={handleLogout}>SignOut</div>
                         </div>
                     } 
                     

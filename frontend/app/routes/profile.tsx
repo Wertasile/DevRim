@@ -162,7 +162,7 @@ const profile = ({params}: Route.ComponentProps) => {
 
   return (
 
-    <div className='min-h-[80vh]'>
+    <div className='min-h-[80vh] pt-[100px]'>
         {listModal && 
             <CreateListModal setListModal={setListModal} listModal={listModal} setLists={setLists} profile={profile} />
         }
@@ -182,17 +182,17 @@ const profile = ({params}: Route.ComponentProps) => {
             <div className='sm:p-5 flex-grow flex flex-col gap-2'>
 
                 <div className='flex flex-row sm:gap-5 border-solid border-b-[1px]'>
-                    <div className={`cursor-pointer p-2 ${view == "blogs" && `bg-[#229197]`}`} onClick={() => setView("blogs")}>Blogs</div>
-                    <div className={`cursor-pointer p-2 ${view == "lists" && `bg-[#229197]`}`} onClick={() => setView("lists")}>Lists</div>
+                    <div className={`cursor-pointer p-2 ${view == "blogs" && `bg-[#5D64F4]`}`} onClick={() => setView("blogs")}>Blogs</div>
+                    <div className={`cursor-pointer p-2 ${view == "lists" && `bg-[#5D64F4]`}`} onClick={() => setView("lists")}>Lists</div>
                     {/* <h3 className='' onClick={() => setView("about")}>About</h3> */}
                     {profile?._id === user?._id && 
-                        <div className={`cursor-pointer p-2 ${view == "liked" && `bg-[#229197]`}`} onClick={() => setView("liked")}>Liked</div>
+                        <div className={`cursor-pointer p-2 ${view == "liked" && `bg-[#5D64F4]`}`} onClick={() => setView("liked")}>Liked</div>
                     }
                     {profile?._id === user?._id && 
-                        <div className={`cursor-pointer p-2 ${view == "requests" && `bg-[#229197]`}`} onClick={() => setView("requests")}>Requests</div>
+                        <div className={`cursor-pointer p-2 ${view == "requests" && `bg-[#5D64F4]`}`} onClick={() => setView("requests")}>Requests</div>
                     }
                     {profile?._id === user?._id && 
-                        <div className={`cursor-pointer p-2 ${view == "connections" && `bg-[#229197]`}`} onClick={() => setView("connections")}>Connections</div>
+                        <div className={`cursor-pointer p-2 ${view == "connections" && `bg-[#5D64F4]`}`} onClick={() => setView("connections")}>Connections</div>
                     }
                 </div>
 
@@ -254,8 +254,8 @@ const profile = ({params}: Route.ComponentProps) => {
 
                         <div className='flex flex-row sm:gap-5 border-solid border-b-[1px]'>
 
-                                <div className={`cursor-pointer p-2 ${requestView == "RequestsReceived" && `bg-[#229197]`}`} onClick={() => setRequestView("RequestsReceived")}>Requests Received</div>
-                                <div className={`cursor-pointer p-2 ${requestView == "RequestsSent" && `bg-[#229197]`}`} onClick={() => setRequestView("RequestsSent")}>Requests Sent</div>
+                                <div className={`cursor-pointer p-2 ${requestView == "RequestsReceived" && `bg-[#5D64F4]`}`} onClick={() => setRequestView("RequestsReceived")}>Requests Received</div>
+                                <div className={`cursor-pointer p-2 ${requestView == "RequestsSent" && `bg-[#5D64F4]`}`} onClick={() => setRequestView("RequestsSent")}>Requests Sent</div>
                             
                         </div>
 

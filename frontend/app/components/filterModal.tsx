@@ -38,7 +38,7 @@ const FilterModal = ({categories, setCategories}:FilterModalProps) => {
                 (!panel) ? (openPanel()) : (closePanel())
             }}
         >
-            <SlidersHorizontalIcon className=''/>
+            <SlidersHorizontalIcon  strokeWidth={'1px'} className=''/>
         </div>
         <div 
             className='fixed overflow-auto w-full sm:max-w-[675px] bg-[#13111C] rounded-[5px] flex flex-col gap-7 border-l-solid border-[0.5px] border-[#353535] top-0 right-0 shadow-md p-2 h-full z-2' 
@@ -63,8 +63,8 @@ const FilterModal = ({categories, setCategories}:FilterModalProps) => {
                                 setCategories( (prev) => [...prev, topic])}
                             }
                         }
-                        className={`${categories.includes(topic) ? ("bg-[#00ADB5]") : ("bg-[#353535]")} text-xs p-1 rounded-[5px] 
-                                    text-center hover:bg-[#00ADB5] w-[150px] cursor-pointer`}
+                        className={`${categories.includes(topic) ? ("bg-[#5D64F4]") : ("bg-[#353535]")} text-xs p-1 rounded-[5px] 
+                                    text-center hover:bg-[#5D64F4] w-[150px] cursor-pointer`}
                     >
                         {topic}
                     </div>
@@ -85,8 +85,8 @@ const FilterModal = ({categories, setCategories}:FilterModalProps) => {
                                 setCategories( (prev) => [...prev, topic])}
                             }
                         }
-                        className={`${categories.includes(topic) ? ("bg-[#00ADB5]") : ("bg-[#353535]")} text-xs p-1 rounded-[5px] 
-                                    text-center hover:bg-[#00ADB5] w-[175px] cursor-pointer`}
+                        className={`${categories.includes(topic) ? ("bg-[#5D64F4]") : ("bg-[#353535]")} text-xs p-1 rounded-[5px] 
+                                    text-center hover:bg-[#5D64F4] w-[175px] cursor-pointer`}
                     >
                     {topic}
                     </div>
@@ -107,8 +107,8 @@ const FilterModal = ({categories, setCategories}:FilterModalProps) => {
                                     setCategories( (prev) => [...prev, topic])}
                                 }
                             }
-                            className={`${categories.includes(topic) ? ("bg-[#00ADB5]") : ("bg-[#353535]")} text-xs p-1 rounded-[5px] 
-                                    text-center hover:bg-[#00ADB5] w-[150px] cursor-pointer`}
+                            className={`${categories.includes(topic) ? ("bg-[#5D64F4]") : ("bg-[#353535]")} text-xs p-1 rounded-[5px] 
+                                    text-center hover:bg-[#5D64F4] w-[150px] cursor-pointer`}
                         >
                         {topic}
                         </div>
@@ -129,8 +129,8 @@ const FilterModal = ({categories, setCategories}:FilterModalProps) => {
                                     setCategories( (prev) => [...prev, f])}
                                 }
                             }
-                            className={`${categories.includes(f) ? ("bg-[#00ADB5]") : ("bg-[#353535]")} text-xs p-1 rounded-[5px] 
-                                    text-center hover:bg-[#00ADB5] w-[115px] cursor-pointer`}
+                            className={`${categories.includes(f) ? ("bg-[#5D64F4]") : ("bg-[#353535]")} text-xs p-1 rounded-[5px] 
+                                    text-center hover:bg-[#5D64F4] w-[115px] cursor-pointer`}
 
                         >
                             {f}
@@ -152,8 +152,8 @@ const FilterModal = ({categories, setCategories}:FilterModalProps) => {
                                     setCategories( (prev) => [...prev, f])}
                                 }
                             }
-                            className={`${categories.includes(f) ? ("bg-[#00ADB5]") : ("bg-[#353535]")} text-xs p-1 rounded-[5px] 
-                                    text-center hover:bg-[#00ADB5] w-[150px] cursor-pointer`}
+                            className={`${categories.includes(f) ? ("bg-[#5D64F4]") : ("bg-[#353535]")} text-xs p-1 rounded-[5px] 
+                                    text-center hover:bg-[#5D64F4] w-[150px] cursor-pointer`}
 
                         >
                         {f}
@@ -175,8 +175,8 @@ const FilterModal = ({categories, setCategories}:FilterModalProps) => {
                                     setCategories( (prev) => [...prev, f])}
                                 }
                             }
-                            className={`${categories.includes(f) ? ("bg-[#00ADB5]") : ("bg-[#353535]")} text-xs p-1 rounded-[5px] 
-                                    text-center hover:bg-[#00ADB5] w-[150px] cursor-pointer`}
+                            className={`${categories.includes(f) ? ("bg-[#5D64F4]") : ("bg-[#353535]")} text-xs p-1 rounded-[5px] 
+                                    text-center hover:bg-[#5D64F4] w-[150px] cursor-pointer`}
 
                         >
                         {f}

@@ -135,10 +135,10 @@ export default function BlogHome() {
 
             <div id="blogs">
                 <div className='border-y-[1px] flex gap-5 '>
-                    <div className={`${section == "For You" ? ("bg-[#229197]") : ("")} p-2 cursor-pointer`} onClick={() => {setSection('For You')}}>For you</div>
+                    <div className={`${section == "For You" ? ("bg-[#5D64F4]") : ("")} p-2 cursor-pointer`} onClick={() => {setSection('For You')}}>For you</div>
                     {/* <div className={`${section == "Featured" ? ("bg-[#229197]") : ("")} p-2 cursor-pointer`} onClick={() => {setSection('Featured')}}>Featured</div> */}
-                    <div className={`${section == "Search Results" ? ("bg-[#229197]") : ("")} p-2 cursor-pointer`} onClick={() => {setSection('Search Results')}}>Search Results</div>
-                    <div className={`${section == "Latest" ? ("bg-[#229197]") : ("")} p-2 cursor-pointer`} onClick={() => {setSection('Latest')}}>Latest</div>
+                    <div className={`${section == "Search Results" ? ("bg-[#5D64F4]") : ("")} p-2 cursor-pointer`} onClick={() => {setSection('Search Results')}}>Search Results</div>
+                    <div className={`${section == "Latest" ? ("bg-[#5D64F4]") : ("")} p-2 cursor-pointer`} onClick={() => {setSection('Latest')}}>Latest</div>
                 </div>
                 
                 {section == "For You" && recommendations.map((b) => (

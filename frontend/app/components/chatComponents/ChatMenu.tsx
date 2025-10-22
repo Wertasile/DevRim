@@ -19,11 +19,12 @@ const ChatMenu = ({Chat} : ChatMenuProps) => {
   }
 
   return (
-    <div className={`cursor-pointer p-2 ${chat == Chat && ('bg-[#229197] rounded-[5px]')} border-b-[1px] border-solid border-[#353535] flex flex-row py-2 justify-between`} onClick={() => {setChat(Chat)}}>
-        {/* <div>
+    <div className={`cursor-pointer p-2 ${chat == Chat && ('bg-[#5D64F4] rounded-[5px]')} border-b-[1px] border-solid border-[#353535] flex flex-row py-2 justify-between`} onClick={() => {setChat(Chat)}}>
+        <div>
             {Chat?.chatName === "sender" ? (<h3>{Chat.users.filter((u) => u._id !== user?._id).map( (otherUser) => <h3>{otherUser.name}</h3>)}</h3>) : (<h3>{Chat?.chatName}</h3>)}
-            <p className='font-light text-sm'>{Chat?.latestMessage.sender.given_name} : {Chat?.latestMessage && (Chat?.latestMessage.content)}</p>
-        </div> */}
+            <p className='font-light text-sm'>
+              {Chat?.latestMessage && Chat?.latestMessage.sender.given_name} : {Chat?.latestMessage && (Chat?.latestMessage.content)}</p>
+        </div>
         <div>
             {Chat?.chatName === "sender" ? 
               (<img 

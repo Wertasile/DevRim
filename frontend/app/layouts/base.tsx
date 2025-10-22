@@ -86,17 +86,18 @@ const base = () => {
         
         
             <header className='w-full lg:w-[1000px] bg-[#0606061a] lg:left-1/2 lg:transform lg:-translate-x-1/2 border-solid border-[1px] border-[#353535] rounded-[50px] fixed top-5 flex justify-between items-center px-5 py-3 backdrop-blur-sm my-5 mx-auto z-5'>
-                <div className='flex gap-2 items-center'>
-                    <a href='/'><img src="/Images/DevRim_Logo_0.png" width="48"/></a>
+                
+                <a href='/' className='flex gap-2 items-center'>
+                    <img src="/Images/DevRim_Logo_0.png" width="48"/>
                     <h3>DevRim</h3>
-                </div>
+                </a>
 
                 <nav className='hidden sm:flex relative items-center gap-7'>
-                    <NavLink to="/blog" target="_self">BLOGS</NavLink>
+                    <NavLink to="/blog" target="_self">Blogs</NavLink>
                     {/* <NavLink to="/projects" target="_self">PROJECTS</NavLink> */}
                     {/* <a href="projects/projects.html" target="_self">Projects</a> */}
-                    <NavLink to="/about" target="_self">ABOUT</NavLink>
-                    <NavLink to="/chats" target="_self">MESSAGE</NavLink>
+                    <NavLink to="/about" target="_self">Pricing</NavLink>
+                    <NavLink to="/chats" target="_self">Message</NavLink>
                     {/* <a href="../Login/login.html" target="_self">Log In</a> */}
                     {user ? 
                         (<img 
@@ -110,11 +111,11 @@ const base = () => {
                         (<button className="primary-btn" onClick={handleLogin}><span>LOGIN</span></button>)
                     }
                     {menu && 
-                        <div className='absolute p-2 flex flex-col bg-[#111] rounded-3xl shadow-md right-0 top-20 gap-3 p-2 w-[200px]'>
-                            <a className="primary-btn" href={`/profile/${user?._id}`}>Profile</a>
-                            <a className="primary-btn">Settings</a>
-                            <a className="primary-btn">Help</a>
-                            <div className="primary-btn" onClick={handleLogout}>SignOut</div>
+                        <div className='absolute p-2 flex flex-col bg-[#111] border-solid border-[1px] border-[#353535] rounded-3xl shadow-md right-0 top-20 gap-3 p-2 w-[200px]'>
+                            <a className="hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer" href={`/profile/${user?._id}`}>Profile</a>
+                            <a className="hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer">Settings</a>
+                            <a className="hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer">Help</a>
+                            <div className="hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer" onClick={handleLogout}>SignOut</div>
                         </div>
                     } 
                     

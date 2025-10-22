@@ -13,7 +13,7 @@ const PinModal = ({pinModal, setPinModal}:pinModalProps) => {
 
   return (
     <>
-    <div className='primary-btn' onClick={() => setPinModal(true)}><PinIcon/></div>
+    <div className='primary-btn' onClick={() => setPinModal(true)}><PinIcon  strokeWidth={'1px'}/></div>
     {pinModal && 
     <div className="fixed left-0 top-0 z-50 w-full h-full bg-black/30 flex items-center justify-center"
         onClick={() => setPinModal(false)  

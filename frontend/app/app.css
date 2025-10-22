@@ -142,13 +142,13 @@
 }
 
 ::-webkit-scrollbar-thumb{
-	background-color: #229197;
+	background-color: #5D64F4;
 	outline-offset: -2px;
 	border: .1px solid #B7B7B7;
 }
 
 ::-webkit-scrollbar-thumb:hover{
-	background-color: #4885E2;
+	background-color: #6d75fd;
   cursor: pointer;
 }
 
@@ -191,7 +191,7 @@ li p{margin-top: 0px;}
 .primary-btn {
     position: relative;
     cursor: pointer;
-    background-color: #229197; /* Base background */
+    background-color: #5D64F4; /* Base background */
     padding: .4em 1.2em;
     border: 1px solid #353535;
     border-radius: 20px;
@@ -212,8 +212,7 @@ li p{margin-top: 0px;}
 
 /* Hover background */
 .primary-btn:hover {
-    background-color: #00ADB5;
-    color: black;
+    background-color: #757bff;
 }
 
 .secondary-btn {

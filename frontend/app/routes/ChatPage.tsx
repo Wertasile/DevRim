@@ -556,17 +556,19 @@ const ChatPage = () => {
             <img src="/Images/DevRim_Logo_0.png" width={48} />
           </a>
           <MessageSquare 
+             strokeWidth={'1px'}
             onClick={() => setSection("messages")} 
-            className={`cursor-pointer w-[48px] text-[#FFF] ${section === "messages" && ('bg-[#229197] rounded-3xl ')}`} 
+            className={`cursor-pointer w-[48px] text-[#FFF] ${section === "messages" && ('bg-[#5D64F4] rounded-3xl ')}`} 
           />
           <UserIcon 
+             strokeWidth={'1px'}
             onClick={() => setSection("friends")} 
-            className={`cursor-pointer w-[48px] text-[#FFF] ${section === "friends" && ('bg-[#229197] rounded-3xl ')}`}  
+            className={`cursor-pointer w-[48px] text-[#FFF] ${section === "friends" && ('bg-[#5D64F4] rounded-3xl ')}`}  
           />
         </div>
         <div className="flex flex-col gap-5">
-          <CircleQuestionMark className="cursor-pointer w-[48px] text-[#FFF]" />
-          <LayoutGrid className="cursor-pointer w-[48px] text-[#FFF]" />
+          <CircleQuestionMark  strokeWidth={'1px'} className="cursor-pointer w-[48px] text-[#FFF]" />
+          <LayoutGrid  strokeWidth={'1px'} className="cursor-pointer w-[48px] text-[#FFF]" />
           <img src={user?.picture} width={48} className="rounded-3xl" />
         </div>
       </div>
@@ -581,7 +583,7 @@ const ChatPage = () => {
           </div>
           <div className="flex primary-btn p-2 " onClick={() => {setGroupModal(!groupModal)}}>
               +
-              <Users/>
+              <Users  strokeWidth={'1px'}/>
 
           </div>
         </div>
@@ -598,7 +600,7 @@ const ChatPage = () => {
       { section === "messages" && 
 
       <div className="flex-grow flex flex-col feed-container overflow-y-scroll">
-        <div className="h-[50px] flex justify-between cursor-pointer items-center border-b border-[#353535] px-5 sticky top-0 bg-[#13111C] z-1">
+        <div className="h-[50px] flex justify-between cursor-pointer items-center border-b border-[#353535] px-5 sticky top-0 bg-[#000] z-1">
           <h2
             className="w-fit cursor-pointer"
             onClick={() => {
@@ -652,9 +654,9 @@ const ChatPage = () => {
                   } `
                 }
               >
-                <CopyIcon className="cursor-pointer" strokeWidth={1} onClick={() => copy(message._id)}/>
-                {message.sender._id !== user?._id && <ReplyIcon className="cursor-pointer" strokeWidth={1} onClick={() => {setReply(message)}}/>}
-                <PinIcon strokeWidth={1} className="cursor-pointer" onClick={() => handlePin(message)}/>
+                <CopyIcon className="cursor-pointer"  strokeWidth={'1px'} onClick={() => copy(message._id)}/>
+                {message.sender._id !== user?._id && <ReplyIcon  strokeWidth={'1px'} className="cursor-pointer" strokeWidth={1} onClick={() => {setReply(message)}}/>}
+                <PinIcon  strokeWidth={'1px'} className="cursor-pointer" onClick={() => handlePin(message)}/>
                 {message.sender._id === user?._id && <Trash2Icon strokeWidth={1} className="cursor-pointer" onClick={() => {handleDeleteMessage(message)}}/>}
               </div>
               }
@@ -674,7 +676,7 @@ const ChatPage = () => {
             <div className="flex justify-around">
               <div>VOICE IS BEING RECORDED</div>
               <div onClick={stopRecording}>
-                <MicOff />
+                <MicOff strokeWidth={'1px'}/>
               </div>
             </div>
           ) : (
@@ -692,18 +694,19 @@ const ChatPage = () => {
             />
           )}
           <div className="primary-btn">
-            <SendHorizonal onClick={sendMessage} />
+            <SendHorizonal  strokeWidth={'1px'} onClick={sendMessage} />
           </div>
 
           <div className="relative primary-btn">
             <Paperclip
+              strokeWidth={'1px'}
               className="cursor-pointer"
               onClick={() => setAttachment(!attachment)}
             />
             {attachment && (
-              <div className="p-2 flex flex-col bg-[#111] rounded-3xl z-50 text-white shadow-md absolute gap-2 right-0 bottom-10 w-[200px]">
-                <label className="flex gap-2 primary-btn text-sm">
-                  <Image /> UPLOAD IMAGE
+              <div className="p-2 flex flex-col bg-[#111] border-solid border-[1px] border-[#353535] rounded-3xl z-50 text-white shadow-md absolute gap-2 right-0 bottom-10 w-[200px]">
+                <label className="flex items-center hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer gap-2 text-sm">
+                  <Image strokeWidth={'1px'}/> UPLOAD IMAGE
                   <input
                     type="file"
                     accept="image/*"
@@ -713,12 +716,12 @@ const ChatPage = () => {
                 </label>
                 <div
                   onClick={startRecording}
-                  className="flex gap-2 primary-btn text-sm"
+                  className="flex items-center hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer gap-2 text-sm"
                 >
-                  <Mic /> RECORD AUDIO
+                  <Mic  strokeWidth={'1px'}/> RECORD AUDIO
                 </div>
-                <label className="flex gap-2 cursor-pointer primary-btn text-sm">
-                  <FileIcon /> UPLOAD FILES
+                <label className="flex items-center hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer gap-2 cursor-pointer text-sm">
+                  <FileIcon  strokeWidth={'1px'}/> UPLOAD FILES
                   <input
                     type="file"
                     className="hidden"
@@ -743,7 +746,7 @@ const ChatPage = () => {
       }
 
       {section === "friends" &&
-        <Friends/>
+        <Friends />
       }
     </div>
     
