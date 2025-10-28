@@ -252,7 +252,7 @@ export default function BlogPost({ params }: Route.ComponentProps) {
   ])
 
   return (
-    <div id='blog-post' className='flex gap-7 flex-col my-5 mx-auto max-w-[1000px] h-full'>
+    <div id='blog-post' className='flex gap-7 flex-col my-5 mx-auto max-w-[1000px] h-full p-2'>
 
 {/* ----------------------- HEADING SECTION ---------------------------------------------------------------------------------------------------- */}
 
@@ -354,13 +354,21 @@ export default function BlogPost({ params }: Route.ComponentProps) {
               className='primary-btn' 
               onClick={handleFollow}
             >
-                {following ? (<span>UNFOLLOW</span>) : (<span>FOLLOW</span>)}
+                {user?.following.includes(blogUser?._id) ? (<span>UNFOLLOW</span>) : (<span>FOLLOW</span>)}
               </button>
             <button 
               className='primary-btn'
               onClick={handleConnect}
             >
-              {connected ? (<span>DISCONNECT</span>) : (<span>CONNECT</span>)}
+              {connected ? (
+                <span>DISCONNECT</span>
+              ) : user?.requestsReceived.includes(blogUser?._id) ? (
+                <span>ACCEPT</span>
+              ) : user?.requestsSent.includes(blogUser?._id) ? (
+                <span>PENDING</span>
+              ) : (
+                <span>CONNECT</span>
+              )}
             </button>
           </div>
         }

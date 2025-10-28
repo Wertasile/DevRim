@@ -198,9 +198,7 @@ const Home = () => {
                             <h2>Rich Text Editor</h2>
                             <p>You can post Images, Audio, and even Code blocks in your posts. Users can format things however they like, with various headings, lists and other formatting options</p>
                         </div>
-                        <div className="w-[700px]">
-
-                        </div>
+                        
                     </div>
 
                     <div className="cards-item bg-[#211F2D] border-solid border-[0.5px] border-[#353535] p-5 flex g-5">
@@ -209,9 +207,7 @@ const Home = () => {
                             <h2>Follow your favourite Authors</h2>
                             <p>Keep up with the latest posts from your favourite Authors by following them. </p>
                         </div>
-                        <div className="w-[700px]">
-
-                        </div>
+                        
                     </div>
 
                     <div className="cards-item bg-[#211F2D] border-solid border-[0.5px] border-[#353535] p-5 flex g-5">
@@ -220,9 +216,7 @@ const Home = () => {
                             <h2>Categories and Lists</h2>
                             <p>Categorise your posts, search by cateogry and find exactly what you're looking for. Have your own private collections or share them with your friends.</p>
                         </div>
-                        <div className="w-[700px]">
-
-                        </div>
+                        
                     </div>
 
                 </div>
@@ -231,7 +225,7 @@ const Home = () => {
         </section>
 
         <section id="messages" className="my-45">
-            <div className="message-panels-container flex flex-col gap-15">
+            <div className="message-panels-container flex flex-col gap-15 overflow-clip">
                 <div className="message-panel ">
                     <h2>Direct Message with Authors</h2>
                     <p>Intersted in an Author's work and wanna get some insight, message them directly by connecting with them and use our messaging platform.</p>

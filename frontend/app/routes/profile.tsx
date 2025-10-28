@@ -10,7 +10,7 @@ import ScrollTrigger from "gsap/ScrollTrigger";
 import ListModal from '~/components/listModal'
 import accept from '~/apiCalls/user/accept'
 import decline from '~/apiCalls/user/decline'
-import { UserXIcon } from 'lucide-react'
+import { DotIcon, UserXIcon } from 'lucide-react'
 import disconnect from '~/apiCalls/user/disconnect'
 
 
@@ -189,7 +189,7 @@ const profile = ({params}: Route.ComponentProps) => {
                         <div className={`cursor-pointer p-2 ${view == "liked" && `bg-[#5D64F4]`}`} onClick={() => setView("liked")}>Liked</div>
                     }
                     {profile?._id === user?._id && 
-                        <div className={`cursor-pointer p-2 ${view == "requests" && `bg-[#5D64F4]`}`} onClick={() => setView("requests")}>Requests</div>
+                        <div className={`flex cursor-pointer justify-center p-2 ${view == "requests" && `bg-[#5D64F4]`}`} onClick={() => setView("requests")}>Requests {profile?.requestsReceived && <DotIcon strokeWidth={'4px'} color='yellow'/>}</div>
                     }
                     {profile?._id === user?._id && 
                         <div className={`cursor-pointer p-2 ${view == "connections" && `bg-[#5D64F4]`}`} onClick={() => setView("connections")}>Connections</div>
@@ -254,8 +254,8 @@ const profile = ({params}: Route.ComponentProps) => {
 
                         <div className='flex flex-row sm:gap-5 border-solid border-b-[1px]'>
 
-                                <div className={`cursor-pointer p-2 ${requestView == "RequestsReceived" && `bg-[#5D64F4]`}`} onClick={() => setRequestView("RequestsReceived")}>Requests Received</div>
-                                <div className={`cursor-pointer p-2 ${requestView == "RequestsSent" && `bg-[#5D64F4]`}`} onClick={() => setRequestView("RequestsSent")}>Requests Sent</div>
+                                <div className={`cursor-pointer p-2 ${requestView == "RequestsReceived" && `bg-[#5D64F4]`}`} onClick={() => setRequestView("RequestsReceived")}>Requests Received {profile?.requestsReceived.length}</div>
+                                <div className={`cursor-pointer p-2 ${requestView == "RequestsSent" && `bg-[#5D64F4]`}`} onClick={() => setRequestView("RequestsSent")}>Requests Sent {profile?.requestsSent.length}</div>
                             
                         </div>
 
