@@ -1,15 +1,13 @@
-const { getSummary, getHistory, getRecommendation, getTrending } = require("../controllers/userAnalyticsController");
-const authenticateUser = require("../functions/auth");
-// const protect =require("../functions/auth")
+import { getSummary, getHistory, getRecommendation, getTrending } from "../controllers/userAnalyticsController.js";
+import authenticateUser from "../functions/auth.js";
 
-var express = require('express');
-var router = express.Router();
+import express from 'express';
+const router = express.Router();
 
 /* GET users listing. */
 router.get('/summary', authenticateUser, getSummary)
 router.get('/history', authenticateUser, getHistory)
 router.get('/recommendations', authenticateUser, getRecommendation)
-router.get('/trending', authenticateUser, getTrending)
+router.get('/trending', authenticateUser, getTrending);
 
-
-module.exports = router;
+export default router;

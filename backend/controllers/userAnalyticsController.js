@@ -1,6 +1,6 @@
-const Log = require('../models/log')
-const Post = require("../models/post");
-const Trending = require("../models/trending");
+import Log from '../models/log.js';
+import Post from "../models/post.js";
+import Trending from "../models/trending.js";
 
 
 // GET /analytics/history
@@ -132,4 +132,4 @@ const getTrending = async ( req,res ) => {
 
 }
 
-module.exports = { getSummary, getHistory, getRecommendation, getTrending }
+export { getSummary, getHistory, getRecommendation, getTrending };

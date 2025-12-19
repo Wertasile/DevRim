@@ -1,10 +1,10 @@
-const express = require("express");
-const {
+import express from "express";
+import {
   allMessages,
   sendMessage,
   deleteMessage
-} = require("../controllers/messageController");
-const  authenticateUser = require("../functions/auth");
+} from "../controllers/messageController.js";
+import authenticateUser from "../functions/auth.js";
 
 const router = express.Router();
 
@@ -12,4 +12,4 @@ router.get("/:chatId", allMessages);
 router.delete("/:messageId", authenticateUser, deleteMessage)
 router.post("/",authenticateUser, sendMessage);
 
-module.exports = router;
+export default router;

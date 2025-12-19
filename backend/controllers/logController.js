@@ -1,4 +1,4 @@
-const Log = require('../models/log')
+import Log from '../models/log.js';
 
 const logUserAction = async ( req, res ) => {
     
@@ -19,9 +19,6 @@ const logUserAction = async ( req, res ) => {
     } catch (error) {
         res.status(500).json({success: false, message: "Server Error"})
     }
-
-
 }
 
-
-module.exports = { logUserAction }
+export { logUserAction };

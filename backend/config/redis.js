@@ -1,5 +1,7 @@
-const { createClient } = require("redis");
-require('dotenv').config();
+import { createClient } from "redis";
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const client = createClient({
   username: process.env.REDIS_USERNAME,
@@ -21,4 +23,4 @@ async function connectRedis() {
 
 connectRedis(); // ✅ call the function (no top-level await)
 
-module.exports = client; // ✅ CommonJS export
+export default client;

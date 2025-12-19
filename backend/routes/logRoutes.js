@@ -1,11 +1,10 @@
-const { logUserAction } = require("../controllers/logController");
-const authenticateUser = require("../functions/auth");
-// const protect =require("../functions/auth")
+import { logUserAction } from "../controllers/logController.js";
+import authenticateUser from "../functions/auth.js";
 
-var express = require('express');
-var router = express.Router();
+import express from 'express';
+const router = express.Router();
 
 /* GET users listing. */
-router.post('/', authenticateUser, logUserAction)
+router.post('/', authenticateUser, logUserAction);
 
-module.exports = router;
+export default router;

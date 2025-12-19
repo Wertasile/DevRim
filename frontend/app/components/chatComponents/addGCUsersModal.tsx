@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useChat } from '~/context/userContext'
 import type { Chat, User } from '~/types/types'
+import { Search } from 'lucide-react';
 
 type AddGCUsersProps = {
     setAddUsersModal: React.Dispatch<React.SetStateAction<boolean>>
@@ -68,50 +69,75 @@ const AddGCUsers = ({setAddUsersModal}: AddGCUsersProps) => {
   
 
   return (
-    <div className="absolute z-2 flex h-[100vh] w-[100vw] justify-center items-center backdrop-blur-xs" onClick={() => {setAddUsersModal(false)}}>
+    <div className="fixed z-50 flex h-[100vh] w-[100vw] justify-center items-center bg-black/60 backdrop-blur-sm" onClick={() => {setAddUsersModal(false)}}>
         
       <div 
-        className="w-[300px] h-[400px] bg-[#393E46] border-solid border-[1px] border-[#979797] flex flex-col gap-2 items-center justify-center p-2" 
+        className="w-[400px] max-h-[600px] bg-[#0f1926] border border-[#1f2735] rounded-lg flex flex-col gap-4 p-6 shadow-xl" 
         onClick={(e) => {e.stopPropagation()}}
       >
-        <div><h3>Select User</h3></div>
-        <div>
-          <label className="hidden" htmlFor="userSearch" id="userSearch"></label>
-          <input
-                id="userSearch"
-                name="userSearch"
-                value={input ?? ""}
-                placeholder="Enter Users in your group"
-                onChange={(e) => {
-                    setInput(e.target.value);          // update state
-                    handleSearch(e.target.value);          // trigger search
-            }}
+        <div className="flex items-center justify-between">
+          <h3 className="text-white font-semibold text-lg">Add Users to Group</h3>
+          <button 
+            onClick={() => setAddUsersModal(false)}
+            className="text-[#9aa4bd] hover:text-white transition-colors"
+          >
+            ×
+          </button>
+        </div>
+        
+        <div className="flex flex-col gap-3">
+          <label htmlFor="userSearch" className="text-[#9aa4bd] text-sm">Search Users</label>
+          <div className="relative">
+            <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#9aa4bd] pointer-events-none z-10" />
+            <input
+              id="userSearch"
+              name="userSearch"
+              value={input ?? ""}
+              placeholder="Search for users to add"
+              onChange={(e) => {
+                  setInput(e.target.value);
+                  handleSearch(e.target.value);
+              }}
+              className="w-full pl-10 pr-4 py-2 bg-[#121b2a] border border-[#1f2735] rounded-lg text-white placeholder-[#9aa4bd] focus:outline-none focus:border-[#31415f] relative z-0"
             />
+          </div>
         </div>
-        <div className='text-sm flex flex-wrap gap-2'>
-          {currentUsers?.map((user) => (
-            <div key={user._id} className='flex gap-2 w-fit p-1 bg-[#111] rounded-[5px]'>
-              {user.name}
-              <span className='font-bold cursor-pointer' onClick={() => removeUser(user)}> X </span>
-            </div>
-          ))}
-        </div>
-        <div className="h-[225px] text-sm overflow-y-auto border w-full p-2">
+        
+        {currentUsers && currentUsers.length > 0 && (
+          <div className='flex flex-wrap gap-2 p-3 bg-[#121b2a] rounded-lg border border-[#1f2735]'>
+            <div className="text-[#9aa4bd] text-xs mb-2 w-full">Current Members:</div>
+            {currentUsers.map((user) => (
+              <div key={user._id} className='flex items-center gap-2 bg-[#1f2735] px-3 py-1 rounded-lg text-sm text-white'>
+                {user.name}
+                <span className='font-bold cursor-pointer hover:text-red-400 transition-colors' onClick={() => removeUser(user)}> × </span>
+              </div>
+            ))}
+          </div>
+        )}
+        
+        <div className="h-[250px] text-sm overflow-y-auto border border-[#1f2735] rounded-lg p-3 bg-[#121b2a]">
             {searchResults.length > 0 ? (
                 searchResults.map((user) => (
                 <div
                     key={user._id}
-                    className="cursor-pointer p-1 hover:bg-[#111] flex flex-row gap-2"
+                    className="cursor-pointer p-3 hover:bg-[#1f2735] rounded-lg flex flex-row gap-3 items-center transition-colors mb-2"
                     onClick={() => addUser(user)}
                 >   
-                        <img width={24} src={user.picture}/>
-                        <div>{user.name}</div>
+                        <img width={32} height={32} src={user.picture} className="rounded-full"/>
+                        <div className="text-white">{user.name}</div>
                 </div>
                 ))
             ) : (
-                <div className="text-gray-500">No users found</div>
+                <div className="text-[#9aa4bd] text-center py-4">No users found</div>
             )}
         </div>
+        
+        <button 
+          className="w-full primary-btn py-3 rounded-lg"
+          onClick={saveChanges}
+        >
+          <span>SAVE CHANGES</span>
+        </button>
         
       </div>
     </div>

@@ -1,6 +1,8 @@
-const express = require('express')
-const { addImage } = require('../controllers/awsController')
+import express from 'express';
+import addImage from '../controllers/awsController.js';
 
-const router = express.Router()
+const router = express.Router();
 
 router.post('/image',addImage)
+
+export default router;

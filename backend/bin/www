@@ -4,11 +4,12 @@
  * Module dependencies.
  */
 
-var app = require('../app');
-var debug = require('debug')('backend:server');
-var http = require('http');
-var { Server } = require("socket.io");
-const client = require("../config/redis");
+import debug from "debug";
+const serverDebug = debug('backend:server');
+import http from "http";
+import { Server } from "socket.io";
+import client from "../config/redis.js"; // ensure this file is also ESM
+import app from "../app.js";
 
 /**
  * Get port from environment and store in Express.
@@ -149,5 +150,5 @@ function onListening() {
   var bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
-  debug('Listening on ' + bind);
+  serverDebug('Listening on ' + bind);
 }

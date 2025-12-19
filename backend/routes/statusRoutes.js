@@ -1,9 +1,9 @@
-var express = require('express');
-const { getUserStatus } = require('../controllers/statusController');
-const authenticateUser = require('../functions/auth');
-var router = express.Router();
+import express from 'express';
+import { getUserStatus } from '../controllers/statusController.js';
+import authenticateUser from '../functions/auth.js';
+const router = express.Router();
 
 
-router.get("/:userId", authenticateUser ,getUserStatus)
+router.get("/:userId", authenticateUser, getUserStatus);
 
-module.exports = router
+export default router;

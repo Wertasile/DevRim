@@ -1,10 +1,9 @@
-import { ChevronDown } from 'lucide-react';
-import React, { useState } from 'react'
-import Tiptap from '~/components/tiptap/tiptap'
+import React, { useState, useEffect } from 'react'
+import NaturalEditor from '~/components/tiptap/naturalEditor'
 import { useUser } from '~/context/userContext'
-import topics from "../data/searchFilters/topics.json"
-import frameworks from "../data/searchFilters/frameworks.json"
-import FilterModal from '~/components/filterModal';
+import type { Community } from '~/types/types';
+import Sidebar from '~/components/Sidebar';
+import { X, FileText } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -13,324 +12,219 @@ const BlogAdd = () => {
   const {user} = useUser()
 
   const [post, setPost] = useState<any | null>(null)
-  const [title, setTitle] = useState<String | null>(null)
-  const [summary, setSummary] = useState<String | null>(null)
+  const [title, setTitle] = useState<string>("")
+  const [summary, setSummary] = useState<string>("")
+  const [showSummaryInput, setShowSummaryInput] = useState<boolean>(false)
+  const [selectedCommunity, setSelectedCommunity] = useState<string>("")
+  const [communities, setCommunities] = useState<Community[]>([])
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
 
-  const [selected, setSelected] = useState<string>("")
-
-  const [categories, setCategories] = useState<string []>([])
+  useEffect(() => {
+    const fetchCommunities = async () => {
+      try {
+        const response = await fetch(`${API_URL}/communities`, {
+          method: 'get',
+          credentials: 'include',
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setCommunities(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch communities:', error);
+      }
+    };
+    fetchCommunities();
+  }, []);
 
   const handleChange = (content: any) => {
     setPost(content)
-    console.log(content)
+  }
+
+  const handleTitleChange = (newTitle: string) => {
+    setTitle(newTitle)
+  }
+
+  const handleSummaryChange = (newSummary: string) => {
+    setSummary(newSummary)
   }
 
   const savePost = async() => {
+    if (!selectedCommunity) {
+      alert('Please select a community');
+      return;
+    }
 
-    const response = await fetch(`${API_URL}/posts`, {
-      method: 'post',
-      credentials: 'include',
-      headers: {
-        "Content-Type": "application/json" 
-      },
-      body: JSON.stringify({
-        title,
-        summary,
-        content: post,
-        categories: categories
+    if (!title.trim()) {
+      alert('Please enter a title');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Remove title heading from content to avoid duplication
+      // The title is stored separately, so we don't need it in content
+      let contentWithoutTitle = post;
+      if (contentWithoutTitle?.content && Array.isArray(contentWithoutTitle.content)) {
+        // Remove the first heading (title) from content
+        const contentNodes = contentWithoutTitle.content.filter((node: any, index: number) => {
+          // Skip the first heading node (index 0) if it's a heading
+          if (index === 0 && node.type === 'heading') {
+            return false;
+          }
+          return true;
+        });
+        
+        // If we removed the title and there's no content left, add an empty paragraph
+        if (contentNodes.length === 0) {
+          contentNodes.push({
+            type: 'paragraph',
+            content: []
+          });
+        }
+        
+        contentWithoutTitle = {
+          ...contentWithoutTitle,
+          content: contentNodes
+        };
+      }
+      
+      // Build request body
+      const requestBody: any = {
+        title: title.trim(),
+        content: contentWithoutTitle,
+        communityId: selectedCommunity,
+        summary: summary.trim() || '' // Always include summary, empty string if not provided
+      }
+      
+      const response = await fetch(`${API_URL}/posts`, {
+        method: 'post',
+        credentials: 'include',
+        headers: {
+          "Content-Type": "application/json" 
+        },
+        body: JSON.stringify(requestBody)
       })
-    })
 
-    window.location.href = "/blog"
-    
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Failed to create post' }));
+        throw new Error(errorData.error || 'Failed to create post');
+      }
+
+      window.location.href = "/blog"
+    } catch (error) {
+      console.error('Error creating post:', error);
+      alert(error instanceof Error ? error.message : 'Failed to create post. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   }
   
   return (
-    <div className='max-w-[80vw] my-0 flex flex-col gap-3 mx-auto'>
-      <div className='flex flex-row gap-2 justify-end'>
-        <button className='primary-btn w-[150px]' onClick={savePost}>SAVE</button>
-        <FilterModal categories={categories} setCategories={setCategories}/>
+    <div className='min-h-screen bg-[#0a1118]'>
+      <div className='flex flex-row gap-6 px-6 py-8 mx-auto max-w-[1400px]'>
+        {/* Left Sidebar */}
+        <Sidebar />
+
+        {/* Main Content */}
+        <div className='flex-grow flex flex-col gap-6'>
+          {/* Header */}
+          <div className='flex items-center justify-between'>
+            <div className='flex items-center gap-3'>
+              <div className='w-10 h-10 rounded-lg bg-[#5D64F4] flex items-center justify-center'>
+                <FileText size={20} className='text-white' />
+              </div>
+              <h1 className='text-white text-2xl font-bold'>Create Post</h1>
+            </div>
+            <div className='flex items-center gap-3'>
+              <button
+                onClick={() => setShowSummaryInput(!showSummaryInput)}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  showSummaryInput 
+                    ? 'bg-[#5D64F4] text-white' 
+                    : 'bg-[#121b2a] border border-[#1f2735] text-[#9aa4bd] hover:border-[#31415f]'
+                }`}
+              >
+                {showSummaryInput ? 'Hide Summary' : 'Add Summary'}
+              </button>
+              <button
+                onClick={savePost}
+                disabled={isSubmitting || !selectedCommunity || !title.trim()}
+                className='px-6 py-2 bg-[#5D64F4] hover:bg-[#4d54e4] rounded-lg text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+              >
+                {isSubmitting ? 'Publishing...' : 'Publish'}
+              </button>
+            </div>
+          </div>
+
+          {/* Community Selection - Required */}
+          <div className='bg-[#0f1926] border border-[#1f2735] rounded-lg p-4'>
+            <label htmlFor="community" className='text-white font-medium text-sm mb-2 block'>
+              Select Community <span className='text-red-400'>*</span>
+            </label>
+            <select
+              id="community"
+              value={selectedCommunity}
+              onChange={(e) => setSelectedCommunity(e.target.value)}
+              required
+              className='w-full px-4 py-3 bg-[#121b2a] border border-[#1f2735] rounded-lg text-white placeholder-[#9aa4bd] focus:outline-none focus:border-[#31415f] transition-colors'
+            >
+              <option value="">Choose a community...</option>
+              {communities.map((community) => (
+                <option key={community._id} value={community._id}>
+                  {community.title}
+                </option>
+              ))}
+            </select>
+            {!selectedCommunity && (
+              <p className='text-[#9aa4bd] text-xs mt-2'>You must select a community to publish your post</p>
+            )}
+          </div>
+
+          {/* Summary Input - Conditional */}
+          {showSummaryInput && (
+            <div className='bg-[#0f1926] border border-[#1f2735] rounded-lg p-4'>
+              <div className='flex items-center justify-between mb-2'>
+                <label htmlFor="summary" className='text-white font-medium text-sm'>
+                  Summary
+                </label>
+                <button
+                  onClick={() => {
+                    setShowSummaryInput(false);
+                    setSummary('');
+                  }}
+                  className='text-[#9aa4bd] hover:text-white transition-colors'
+                >
+                  <X size={16} />
+                </button>
+              </div>
+              <input
+                type='text'
+                id='summary'
+                name="summary"
+                value={summary}
+                onChange={(e) => setSummary(e.target.value)}
+                placeholder='Add a brief summary of your post (optional)'
+                maxLength={250}
+                className='w-full px-4 py-2 bg-[#121b2a] border border-[#1f2735] rounded-lg text-white placeholder-[#9aa4bd] focus:outline-none focus:border-[#31415f] transition-colors'
+              />
+              <p className='text-[#9aa4bd] text-xs mt-1'>{summary.length}/250</p>
+            </div>
+          )}
+
+          {/* Editor */}
+          <div className='flex-grow'>
+            <NaturalEditor 
+              content={post} 
+              handleChange={handleChange}
+              onTitleChange={handleTitleChange}
+              onSummaryChange={handleSummaryChange}
+            />
+          </div>
+          </div>
+        </div>
       </div>
-      <div>
-        <label htmlFor="title" id="title" className='hidden'>TITLE</label>
-        <input 
-          type='text' 
-          id='title' 
-          name="title" 
-          onChange={(event) => setTitle(event.target.value)} 
-          placeholder='Enter your title'
-        />
-      </div>
-      <div>
-        <label className="hidden" htmlFor="summary" id="summary">SUMMARY</label>
-        <input 
-          type='text' 
-          id='summary' 
-          name="summary"
-          className='bg-[#060010]' 
-          onChange={(event) => setSummary(event.target.value)} 
-          placeholder='Enter your Summary'
-        />
-      </div>
-
-      {/* <div className='flex gap-2 text-[#979797]'>
-        SELECTED : 
-        {categories.map( (category, index) => (
-          <div className='italic border-r-[2px] border-[#353535] border-solid pr-2' key={index}>{category}</div>
-        ))}
-      </div> */}
-
-      {/* <div className='flex justify-between relative'>
-        <div className='self-center text-[#979797]'>CATEGORIES: </div>
-
-        <div className='primary-btn' 
-          onClick={() => 
-            {
-              if (selected === "topics") {
-                setSelected("")
-              }else{
-                setSelected("topics")
-              }
-            }
-          }
-        >
-          <span className='flex'>
-          TOPICS <ChevronDown/>
-          </span>
-        </div>
-
-        <div className='primary-btn' 
-          onClick={() => 
-            {
-              if (selected === "types") {
-                setSelected("")
-              }else{
-                setSelected("types")
-              }
-            }
-          }
-        >
-          <span className='flex'>
-          TYPE <ChevronDown/>
-          </span>
-        </div>
-
-        <div className='primary-btn' 
-          onClick={() => 
-            {
-              if (selected === "ai") {
-                setSelected("")
-              }else{
-                setSelected("ai")
-              }
-            }
-          }
-        >
-          <span className='flex'>
-          AI <ChevronDown/>
-          </span>
-        </div>
-        <div className='primary-btn' 
-          onClick={() => 
-            {
-              if (selected === "frameworks") {
-                setSelected("")
-              }else{
-                setSelected("frameworks")
-              }
-            }
-          }
-        >
-          <span className='flex'>
-          FRAMEWORKS <ChevronDown/>
-          </span>
-        </div>
-
-        <div className='primary-btn' 
-          onClick={() => 
-            {
-              if (selected === "languages") {
-                setSelected("")
-              }else{
-                setSelected("languages")
-              }
-            }
-          }
-        >
-          <span className='flex'>
-          LANGUAGES <ChevronDown/>
-          </span>
-        </div>
-
-        <div className='primary-btn' 
-          onClick={() => 
-            {
-              if (selected === "cloud") {
-                setSelected("")
-              }else{
-                setSelected("cloud")
-              }
-            }
-          }
-        >
-          <span className='flex'>
-          CLOUD <ChevronDown/>
-          </span>
-        </div>
-
-        <div className='primary-btn' 
-          onClick={() => 
-            {
-              if (selected === "data") {
-                setSelected("")
-              }else{
-                setSelected("data")
-              }
-            }
-          }
-        >
-          <span className='flex'>
-          DATA <ChevronDown/>
-          </span>
-        </div>
-
-        {selected === "topics" &&
-        <div className='absolute top-10 bg-[#111] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 p-3 h-auto w-full z-20 justify-between'>
-          {topics.Topics.SoftwareDevelopmentProgramming.map( (topic, index) => (            
-              <div 
-                className={`primary-btn text-sm w-[200px]`}
-                onClick={() => {
-                  if (categories.includes(topic)) {
-                    setCategories( (prev) => prev.filter( p => p !== topic))
-                  }else{
-                    setCategories( (prev) => [...prev, topic])}
-                  }
-                }
-              >
-                {topic}
-              </div>
-          ))}
-        </div>
-        }
-
-        {selected === "types" &&
-        <div className='absolute top-10 bg-[#111] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 p-3 h-auto w-full z-20 justify-between'>
-          {topics.Topics.CareerCommunityIndustry.map( (type, index) => (            
-              <div 
-                className={`primary-btn text-sm w-[200px]`}
-                onClick={() => {
-                  if (categories.includes(type)) {
-                    setCategories( (prev) => prev.filter( p => p !== type))
-                  }else{
-                    setCategories( (prev) => [...prev, type])}
-                  }
-                }
-              >
-                {type}
-              </div>
-          ))}
-        </div>
-        }
-
-        {selected === "ai" &&
-        <div className='absolute top-10 bg-[#111] rounded-3xl grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 p-3 h-auto w-full z-20 justify-between'>
-          {topics.Topics.AICloudEmergingTech.map( (el, index) => (            
-              <div 
-                className={`primary-btn text-sm w-[200px]`}
-                onClick={() => {
-                  if (categories.includes(el)) {
-                    setCategories( (prev) => prev.filter( p => p !== el))
-                  }else{
-                    setCategories( (prev) => [...prev, el])}
-                  }
-                }
-              >
-                {el}
-              </div>
-          ))}
-        </div>
-        }
-
-        {selected === "frameworks" &&
-        <div className='absolute top-10 bg-[#111] rounded-3xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 p-3 h-auto w-full z-20 justify-between'>
-          {frameworks.Frameworks.FrameworksLibraries.map( (framework, index) => (            
-              <div 
-                className={`primary-btn text-sm w-[200px]`}
-                onClick={() => {
-                  if (categories.includes(framework)) {
-                    setCategories( (prev) => prev.filter( p => p !== framework))
-                  }else{
-                    setCategories( (prev) => [...prev, framework])}
-                  }
-                }
-              >
-                {framework}
-              </div>
-          ))}
-        </div>
-        }
-
-        {selected === "languages" &&
-        <div className='absolute top-10 bg-[#111] rounded-3xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 p-3 h-auto w-full z-20 justify-between'>
-          {frameworks.Frameworks.Languages.map( (language, index) => (            
-              <div 
-                className={`primary-btn text-sm w-[200px]`}
-                onClick={() => {
-                  if (categories.includes(language)) {
-                    setCategories( (prev) => prev.filter( p => p !== language))
-                  }else{
-                    setCategories( (prev) => [...prev, language])}
-                  }
-                }
-              >
-                {language}
-              </div>
-          ))}
-        </div>
-        }
-
-        {selected === "cloud" &&
-        <div className='absolute top-10 bg-[#111] rounded-3xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 p-3 h-auto w-full z-20 justify-between'>
-          {frameworks.Frameworks.CloudDevOps.map( (cloud, index) => (            
-              <div 
-                className={`primary-btn text-sm w-[200px]`}
-                onClick={() => {
-                  if (categories.includes(cloud)) {
-                    setCategories( (prev) => prev.filter( p => p !== cloud))
-                  }else{
-                    setCategories( (prev) => [...prev, cloud])}
-                  }
-                }
-              >
-                {cloud}
-              </div>
-          ))}
-        </div>
-        }
-
-        {selected === "data" &&
-        <div className='absolute top-10 bg-[#111] rounded-3xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 p-3 h-auto w-full z-20 justify-between'>
-          {frameworks.Frameworks.DataAI.map( (data, index) => (            
-              <div 
-                className={`primary-btn text-sm w-[200px]`}
-                onClick={() => {
-                  if (categories.includes(data)) {
-                    setCategories( (prev) => prev.filter( p => p !== data))
-                  }else{
-                    setCategories( (prev) => [...prev, data])}
-                  }
-                }
-              >
-                {data}
-              </div>
-          ))}
-        </div>
-        }
-      </div> */}
-      <div className='flex-grow'>
-        <Tiptap content={post} handleChange={handleChange}/>
-      </div>
-    </div>
   )
 }
 

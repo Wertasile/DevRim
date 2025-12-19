@@ -1,6 +1,8 @@
-require("dotenv").config();
-const mongoose = require("mongoose");
-const startAggregationJob = require("./jobs/aggregateStats");
+import dotenv from "dotenv";
+import mongoose from "mongoose";
+import startAggregationJob from "./jobs/aggregateStats.js";
+
+dotenv.config();
 
 mongoose.connect(process.env.MONGO_DB)
   .then(() => {

@@ -33,26 +33,26 @@ const FilterModal = ({categories, setCategories}:FilterModalProps) => {
   return (
     <>
         <div
-            className='bg-[#393E46] cursor-pointer h-[41.14px] px-2 flex items-center rounded-[5px] items-center border-solid border-[0.5px] border-[#353535]'
+            className='bg-[#121b2a] cursor-pointer h-[41.14px] px-3 flex items-center rounded-lg border border-[#1f2735] hover:bg-[#1f2735] transition-colors'
             onClick={() => {
                 (!panel) ? (openPanel()) : (closePanel())
             }}
         >
-            <SlidersHorizontalIcon  strokeWidth={'1px'} className=''/>
+            <SlidersHorizontalIcon size={18} strokeWidth={'1px'} className='text-white'/>
         </div>
         <div 
-            className='fixed overflow-auto w-full sm:max-w-[675px] bg-[#13111C] rounded-[5px] flex flex-col gap-7 border-l-solid border-[0.5px] border-[#353535] top-0 right-0 shadow-md p-2 h-full z-2' 
+            className='fixed overflow-auto w-full sm:max-w-[675px] bg-[#0f1926] rounded-lg flex flex-col gap-7 border-l border-[#1f2735] top-0 right-0 shadow-xl p-6 h-full z-50' 
             style={{transform:"translateX(100%)"}}
             ref={filterPanel}
         >
-            <div className='flex justify-between'>
-                <h2>SELECT FILTERS</h2>
-                <b className="cursor-pointer" onClick={closePanel}>X</b>
+            <div className='flex justify-between items-center'>
+                <h2 className="text-white font-semibold text-xl">Select Filters</h2>
+                <button className="text-[#9aa4bd] hover:text-white transition-colors text-xl font-bold cursor-pointer" onClick={closePanel}>×</button>
             </div>
 
             <div>
-                <h3>SOFTWARE DEVELOPMENT</h3>
-                <div className='flex flex-wrap gap-2 border-b-[2px] border-[#353535] border-solid py-2'>
+                <h3 className="text-white font-semibold mb-3">Software Development</h3>
+                <div className='flex flex-wrap gap-2 border-b border-[#1f2735] py-4'>
                 {topics.Topics.SoftwareDevelopmentProgramming.map( (topic, index) => (
                     <div
                         key={index}
@@ -63,8 +63,8 @@ const FilterModal = ({categories, setCategories}:FilterModalProps) => {
                                 setCategories( (prev) => [...prev, topic])}
                             }
                         }
-                        className={`${categories.includes(topic) ? ("bg-[#5D64F4]") : ("bg-[#353535]")} text-xs p-1 rounded-[5px] 
-                                    text-center hover:bg-[#5D64F4] w-[150px] cursor-pointer`}
+                        className={`${categories.includes(topic) ? ("bg-[#5D64F4] text-white") : ("bg-[#121b2a] text-[#9aa4bd] border border-[#1f2735]")} text-xs px-3 py-2 rounded-lg 
+                                    text-center hover:bg-[#5D64F4] hover:text-white transition-colors w-[150px] cursor-pointer`}
                     >
                         {topic}
                     </div>
@@ -73,8 +73,8 @@ const FilterModal = ({categories, setCategories}:FilterModalProps) => {
             </div>
 
             <div>
-                <h3>CAREER AND COMMUNITY</h3>
-                <div className='flex flex-wrap gap-2 border-b-[2px] border-[#353535] border-solid py-2'>
+                <h3 className="text-white font-semibold mb-3">Career and Community</h3>
+                <div className='flex flex-wrap gap-2 border-b border-[#1f2735] py-4'>
                 {topics.Topics.CareerCommunityIndustry.map( (topic, index) => (
                     <div 
                         key={index}
@@ -95,8 +95,8 @@ const FilterModal = ({categories, setCategories}:FilterModalProps) => {
             </div>
 
             <div>
-                <h3>AI AND CLOUD TECHNOLOGIES</h3>
-                <div className='flex flex-wrap gap-2 border-b-[2px] border-[#353535] border-solid py-2'>
+                <h3 className="text-white font-semibold mb-3">AI and Cloud Technologies</h3>
+                <div className='flex flex-wrap gap-2 border-b border-[#1f2735] py-4'>
                     {topics.Topics.AICloudEmergingTech.map( (topic, index) => (
                         <div 
                             key={index}
@@ -107,8 +107,8 @@ const FilterModal = ({categories, setCategories}:FilterModalProps) => {
                                     setCategories( (prev) => [...prev, topic])}
                                 }
                             }
-                            className={`${categories.includes(topic) ? ("bg-[#5D64F4]") : ("bg-[#353535]")} text-xs p-1 rounded-[5px] 
-                                    text-center hover:bg-[#5D64F4] w-[150px] cursor-pointer`}
+                            className={`${categories.includes(topic) ? ("bg-[#5D64F4] text-white") : ("bg-[#121b2a] text-[#9aa4bd] border border-[#1f2735]")} text-xs px-3 py-2 rounded-lg 
+                                    text-center hover:bg-[#5D64F4] hover:text-white transition-colors w-[150px] cursor-pointer`}
                         >
                         {topic}
                         </div>
@@ -117,8 +117,8 @@ const FilterModal = ({categories, setCategories}:FilterModalProps) => {
             </div>
 
             <div>
-                <h3>FRAMEWORKS</h3>
-                <div className='flex flex-wrap gap-2 border-b-[2px] border-[#353535] border-solid py-2'>
+                <h3 className="text-white font-semibold mb-3">Frameworks</h3>
+                <div className='flex flex-wrap gap-2 border-b border-[#1f2735] py-4'>
                     {frameworks.Frameworks.FrameworksLibraries.map( (f, index) => (
                         <div 
                             key={index}
@@ -140,8 +140,8 @@ const FilterModal = ({categories, setCategories}:FilterModalProps) => {
             </div>
 
             <div>
-                <h3>LANGUAGES</h3>
-                <div className='flex flex-wrap gap-2 border-b-[2px] border-[#353535] border-solid py-2'>
+                <h3 className="text-white font-semibold mb-3">Languages</h3>
+                <div className='flex flex-wrap gap-2 border-b border-[#1f2735] py-4'>
                     {frameworks.Frameworks.Languages.map( (f, index) => (
                         <div 
                             key={index}
@@ -163,8 +163,8 @@ const FilterModal = ({categories, setCategories}:FilterModalProps) => {
             </div>
 
             <div>
-                <h3>DEVOPS</h3>
-                <div className='flex flex-wrap gap-2 border-b-[2px] border-[#353535] border-solid py-2'>
+                <h3 className="text-white font-semibold mb-3">DevOps</h3>
+                <div className='flex flex-wrap gap-2 border-b border-[#1f2735] py-4'>
                     {frameworks.Frameworks.CloudDevOps.map( (f, index) => (
                         <div 
                             key={index}
@@ -185,8 +185,10 @@ const FilterModal = ({categories, setCategories}:FilterModalProps) => {
                 </div>
             </div>
 
-            <div className='bottom-0 right-0 sticky p-1'>
-                <button className='secondary-btn' onClick={() => setCategories([])}>REMOVE FILTER</button>
+            <div className='bottom-0 right-0 sticky p-4 bg-[#0f1926] border-t border-[#1f2735]'>
+                <button className='w-full secondary-btn py-3 rounded-lg' onClick={() => setCategories([])}>
+                  <span>REMOVE ALL FILTERS</span>
+                </button>
             </div>
             
         </div>

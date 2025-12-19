@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 
@@ -33,7 +33,7 @@ LogSchema.index({ user: 1, timestamp: -1 });                          // to find
 LogSchema.index({ "metadata.postId": 1, event: 1, timestamp: -1 });     // to find all view events for a particular post
 LogSchema.index({ event: 1, timestamp: -1 });                           // based on event, and based on recency, it is categorised
 
-const log = mongoose.model("log", LogSchema)
+export default mongoose.model("log", LogSchema)
 
-module.exports = log
+
 

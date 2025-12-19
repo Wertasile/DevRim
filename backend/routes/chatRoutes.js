@@ -1,5 +1,5 @@
-const express = require("express");
-const {
+import express from "express";
+import {
   accessChat,
   fetchChats,
   deleteChat,
@@ -10,8 +10,8 @@ const {
   editGroupUsers,
   pinMessage,
   unpinMessage
-} = require("../controllers/chatController");
-const authenticateUser = require("../functions/auth");
+} from "../controllers/chatController.js";
+import authenticateUser from "../functions/auth.js";
 
 const router = express.Router();  // router gets initialised, allowing us to define routes specific to chat functionalities
 
@@ -26,4 +26,4 @@ router.put("/groupedit/:chatId", authenticateUser, editGroupUsers);
 router.put("/pin/:chatId", authenticateUser, pinMessage)
 router.put("/unpin/:chatid", authenticateUser, unpinMessage)
 
-module.exports = router;
+export default router;

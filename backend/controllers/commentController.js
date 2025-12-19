@@ -1,12 +1,16 @@
-const Comment = require('../models/comment')
-const Post = require('../models/post')
+import Comment from '../models/comment.js';
+import Post from '../models/post.js';
 
 const getComments = async (req, res) => {
     
     const blogId = req.params.postId
 
-    const data = await Comment.find(blog._id === blogId)
-    .populate()
+    const data = await Comment.find({ blog: blogId })
+    .populate("user", "name picture _id")
+    .populate({
+        path: "replyTo",
+        populate: { path: "user", select: "name picture _id" }
+    })
     .exec()
 
     res.send(data)
@@ -16,15 +20,20 @@ const addComment = async (req, res) => {
 
     const blogId = req.params.postId
     const userId = req.user._id
-    const { comment } = req.body
+    const { comment, replyTo } = req.body
     console.log(req.body)
-    const addedComment = await Comment.create(
-        {
-            blog: blogId,
-            user: userId,
-            comment: comment
-        }
-    )
+    
+    const commentData = {
+        blog: blogId,
+        user: userId,
+        comment: comment
+    }
+    
+    if (replyTo) {
+        commentData.replyTo = replyTo
+    }
+    
+    const addedComment = await Comment.create(commentData)
 
     const addCommentToPost = await Post.findByIdAndUpdate(
         blogId,
@@ -33,7 +42,11 @@ const addComment = async (req, res) => {
     )
 
     const populatedComment = await Comment.findById(addedComment._id)
-      .populate("user", "name picture _id") // only send the fields you need
+      .populate("user", "name picture _id")
+      .populate({
+          path: "replyTo",
+          populate: { path: "user", select: "name picture _id" }
+      })
 
     res.status(201).json(populatedComment)
 }
@@ -48,4 +61,4 @@ const deleteComment = async (req, res) => {
 
 }
 
-module.exports = {getComments, addComment, updateComment, deleteComment}
+export { getComments, addComment, updateComment, deleteComment };

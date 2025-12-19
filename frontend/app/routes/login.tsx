@@ -1,9 +1,12 @@
 import React, { useState } from 'react'
+import SignInTab from '~/components/auth/signin-tab'
+import SignUpTab from '~/components/auth/signup-tab'
 
 const login = () => {
 
     const [email, setEmail] = useState()
     const [password, setPassword] = useState()
+    const [tab,setTab] = useState<"signin" | "signup">("signin")
 
     const login = async function () {
         const response = await fetch("http://localhost:5000/users/login", {
@@ -31,23 +34,33 @@ const login = () => {
 
     return (
         <>
-            <section id="login">
-                <form id="login_form" autoComplete='on' className="card">
-                    <div className="form-element">
-                        <label htmlFor="email">Email Address</label>
-                        <input id="email" placeholder="EnterEmail Address" name="email" type="email"/>
+            <section id="login" className='mx-auto flex flex-col p-2 gap-2'>
+                
+
+                <div className='bg-[#262626] text-gray w-fit flex gap-2 rounded-[5px] p-1'>
+                    <div 
+                        className={`${tab == "signin" && ("text-white border-[1px]")} p-2 cursor-pointer`}
+                        onClick={() => {setTab('signin')}}
+                    >
+                        Sign In
                     </div>
-                    <div className="form-element">
-                        <label htmlFor="password">Password</label>
-                        {/* <input id="password" placeholder="Enter Password" onChange={(e) => {setPassword(e)}}name="password" type="password"/> */}
+                    <div 
+                        className={`${tab == "signup" && ("text-white border-[1px] ")} p-2 cursor-pointer`}
+                        onClick={() => {setTab('signup')}}
+                    >
+                        Sign Up
                     </div>
-                    <div className="form-element">
-                        <button type="button" id="link-to-register">New user ? , click here to sign up!</button>
-                    </div>
-                    <div className="form-element">
-                        <button type="button" className="primary-btn" onClick={() => {login()}} id="login-btn">LOGIN</button>
-                    </div> 
-                </form>
+                </div>
+                {tab=='signin' &&
+                <SignInTab/>
+                }
+
+                {tab=='signup' &&
+                <SignUpTab/>
+                }
+                <div>
+
+                </div>
             </section>
         </>
     )

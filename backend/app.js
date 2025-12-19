@@ -1,17 +1,40 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const {OAuth2Client, UserRefreshClient} = require('google-auth-library');
-const User = require("./models/user");
-const authenticateUser = require('./functions/auth');
-require('dotenv').config();
-const jwt = require("jsonwebtoken");
-const { S3Client, PutObjectCommand, GetObjectCommand } = require("@aws-sdk/client-s3");
-const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
+import createError from "http-errors";
+import express from "express";
+import path from "path";
+import cookieParser from "cookie-parser";
+import logger from "morgan";
+import mongoose from "mongoose";
+import cors from "cors";
+import { OAuth2Client } from "google-auth-library";
+import jwt from "jsonwebtoken";
+import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { auth } from "./authentication.js";
+import { toNodeHandler } from "better-auth/node";
+import dotenv from "dotenv";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+import authenticateUser from "./functions/auth.js";
+import User from "./models/user.js";
+import arcjet, { shield, detectBot, tokenBucket } from "@arcjet/node";
+import { isSpoofedBot } from "@arcjet/inspect";
+
+import postsRouter from "./routes/postRoutes.js";
+import usersRouter from "./routes/userRoutes.js";
+import chatsRouter from "./routes/chatRoutes.js";
+import commentsRouter from "./routes/commentRoutes.js";
+import messagesRouter from "./routes/messageRoutes.js";
+import listsRouter from "./routes/listRoutes.js";
+import logsRouter from "./routes/logRoutes.js";
+import analyticsRouter from "./routes/userAnalyticsRoutes.js";
+import statusRouter from "./routes/statusRoutes.js";
+import communitiesRouter from "./routes/communityRoutes.js";
+
+dotenv.config();
+
+// 🔹 Recreate __dirname in ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 
 var app = express();
@@ -24,12 +47,13 @@ var client = new OAuth2Client(
 
 // CONNECTING TO MONGODB DATABASE
 async function connectToDB () {
-  await mongoose.connect(process.env.MONGO_DB, {})
-  .then((result) => {
+  try {
+    await mongoose.connect(process.env.MONGO_DB, {})
+    
     console.log("Successfully Connected to Database")
-  }).catch((err) => {
+  } catch (err) {
     console.log(`error ${err}`)
-  });
+  }
 }
 
 const isProduction = process.env.NODE_ENV === "production";
@@ -120,6 +144,8 @@ const getPersonalData = async (req, res) => {
     family_name: req.user.family_name,
     email: req.user.email,
     picture: req.user.picture,
+    byline: req.user.byline,
+    about: req.user.about,
     liked: req.user.liked,
     lists: req.user.lists,
     following: req.user.following,
@@ -133,6 +159,7 @@ const getPersonalData = async (req, res) => {
 
 
 connectToDB()
+
 
 
 // -------------------- CROSS ORIGIN RESOURCE SHARING SETTINGS ------------------------------------------------------------------------------------------------------------
@@ -168,21 +195,87 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 // -------------------------- ALL ROUTES ------------------------------------------------------------------------------------------------------------------------------------
-app.use('/posts', require('./routes/postRoutes'));
-app.use('/users', require('./routes/userRoutes'));
-app.use('/chats', require('./routes/chatRoutes'));
-app.use('/comments', require('./routes/commentRoutes'));
-app.use('/messages', require('./routes/messageRoutes'));
-app.use('/lists', require('./routes/listRoutes'));
-app.use('/logs', require('./routes/logRoutes'));
-app.use('/analytics', require('./routes/userAnalyticsRoutes'));
-app.use('/status', require('./routes/statusRoutes'));
+app.use("/posts", postsRouter);
+app.use("/users", usersRouter);
+app.use("/chats", chatsRouter);
+app.use("/comments", commentsRouter);
+app.use("/messages", messagesRouter);
+app.use("/lists", listsRouter);
+app.use("/logs", logsRouter);
+app.use("/analytics", analyticsRouter);
+app.use("/status", statusRouter);
+app.use("/communities", communitiesRouter);
 
 //google authentication
 app.post("/auth/google", connectToGoogle)
 app.get("/me", authenticateUser, getPersonalData)
 app.post("/logout", LogoutFromGoogle) 
+app.all("/api/auth/*", toNodeHandler(auth));
 //app.post("/auth/google/refresh-token", refreshTokenGoogle)
+
+// --------------------------- ARCJET STUFF ---------------------------------------------------------------------------------------------------------------------------------
+const aj = arcjet({
+  key: process.env.ARCJET_KEY,
+  rules: [
+    shield({ mode: "LIVE" }),
+    detectBot({
+      mode: "LIVE", // Blocks requests. Use "DRY_RUN" to log only
+      // Block all bots except the following
+      allow: [
+        "CATEGORY:SEARCH_ENGINE", // Google, Bing, etc
+        // Uncomment to allow these other common bot categories
+        // See the full list at https://arcjet.com/bot-list
+        //"CATEGORY:MONITOR", // Uptime monitoring services
+        //"CATEGORY:PREVIEW", // Link previews e.g. Slack, Discord
+      ],
+    }),
+    // Create a token bucket RATE LIMIT. Other algorithms are supported.
+    tokenBucket({
+      mode: "LIVE",
+      // Tracked by IP address by default, but this can be customized
+      // See https://docs.arcjet.com/fingerprints
+      characteristics: ["ip.src"],
+      refillRate: 10, // Refill 5 tokens per interval
+      interval: 60, // Refill every 10 seconds
+      capacity: 100, // Bucket capacity of 10 tokens
+    }),
+  ],
+});
+
+app.get("/", async (req, res) => {
+  const decision = await aj.protect(req, { requested: 5 }); // Deduct 5 tokens from the bucket
+  console.log("Arcjet decision", decision);
+
+  if (decision.isDenied()) {
+    if (decision.reason.isRateLimit()) {
+      res.writeHead(429, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "Too Many Requests" }));
+    } else if (decision.reason.isBot()) {
+      res.writeHead(403, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "No bots allowed" }));
+    } else {
+      res.writeHead(403, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "Forbidden" }));
+    }
+  } else if (decision.ip.isHosting()) {
+    // Requests from hosting IPs are likely from bots, so they can usually be
+    // blocked. However, consider your use case - if this is an API endpoint
+    // then hosting IPs might be legitimate.
+    // https://docs.arcjet.com/blueprints/vpn-proxy-detection
+    res.writeHead(403, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ error: "Forbidden" }));
+  } else if (decision.results.some(isSpoofedBot)) {
+    // Paid Arcjet accounts include additional verification checks using IP data.
+    // Verification isn't always possible, so we recommend checking the decision
+    // separately.
+    // https://docs.arcjet.com/bot-protection/reference#bot-verification
+    res.writeHead(403, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ error: "Forbidden" }));
+  } else {
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ message: "Hello World" }));
+  }
+});
 
 // --------------------------- S3 FILE UPLOAD STUFF -------------------------------------------------------------------------------------------------------------------------
 
@@ -266,6 +359,77 @@ app.get("/s3/tiptap-image-upload", async (req, res) => {
   }
 });
 
+// ----------------------------- GENERATING PRESIGNED URL FOR UPLOADING IMAGE ON community creation--------------------------------------------------------------------------------------------------
+app.get("/s3/community-image-upload", async (req, res) => {
+  console.log("Upload request received:", req.query);
+  try {
+    
+    const { filename, contentType } = req.query;
+
+    if (!filename || !contentType) {
+      return res.status(400).json({ error: "Filename and contentType are required" });
+    }
+
+    const bucket = process.env.S3_COMMUNITY_IMAGE_BUCKET;
+    
+    if (!bucket) {
+      console.error("S3_COMMUNITY_IMAGE_BUCKET environment variable is not set");
+      return res.status(500).json({ error: "S3 bucket configuration is missing" });
+    }
+
+    const command = new PutObjectCommand({
+      Bucket: bucket,
+      Key: filename,
+      ContentType: contentType,
+    });
+
+    const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 }); // 5 min
+
+    const fileUrl = `https://${bucket}.s3.${process.env.AWS_REGION}.amazonaws.com/${filename}`;
+
+    res.json({ uploadUrl, fileUrl, key: filename });
+  } catch (err) {
+    console.error("Error generating presigned upload URL:", err);
+    res.status(500).json({ error: "Failed to generate presigned upload URL", details: err.message });
+  }
+});
+
+// ----------------------------- GENERATING PRESIGNED URL FOR UPLOADING PROFILE PICTURE--------------------------------------------------------------------------------------------------
+app.get("/s3/profile-picture-upload", async (req, res) => {
+  console.log("Profile picture upload request received:", req.query);
+  try {
+    
+    const { filename, contentType } = req.query;
+
+    if (!filename || !contentType) {
+      return res.status(400).json({ error: "Filename and contentType are required" });
+    }
+
+    // Use the general file bucket for profile pictures, or create a dedicated bucket env var
+    const bucket = process.env.S3_BUCKET_FILE;
+    
+    if (!bucket) {
+      console.error("S3_BUCKET_FILE environment variable is not set");
+      return res.status(500).json({ error: "S3 bucket configuration is missing" });
+    }
+
+    const command = new PutObjectCommand({
+      Bucket: bucket,
+      Key: filename,
+      ContentType: contentType,
+    });
+
+    const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 }); // 5 min
+
+    const fileUrl = `https://${bucket}.s3.${process.env.AWS_REGION}.amazonaws.com/${filename}`;
+
+    res.json({ uploadUrl, fileUrl, key: filename });
+  } catch (err) {
+    console.error("Error generating presigned upload URL:", err);
+    res.status(500).json({ error: "Failed to generate presigned upload URL", details: err.message });
+  }
+});
+
 // ------------------------------------------ SOME DEFAULT STUFF ------------------------------------------------------------------------------------------------------------
 
 // catch 404 and forward to error handler
@@ -284,4 +448,4 @@ app.use(function(err, req, res, next) {
   // res.render('error');
 });
 
-module.exports = app;
+export default app;

@@ -1,9 +1,23 @@
-const { logoutUser, loginUser, fetchUser, createUser, likeBlog, unlikeBlog, allUsers, follow, unfollow, connect, disconnect, accept, decline} = require("../controllers/userController");
-const authenticateUser = require("../functions/auth");
-// const protect =require("../functions/auth")
+import { 
+    logoutUser,
+    loginUser,
+    fetchUser,
+    createUser,
+    likeBlog,
+    unlikeBlog,
+    allUsers,
+    follow,
+    unfollow,
+    connect,
+    disconnect,
+    accept,
+    decline,
+    updateUser
+} from "../controllers/userController.js";
+import authenticateUser from "../functions/auth.js";
 
-var express = require('express');
-var router = express.Router();
+import express from 'express';
+const router = express.Router();
 
 /* GET users listing. */
 router.get('/', authenticateUser, allUsers)
@@ -19,6 +33,6 @@ router.put('/connect/:userId', authenticateUser, connect)
 router.delete('/connect/:userId', authenticateUser, disconnect)
 router.put('/connect/accept/:userId', authenticateUser, accept)
 router.delete('/connect/decline/:userId', authenticateUser, decline)
+router.put('/me', authenticateUser, updateUser);
 
-
-module.exports = router;
+export default router;

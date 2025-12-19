@@ -7,14 +7,20 @@ export type List = {
   blogs: Blog[]
 }
 
+// start of better auth properties
+
 export type User = {
-    googleId: string,
-    email: string;
+    _id: string;              //
+    name: string;             //
+    picture: string;          //
+    created_at: string;       //
+    updatedAt: string;        //
+    email: string;            //
+    emailVerified: boolean,   //
     family_name: string;
     given_name: string;
-    _id: string;
-    name: string;
-    picture: string;
+    googleId: string,
+    image: string;
     lists: List[];
     liked: Blog[];
     following: User[];
@@ -25,6 +31,35 @@ export type User = {
     requestsReceived: string[]
     connections : string[]
 }
+
+export type Session = {
+  id: string;               // Unique identifier for each session (PK)
+  userId: string;           // The ID of the user (FK)
+  token: string;            // The unique session token
+  expiresAt: Date;          // The time when the session expires
+  ipAddress?: string;       // The IP address of the device (optional)
+  userAgent?: string;       // The user agent information of the device (optional)
+  createdAt: Date;          // Timestamp of when the session was created
+  updatedAt: Date;          // Timestamp of when the session was updated
+};
+
+export type Account = {
+  _id: string;                      // Unique identifier for each account (PK)
+  userId: string;                  // The ID of the user (FK)
+  accountId: string;               // The ID of the account from the SSO or equals userId for credential accounts
+  providerId: string;              // The ID of the provider
+  accessToken?: string;            // Access token returned by the provider (optional)
+  refreshToken?: string;           // Refresh token returned by the provider (optional)
+  accessTokenExpiresAt?: Date;     // When the access token expires (optional)
+  refreshTokenExpiresAt?: Date;    // When the refresh token expires (optional)
+  scope?: string;                  // The scope of the account (optional)
+  idToken?: string;                // ID token returned from the provider (optional)
+  password?: string;               // Password for credential-based accounts (optional)
+  createdAt: Date;                 // Timestamp of when the account was created
+  updatedAt: Date;                 // Timestamp of when the account was updated
+};
+
+// end of better auth properties
 
 export type Token = {
     accessToken : string;
@@ -49,6 +84,9 @@ export type Comment = {
   blog: Blog;
   comment: string;
   user: User;
+  replyTo?: Comment | null;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export type Blog = {
@@ -61,6 +99,10 @@ export type Blog = {
   categories: string[] ;
   likes : User[];
   comments: Comment[];
+  community?: {
+    _id: string;
+    title: string;
+  };
 }
 
 export type Chat = {
@@ -96,5 +138,19 @@ export type Trending = {
     _id: string;
     type: string;
     posts: BlogScore[];
+    updatedAt: string;
+}
+
+export type Community = {
+    _id: string;
+    title: string;
+    description: string;
+    creator: User;
+    moderators: User[];
+    rules: string[];
+    picture: string;
+    members: User[];
+    posts: Blog[];
+    createdAt: string;
     updatedAt: string;
 }

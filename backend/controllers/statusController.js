@@ -1,5 +1,5 @@
-const client = require("../config/redis")
-const User = require("../models/user")
+import client from "../config/redis.js";
+import User from "../models/user.js";
 
 const getUserStatus = async (req,res) => {
     try {
@@ -21,5 +21,4 @@ const getUserStatus = async (req,res) => {
     }
 }
 
-
-module.exports = { getUserStatus }
+export { getUserStatus };

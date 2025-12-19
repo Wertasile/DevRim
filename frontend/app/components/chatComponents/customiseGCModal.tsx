@@ -35,17 +35,33 @@ const CustomiseGCModal = ({groupName, setGroupName, setGroupUsers, groupUsers, s
     }
 
   return (
-    <div className='absolute z-2 flex h-[100vh] w-[100vw] justify-center items-center backdrop-blur-xs' onClick={() => setGCModal(false)}>
-        <div className='w-[300px] h-[400px] bg-[#393E46] border-solid border-[1px] border-[#979797] flex flex-col gap-2 items-center justify-center p-2' onClick={(e) => e.stopPropagation()}>
-            <label className='hidden' id="list" htmlFor='list'></label>
-            <input 
-                name="gcname" 
-                id="gcname" 
-                value={newGCName ?? ""}
-                onChange={(event) => {setNewGCName(event.target.value)}} 
-                placeholder='enter group chat name'
-            />
-            <button className="primary-btn" onClick={saveNameChanges}><span>CREATE LIST!</span></button>
+    <div className='fixed z-50 flex h-[100vh] w-[100vw] justify-center items-center bg-black/60 backdrop-blur-sm' onClick={() => setGCModal(false)}>
+        <div className='w-[400px] bg-[#0f1926] border border-[#1f2735] rounded-lg flex flex-col gap-4 p-6 shadow-xl' onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between">
+              <h3 className="text-white font-semibold text-lg">Edit Group Name</h3>
+              <button 
+                onClick={() => setGCModal(false)}
+                className="text-[#9aa4bd] hover:text-white transition-colors"
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className="flex flex-col gap-3">
+              <label htmlFor="gcname" className="text-[#9aa4bd] text-sm">Group Chat Name</label>
+              <input 
+                  name="gcname" 
+                  id="gcname" 
+                  value={newGCName ?? ""}
+                  onChange={(event) => {setNewGCName(event.target.value)}} 
+                  placeholder='Enter group chat name'
+                  className="w-full px-4 py-2 bg-[#121b2a] border border-[#1f2735] rounded-lg text-white placeholder-[#9aa4bd] focus:outline-none focus:border-[#31415f]"
+              />
+            </div>
+            
+            <button className="w-full primary-btn py-3 rounded-lg" onClick={saveNameChanges}>
+              <span>SAVE CHANGES</span>
+            </button>
         </div>
     </div>
 )

@@ -1,7 +1,7 @@
-const asyncHandler = require("express-async-handler");
-const Message = require("../models/message");
-const User = require("../models/user");
-const Chat = require("../models/chat");
+import asyncHandler from "express-async-handler";
+import Message from "../models/message.js";
+import User from "../models/user.js";
+import Chat from "../models/chat.js";
 
 //@description     Get all Messages
 //@route           GET /api/Message/:chatId
@@ -111,4 +111,5 @@ const deleteMessage = async (req,res) => {
     res.status(500).json({success:false, message:error.message})
   }
 }
-module.exports = { allMessages, sendMessage, deleteMessage };
+
+export { allMessages, sendMessage, deleteMessage };

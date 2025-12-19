@@ -1,7 +1,9 @@
-require('dotenv').config();
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const addImage = async (req,res) => {
     
 }
 
-module.exports = addImage
+export default addImage;

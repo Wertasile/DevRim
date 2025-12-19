@@ -33,7 +33,7 @@ const MenuBar = ({editor} : MenuBarProps) => {
   const onFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.length) return;
     const file = e.target.files[0];
-    console.log("selected file:", file); // ✅
+    console.log("selected file:", file); 
 
     const response = await fetch(`${API_URL}/s3/tiptap-image-upload?filename=${encodeURIComponent(file.name)}&contentType=${encodeURIComponent(file.type)}`,{
       method:'get',

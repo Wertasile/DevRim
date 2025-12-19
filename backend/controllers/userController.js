@@ -1,10 +1,11 @@
-const User = require("../models/user")
-const Post = require('../models/post')
+import User from "../models/user.js";
+import Post from '../models/post.js';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken')
 const saltRounds = 10;
-require('dotenv').config()
+dotenv.config();
 
 const fetchUser = async (req, res) => {
     try {
@@ -297,6 +298,52 @@ const decline = async (req, res) => {
     }
 }
 
+const updateUser = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const { name, given_name, family_name, picture, byline, about } = req.body;
 
-module.exports = { fetchUser, createUser, loginUser, logoutUser, deleteUser, likeBlog, unlikeBlog, allUsers, follow, unfollow,
-                   connect, disconnect, accept, decline }
+        // Build update object with only provided fields
+        const updateData = {};
+        if (name !== undefined) updateData.name = name;
+        if (given_name !== undefined) updateData.given_name = given_name;
+        if (family_name !== undefined) updateData.family_name = family_name;
+        if (picture !== undefined) updateData.picture = picture;
+        if (byline !== undefined) updateData.byline = byline;
+        if (about !== undefined) updateData.about = about;
+
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            updateData,
+            { new: true, runValidators: true }
+        ).select('-password');
+
+        if (!updatedUser) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        res.json({ success: true, user: updatedUser });
+    } catch (error) {
+        console.error("Error updating user:", error);
+        res.status(500).json({ success: false, message: "Failed to update user details" });
+    }
+}
+
+
+export { 
+    fetchUser,
+    createUser,
+    loginUser,
+    logoutUser,
+    deleteUser,
+    likeBlog,
+    unlikeBlog,
+    allUsers,
+    follow,
+    unfollow,
+    connect,
+    disconnect,
+    accept,
+    decline,
+    updateUser
+};

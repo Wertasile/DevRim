@@ -1,7 +1,7 @@
-const asyncHandler = require("express-async-handler");
-const mongoose = require("mongoose");
-const Chat = require("../models/chat");
-const User = require("../models/user");
+import asyncHandler from "express-async-handler";
+import mongoose from "mongoose";
+import Chat from "../models/chat.js";
+import User from "../models/user.js";
 
 //@description     Create or fetch One to One Chat
 //@route           POST /api/chat/
@@ -295,7 +295,7 @@ const unpinMessage = async (req, res) => {
   }
 }
 
-module.exports = {
+export {
   accessChat,
   fetchChats,
   deleteChat,

@@ -1,13 +1,12 @@
-const express = require("express");
-
-const {
+import express from "express";
+import {
   getComments,
   addComment,
   updateComment,
   deleteComment
-} = require("../controllers/commentController");
+} from "../controllers/commentController.js";
 
-const  authenticateUser = require("../functions/auth");
+import authenticateUser from "../functions/auth.js";
 
 const router = express.Router();
 
@@ -15,4 +14,4 @@ router.get("/:postId", getComments);
 router.post("/:postId",authenticateUser, addComment);
 router.put("/:postId", authenticateUser, updateComment);
 router.delete("/:postId", authenticateUser, deleteComment);
-module.exports = router;
+export default router;

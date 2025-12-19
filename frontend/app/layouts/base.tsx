@@ -1,18 +1,22 @@
 import React, { useEffect, useState } from 'react'
 import { NavLink, Outlet } from 'react-router'
 import { useGoogleLogin, GoogleLogin, googleLogout } from '@react-oauth/google'
-import { AppProvider, UserProvider, useUser } from '../context/userContext'
+import { AppProvider, UserProvider, useSession, useUser } from '../context/userContext'
 import CustomButton from '~/components/customButton';
 import { HamburgerIcon, MenuIcon } from 'lucide-react';
 import MenuBar from '~/components/tiptap/menuBar';
+import { authClient } from '~/lib/auth-client';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 const base = () => {
   
     const { user, setUser } = useUser()
+    const { session, setSession} = useSession()
+
     // const {accessToken, setAccessToken, refreshToken, setRefreshToken} = useToken()
     const [ menu, setMenu ] = useState(false)
+    const [ otherMenu, setOtherMenu ] = useState(false)
 
     const login = 
         useGoogleLogin({
@@ -60,6 +64,25 @@ const base = () => {
         window.location.href = "/"
     }
 
+    async function getSession () {
+        try {
+            const session = await authClient.getSession()
+            setSession(session.data)
+            console.log(session.data)      
+        } catch (error) {
+            console.log("error getting session")
+        }
+    }
+
+    async function logout() {
+        try {
+            await authClient.signOut()
+            window.location.href = "/"
+        } catch (error) {
+            console.log("error logging out from session")
+        }
+    }
+
     const fetchUser = async () => {
 
         const user = await fetch(`${API_URL}/me`, {
@@ -79,30 +102,27 @@ const base = () => {
 
     useEffect( () => {
         fetchUser()
+        getSession()
     }, [])
     
     return (
-        <>
-        
-        
-            <header className='w-full lg:w-[1000px] bg-[#0606061a] lg:left-1/2 lg:transform lg:-translate-x-1/2 border-solid border-[1px] border-[#353535] rounded-[50px] fixed top-5 flex justify-between items-center px-5 py-3 backdrop-blur-sm my-5 mx-auto z-5'>
+        <div className="layout-shell">
+            <header className='w-full bg-[#0606061a] border-solid border-b-[2px] border-[#DDFFFD] sticky top-0 flex justify-between items-center px-3 py-2 backdrop-blur-sm z-50'>
                 
                 <a href='/' className='flex gap-2 items-center'>
-                    <img src="/Images/DevRim_Logo_0.png" width="48"/>
-                    <h3>DevRim</h3>
+                    <img src="/Images/DevRim_Logo_0.png" width="32"/>
+                    <h2 className="text-white" style={{ fontFamily: "'Figtree', 'Arial Narrow', Arial, sans-serif" }}>DevRim</h2>
                 </a>
 
-                <nav className='hidden sm:flex relative items-center gap-7'>
-                    <NavLink to="/blog" target="_self">Blogs</NavLink>
-                    {/* <NavLink to="/projects" target="_self">PROJECTS</NavLink> */}
-                    {/* <a href="projects/projects.html" target="_self">Projects</a> */}
-                    <NavLink to="/about" target="_self">Pricing</NavLink>
-                    <NavLink to="/chats" target="_self">Message</NavLink>
-                    {/* <a href="../Login/login.html" target="_self">Log In</a> */}
+                <nav className='hidden sm:flex relative items-center gap-7' style={{ fontFamily: "'Space Grotesk', 'Arial Narrow', Arial, sans-serif" }}>
+                    <NavLink to="/dashboard" target="_self" className="text-white hover:text-[#DDFFFD] transition-colors">Dashboard</NavLink>
+                    <NavLink to="/chats" target="_self" className="text-white hover:text-[#DDFFFD] transition-colors">Chats</NavLink>
+                    <NavLink to="/chats" target="_self" className="text-white hover:text-[#DDFFFD] transition-colors">About</NavLink>
+                    <NavLink to="/chats" target="_self" className="text-white hover:text-[#DDFFFD] transition-colors">Help</NavLink>
                     {user ? 
                         (<img 
                             src={user?.picture} 
-                            width={48}
+                            width={32}
                             onClick={() => {setMenu(!menu)}}
                             className='rounded-3xl relative cursor-pointer hover:border-[3px] hover:border-solid hover:border-white ease-in-out duration-100'
                             ></img>
@@ -110,14 +130,35 @@ const base = () => {
                         ):
                         (<button className="primary-btn" onClick={handleLogin}><span>LOGIN</span></button>)
                     }
-                    {menu && 
-                        <div className='absolute p-2 flex flex-col bg-[#111] border-solid border-[1px] border-[#353535] rounded-3xl shadow-md right-0 top-20 gap-3 p-2 w-[200px]'>
-                            <a className="hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer" href={`/profile/${user?._id}`}>Profile</a>
-                            <a className="hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer">Settings</a>
-                            <a className="hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer">Help</a>
-                            <div className="hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer" onClick={handleLogout}>SignOut</div>
+                    {/* {session ? 
+                        (<div
+                            onClick={() => {setOtherMenu(!otherMenu)}}
+                            className='rounded-3xl relative cursor-pointer hover:border-[3px] hover:border-solid hover:border-white ease-in-out duration-100'
+                            >
+                            PROFILE
                         </div>
-                    } 
+                                
+                        ):
+                        (<a className="primary-btn"href='/login'><span>G-LOGIN</span></a>)
+                    } */}
+                    
+                    {menu && 
+                        <div className='absolute p-2 flex flex-col bg-[#111] border-solid border-[1px] border-[#353535] rounded-3xl shadow-md right-0 top-20 gap-3 p-2 w-[200px]' style={{ fontFamily: "'Space Grotesk', 'Arial Narrow', Arial, sans-serif" }}>
+                            <a className="hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer text-white transition-colors" href={`/profile/${user?._id}`}>Profile</a>
+                            <a className="hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer text-white transition-colors" href="/settings">Settings</a>
+                            <a className="hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer text-white transition-colors">Help</a>
+                            <div className="hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer text-white transition-colors" onClick={handleLogout}>Sign Out</div>
+                        </div>
+                    }
+
+                    {otherMenu && 
+                        <div className='absolute p-2 flex flex-col bg-[#111] border-solid border-[1px] border-[#353535] rounded-3xl shadow-md right-0 top-20 gap-3 p-2 w-[200px]' style={{ fontFamily: "'Space Grotesk', 'Arial Narrow', Arial, sans-serif" }}>
+                            <a className="hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer text-white transition-colors" href={`/profile/${user?._id}`}>Profile</a>
+                            <a className="hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer text-white transition-colors" href="/settings">Settings</a>
+                            <a className="hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer text-white transition-colors">Help</a>
+                            <div className="hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer text-white transition-colors" onClick={logout}>Sign Out</div>
+                        </div>
+                    }  
                     
                 </nav>
 
@@ -126,40 +167,23 @@ const base = () => {
                 </div>
             </header>
 
-            <main>
+            <main className="layout-main">
                 <Outlet/>
             </main>
 
-            <footer className='bg-[#211F2D] text-white gap-5 sm:gap-2 flex flex-col sm:flex-row justify-around items-center px-[10px] py-[20px] bottom-0 mt-[20px]'>
-                <div>
-                    <div className='flex gap-2 items-center'>
-                        <img src="/Images/DevRim_Logo_0.png" height="64"/>
-                        <h2>DevRim</h2>
-                    </div>
-                    
-                    <i>A platform for developers</i>
-                </div>
-                    
-                <div style={{display:'flex', gap:100}}>    
-                    <div style={{display:'flex', flexDirection:'column'}}>
-                        CONTACT
-                        <a href="emailto:ahmedmharfan@gmail.com" target="_blank">Email Developer(s)</a>
-                        <a href="https://github.com/Wertasile" target="_blank">GitHub</a>
-                        <a href="https://www.linkedin.com/in/ahmed-mohamed-haniffa-arfan-989267202/" target="_blank">LinkedIn</a>
-                        <a href="https://ahmedarfan.netlify.app" target="_blank">Developer's Website</a>
-                    </div>
-                    <div style={{display:'flex', flexDirection:'column'}}>
-                        Terms & Policies
-                        <a>Policies</a>
-                        <a>Terms of Use</a>
-                        <a>Code of Conduct</a>
-                        <a>Privacy</a>
-                    </div>
-                </div>
-            </footer>
-        
-
-        </>
+            {/* <footer className='bg-[#211F2D] text-[gray] flex flex-wrap flex-col sm:flex-row justify-around items-center px-[10px] py-[20px] bottom-0'>
+                                       
+                <a href="emailto:ahmedmharfan@gmail.com" target="_blank" className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>Email Developer(s)</a>
+                <a href="https://github.com/Wertasile" target="_blank" className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>GitHub</a>
+                <a href="https://www.linkedin.com/in/ahmed-mohamed-haniffa-arfan-989267202/" target="_blank" className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>LinkedIn</a>
+                <a href="https://ahmedarfan.netlify.app" target="_blank" className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>Developer's Website</a>
+                
+                <a href="#" className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>Policies</a>
+                <a href="#" className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>Terms of Use</a>
+                <a href="#" className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>Code of Conduct</a>
+                <a href="#"className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>Privacy</a> 
+            </footer> */}
+        </div>
     )
 }
 

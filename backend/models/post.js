@@ -1,10 +1,10 @@
-const mongoose = require("mongoose");
+import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 
 const postSchema = new Schema({
     title: {type: String, required: true},
-    summary: {type: String, required: true},
+    summary: {type: String, maxLength: 250, default: undefined}, // Optional, max 250 chars
     content: {type: Object, required: true},
     releaseDate : {type: Date}, // we use form with type: date-time local
     user: {type: Schema.Types.ObjectId, ref: "user"},
@@ -13,6 +13,4 @@ const postSchema = new Schema({
     categories: [{type: String}]
 })
 
-const post = mongoose.model("post", postSchema)
-
-module.exports = post;
+export default mongoose.model("post", postSchema);

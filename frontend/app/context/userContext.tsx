@@ -28,6 +28,33 @@ export const useUser = () => {
   return context;
 };
 
+// =============================== SESSION CONTEXT  ==========================================================================================================================
+
+// --- Session Context Types ---
+type SessionContextProps = {
+  session: any | null;
+  setSession: React.Dispatch<React.SetStateAction<any | null>>;
+};
+
+// --- Session Context ---
+export const sessionContext = createContext<SessionContextProps | null>(null);
+
+export const SessionProvider = ({ children }: { children: ReactNode }) => {
+  const [session, setSession] = useState<User | null>(null);
+
+  return (
+    <sessionContext.Provider value={{ session, setSession }}>
+      {children}
+    </sessionContext.Provider>
+  );
+};
+
+export const useSession = () => {
+  const context = useContext(sessionContext);
+  if (!context) throw new Error("useUser must be used within a UserProvider");
+  return context;
+};
+
 // ============================= CHAT CONTEXT ================================================================================================================================
 
 // --- Chat Context Types ---
@@ -115,11 +142,13 @@ export const useNotification = () => {
 export const AppProvider = ({children} : {children : React.ReactNode}) => {
     return(
         <UserProvider>
-            <ChatProvider>
-              <NotificationProvider>
-                {children}
-              </NotificationProvider>
-            </ChatProvider>
+          <SessionProvider>
+              <ChatProvider>
+                <NotificationProvider>
+                  {children}
+                </NotificationProvider>
+              </ChatProvider>
+            </SessionProvider>
         </UserProvider>
     )
 }

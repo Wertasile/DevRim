@@ -1,21 +1,19 @@
 import { useEffect, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import { useUser } from "../context/userContext.js";
-import CardSwap, { Card } from "~/components/CardSwap.js";
 import type { Route } from "./+types/home.js";
 import type { User } from "~/types/types.js";
-import { Film, Handshake, NotebookPen } from "lucide-react";
+import { Film, Handshake, NotebookPen, Users, MessageSquare, BookOpen, Sparkles, TrendingUp, Zap, Shield, Globe } from "lucide-react";
 import gsap from "gsap";
 import Lenis from "lenis"
-import HeroBackground from "~/components/heroBackground.js";
 
 
 
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "DevRim" },
-    { name: "description", content: "Welcome to React Router!" },
+    { title: "DevRim - Where Ideas Meet Community" },
+    { name: "description", content: "A platform combining Medium's storytelling depth with Reddit's community engagement. Write long-form content, join communities, connect with authors, and build your network." },
   ];
 }
 
@@ -94,7 +92,7 @@ const Home = () => {
 
             ScrollTrigger.create({
                 trigger: card,
-                start: `top-=${index * spacer} 100px`,
+                start: `top-=${index * spacer} 75px`,
                 endTrigger: ".cards",
                 end: `bottom top+=${300 + (cards.length * spacer)}`, /// by default, when bottom of trigger element hits top of viewport, if we have "bottom 100px" scroller ends 100px down from the top
                 pin: true,
@@ -129,29 +127,42 @@ const Home = () => {
     
 
   return(
-    <>
-        <section id="hero" className=" min-h-[100vh]">
-            <HeroBackground/>
-            <div className="relative flex flex-col h-[100vh] items-center text-center justify-end gap-2 p-2 gap-5 mx-auto max-w-[1200px] z-3">
-                <div className="flex flex-col justify-end gap-5">
-                    <h2>Write. Connect. Share. All in one place.</h2>
-                    <h3>Devrim is where blogging meets social connection. Publish ideas, follow authors, and connect through direct messages or groups. Combinbing Social - with Educational.</h3>
-                    {/* {user === null && <a className="primary-btn" href="signup.html" target="_self">Sign Up for Free</a>} */}
-                    {/* <img src="/images/placeholder_img.png"/> */}
+    <div className="min-h-screen w-full">
+        {/* Hero Section */}
+        <section id="hero" className="relative min-h-screen w-full overflow-hidden">
+            <div className="relative z-10 flex flex-col h-screen items-center justify-center text-center gap-8 px-4 mx-auto max-w-[1200px]">
+                <div className="flex flex-col items-center gap-6 max-w-4xl">
+                    <div className="flex items-center gap-2 px-4 py-2 bg-[#5D64F4]/20 border border-[#5D64F4]/30 rounded-full mb-4">
+                        <Sparkles size={16} className="text-[#5D64F4]" />
+                        <span className="text-[#5D64F4] text-sm font-medium">Medium meets Reddit</span>
+                    </div>
+                    <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight">
+                        Where Ideas Meet Community
+                    </h2>
+                    <h3 className="text-xl md:text-2xl lg:text-3xl text-white/80 max-w-3xl leading-relaxed font-light">
+                        Publish long-form stories like Medium. Build communities like Reddit. Connect, discuss, and grow together.
+                    </h3>
+                    <p className="text-lg text-white/70 max-w-2xl mt-4">
+                        A platform that combines the depth of Medium's storytelling with the engagement of Reddit's communities.
+                    </p>
                 </div>
-                <div>
-                    <img src="/Images/HomePage/hero-image.png" className="hero-image w-1000px"/>
+                <div className="mt-8">
+                    <img 
+                        src="/Images/HomePage/hero-image.png" 
+                        className="hero-image max-w-full h-auto"
+                        alt="DevRim Hero"
+                    />
                 </div>
             </div>
         </section>
 
-        <section id="overview" className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 max-w-[1200px] gap-2 p-2 my-15 mx-auto ">
+        <section id="overview" className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 max-w-[1200px] gap-6 px-6 py-16 mx-auto">
 
-            <div className="overview-item flex flex-col justify-between g-3 border-solid border-[0.5px] border-[#353535] p-5 ">
+            <div className="overview-item flex flex-col justify-between gap-4 border-solid border-[0.5px] border-[#353535] p-6">
                 <div className="w-fit border-solid border-[0.5px] border-[#979797] p-5 rounded-[200px] bg-[#111]">
                     <NotebookPen/>
                 </div>
-                <div className="flex flex-col gap-3 ">
+                <div className="flex flex-col gap-3">
                     <h2>Blogging without Limits</h2>
                     <p>Publish long-form stories, share code, and add rich media.</p>
                 </div>
@@ -159,11 +170,11 @@ const Home = () => {
                     {/* <img src="/images/placeholder_img.png" width="100px"/> */}
                 </div>
             </div>
-            <div className="overview-item flex flex-col justify-between g-3 border-solid border-[0.5px] border-[#353535] p-5 ">
+            <div className="overview-item flex flex-col justify-between gap-4 border-solid border-[0.5px] border-[#353535] p-6">
                 <div className="w-fit border-solid border-[0.5px] border-[#979797] p-5 rounded-[200px] bg-[#111]">
                     <Handshake/>
                 </div>
-                <div>
+                <div className="flex flex-col gap-3">
                     <h2>Follow & Connect</h2>
                     <p>Stay updated with your favorite authors, or connect directly to chat.</p>
                 </div>
@@ -171,11 +182,11 @@ const Home = () => {
                     {/* <img src="/images/placeholder_img.png" width="200px"/> */}
                 </div>
             </div>
-            <div className="overview-item flex flex-col justify-between g-3 border-solid border-[0.5px] border-[#353535] p-5">
+            <div className="overview-item flex flex-col justify-between gap-4 border-solid border-[0.5px] border-[#353535] p-6">
                 <div className="w-fit border-solid border-[0.5px] border-[#979797] p-5 rounded-[200px] bg-[#111]">
                     <Film/>
                 </div>
-                <div>
+                <div className="flex flex-col gap-3">
                     <h2>Chat Beyond Text</h2>
                     <p>Share images, audio, and files in DMs or groups.</p>
                 </div>
@@ -187,45 +198,89 @@ const Home = () => {
 
         </section>
 
-        <section id="features" className="max-w-[1200px] mb-[40] mx-auto mb-[400px]">
-            <h1 className="text-center">Blogging Features</h1>
-            <div className="card-container pt-[20vh]">
+        {/* How It Works Section */}
+        <section id="features" className="max-w-[1400px] mx-auto px-6 py-16 mb-[100px]">
+            <div className="text-center mb-16">
+                <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">How It Works</h2>
+                <p className="text-xl text-white/70 max-w-2xl mx-auto">
+                    Three simple steps to start your journey
+                </p>
+            </div>
+            
+            <div className="card-container">
                 <div className="cards">
-
-                    <div className="cards-item bg-[#211F2D] border-solid border-[0.5px] border-[#353535] p-5 flex g-5">
-                        <div>
-                            <h2 className="border-solid border-[0.5px] border-[#979797] p-5 rounded-[200px] bg-[#111] w-[100px] text-center"> 1 </h2>
-                            <h2>Rich Text Editor</h2>
-                            <p>You can post Images, Audio, and even Code blocks in your posts. Users can format things however they like, with various headings, lists and other formatting options</p>
+                    <div className="cards-item bg-[#0f1926] border border-[#1f2735] rounded-xl p-8 flex flex-col gap-6">
+                        <div className="flex items-center gap-4">
+                            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#5D64F4] to-[#7c82ff] flex items-center justify-center flex-shrink-0">
+                                <span className="text-2xl font-bold text-white">1</span>
+                            </div>
+                            <div>
+                                <h3 className="text-2xl font-bold text-white mb-2">Write Your Story</h3>
+                                <p className="text-[#9aa4bd]">
+                                    Use our natural editor to write long-form content. Start with a title, then write freely. Add code blocks, images, headings, and formatting to make your post stand out.
+                                </p>
+                            </div>
                         </div>
-                        
+                        <div className="pl-24">
+                            <ul className="text-sm text-[#9aa4bd] space-y-2">
+                                <li>• Natural writing experience - feels like writing in a book</li>
+                                <li>• Rich formatting options - headings, lists, code blocks</li>
+                                <li>• Media support - images, audio, and more</li>
+                                <li>• Choose a community to share your post</li>
+                            </ul>
+                        </div>
                     </div>
 
-                    <div className="cards-item bg-[#211F2D] border-solid border-[0.5px] border-[#353535] p-5 flex g-5">
-                        <div>
-                            <h2 className="border-solid border-[0.5px] border-[#979797] p-5 rounded-[200px] bg-[#111] w-[100px] text-center"> 2 </h2>
-                            <h2>Follow your favourite Authors</h2>
-                            <p>Keep up with the latest posts from your favourite Authors by following them. </p>
+                    <div className="cards-item bg-[#0f1926] border border-[#1f2735] rounded-xl p-8 flex flex-col gap-6">
+                        <div className="flex items-center gap-4">
+                            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#5D64F4] to-[#7c82ff] flex items-center justify-center flex-shrink-0">
+                                <span className="text-2xl font-bold text-white">2</span>
+                            </div>
+                            <div>
+                                <h3 className="text-2xl font-bold text-white mb-2">Join Communities</h3>
+                                <p className="text-[#9aa4bd]">
+                                    Discover communities around topics you love, or create your own. Each community has rules, moderators, and dedicated discussions. Share posts and engage with like-minded people.
+                                </p>
+                            </div>
                         </div>
-                        
+                        <div className="pl-24">
+                            <ul className="text-sm text-[#9aa4bd] space-y-2">
+                                <li>• Browse and join existing communities</li>
+                                <li>• Create your own community with custom rules</li>
+                                <li>• Post within communities for targeted audience</li>
+                                <li>• Search and filter posts within communities</li>
+                            </ul>
+                        </div>
                     </div>
 
-                    <div className="cards-item bg-[#211F2D] border-solid border-[0.5px] border-[#353535] p-5 flex g-5">
-                        <div>
-                            <h2 className="border-solid border-[0.5px] border-[#979797] p-5 rounded-[200px] bg-[#111] w-[100px] text-center"> 3 </h2>
-                            <h2>Categories and Lists</h2>
-                            <p>Categorise your posts, search by cateogry and find exactly what you're looking for. Have your own private collections or share them with your friends.</p>
+                    <div className="cards-item bg-[#0f1926] border border-[#1f2735] rounded-xl p-8 flex flex-col gap-6">
+                        <div className="flex items-center gap-4">
+                            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#5D64F4] to-[#7c82ff] flex items-center justify-center flex-shrink-0">
+                                <span className="text-2xl font-bold text-white">3</span>
+                            </div>
+                            <div>
+                                <h3 className="text-2xl font-bold text-white mb-2">Connect & Engage</h3>
+                                <p className="text-[#9aa4bd]">
+                                    Follow authors, connect with peers, and build your network. Comment on posts, save favorites to collections, and chat directly with other members. Build meaningful relationships.
+                                </p>
+                            </div>
                         </div>
-                        
+                        <div className="pl-24">
+                            <ul className="text-sm text-[#9aa4bd] space-y-2">
+                                <li>• Follow authors and see their latest posts</li>
+                                <li>• Comment and reply to build discussions</li>
+                                <li>• Save posts to collections for later</li>
+                                <li>• Message directly or join group chats</li>
+                            </ul>
+                        </div>
                     </div>
-
                 </div>
             </div>
-
         </section>
 
-        <section id="messages" className="my-45">
-            <div className="message-panels-container flex flex-col gap-15 overflow-clip">
+        <section id="features" className="max-w-[1400px] mx-auto px-6 py-16">
+        {/* <section id="messages" className="my-45"> */}
+            <div className="message-panels-container flex flex-col gap-16 overflow-clip">
                 <div className="message-panel ">
                     <h2>Direct Message with Authors</h2>
                     <p>Intersted in an Author's work and wanna get some insight, message them directly by connecting with them and use our messaging platform.</p>
@@ -242,9 +297,33 @@ const Home = () => {
                     <h2>Connect and Follow</h2>
                     <div>Connect with Authors and Collaborate with them, by adding them into your profiles and more.</div>
                 </div>
-                
             </div>
         </section>
+        
+        {/* CTA Section */}
+        <section className="max-w-[1200px] mx-auto px-6 py-16">
+            <div className="bg-gradient-to-br from-[#5D64F4] to-[#7c82ff] rounded-2xl p-12 text-center">
+                <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">Ready to Start?</h2>
+                <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+                    Join thousands of writers, creators, and community builders sharing their ideas and connecting with like-minded people.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a 
+                        href="/login" 
+                        className="px-8 py-4 bg-white text-[#5D64F4] rounded-lg font-semibold hover:bg-white/90 transition-colors"
+                    >
+                        Get Started
+                    </a>
+                    <a 
+                        href="/dashboard" 
+                        className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-lg font-semibold hover:bg-white/20 transition-colors"
+                    >
+                        Explore Dashboard
+                    </a>
+                </div>
+            </div>
+        </section>
+
 
 
         {/* <section id="pricing" className=" max-w-[1200px] my-15 mx-auto ">
@@ -276,7 +355,7 @@ const Home = () => {
                 </div>
             </div>
         </section> */}
-    </>
+    </div>
     
   )
 }

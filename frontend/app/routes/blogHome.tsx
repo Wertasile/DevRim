@@ -1,68 +1,37 @@
-import React, { useDeferredValue, useCallback, useEffect, useState, useRef } from 'react'
-import BlogPostCard from '../components/blogPostCard'
-import type { Blog, Trending } from '~/types/types'
-import Search from '~/components/Search'
-import { NavLink, useLocation } from 'react-router'
-import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
-import topics from "../data/searchFilters/topics.json"
-import frameworks from "../data/searchFilters/frameworks.json"
-import { useUser } from '~/context/userContext'
-import { TrendingUpIcon } from 'lucide-react'
+import React, { useEffect, useState } from 'react';
+import BlogPostCard from '../components/blogPostCard';
+import type { Blog, Trending } from '~/types/types';
+import { useLocation } from 'react-router';
+import { useUser } from '~/context/userContext';
+import {
+    Bell,
+    Compass,
+    Headphones,
+    Heart,
+    MessageCircle,
+    TrendingUp,
+    Video,
+} from 'lucide-react';
+import Sidebar from '~/components/Sidebar';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 export default function BlogHome() {
 
-    const {user} = useUser()
+    const {user} = useUser();
 
-    const [blogs, setBlogs] = useState<Blog []>([])
-    const [recommendations, setRecommendations] = useState<Blog []>([])
-    const [trending, setTrending] = useState<Trending[]>([])
-    const [searchResults, setSearchResults] = useState<Blog[]>([])
+    const [blogs, setBlogs] = useState<Blog []>([]);
+    const [recommendations, setRecommendations] = useState<Blog []>([]);
+    const [trending, setTrending] = useState<Trending[]>([]);
+    const [searchResults, setSearchResults] = useState<Blog[]>([]);
+    const [section, setSection] = useState<"For You" | "Featured" | "Search Results" | "Latest">("Latest");
 
-    // Panel control
-    const [isOpen, setIsOpen] = useState(false);
-    const [activeFilter, setActiveFilter] = useState<"topic" | "framework" | "date" | null>(null);
-    const [showContent, setShowContent] = useState(false); // controls when content appears
-
-    const [dateRange, setDateRange] = useState({from: new Date(2025, 7, 31), to: new Date(Date.now())})
-
-    const tlRef = useRef<gsap.core.Timeline | null>(null);
-
-    const [categories, setCategories] = useState<string[]>([])
-
-    const [section, setSection] = useState<"For You" | "Featured" | "Search Results" | "Latest">("For You")
-
-    useGSAP(() => {
-        const panel = document.querySelector<HTMLElement>(".filter-panel");
-        if (!panel) return;
-
-        // Create timeline only once
-        if (!tlRef.current) {
-            tlRef.current = gsap.timeline({ paused: true })
-                .to(panel, {
-                    height: "400px",
-                    width: "100%",
-                    zIndex: 20,
-                    position: "absolute",
-                    left: 0,
-                    duration: 0.5,
-                    ease: "power2.inOut",
-                    onComplete: () => setShowContent(true),
-                    onReverseComplete: () => setShowContent(false),
-                });
-        }
-
-        // Control timeline based on isOpen
-        if (isOpen) {
-            tlRef.current.play();
-        } else {
-            tlRef.current.reverse();
-        }
-    }, [isOpen]);
-
-    {/* ----------------------- TO RECEIVE STATE(SEARCH RESULTS FROM LAYOUT) ----------------------------------------------------------------------------------------- */}  
+    const communityChips = [
+        { label: "Travel", icon: <Compass size={16} /> },
+        { label: "Tech", icon: <TrendingUp size={16} /> },
+        { label: "Movies", icon: <Video size={16} /> },
+        { label: "Beauty", icon: <Headphones size={16} /> },
+    ];
     
     const location = useLocation();
     useEffect(() => {
@@ -75,8 +44,6 @@ export default function BlogHome() {
         }
     }, [location.state]);
 
-    {/* ----------------------- TO GET BLOGS ON INITIAL PAGE LOAD ---------------------------------------------------------------------------------------------------- */}   
-
     const getBlogs = async () => {
         const response = await fetch(`${API_URL}/posts/`, {
             method: "get",
@@ -88,12 +55,18 @@ export default function BlogHome() {
     };
 
     const getRecommendations = async () => {
-        const response = await fetch(`${API_URL}/analytics/recommendations`, {
-            method: "get",
-            credentials: 'include'
-        })
-        const data = await response.json()
-        setRecommendations(data);
+        try {
+            const response = await fetch(`${API_URL}/analytics/recommendations`, {
+                method: "get",
+                credentials: 'include'
+            })
+            const data = await response.json()
+            setRecommendations(data);
+        } catch (err) {
+            console.error(err);
+            setRecommendations([]);
+        }
+
     }
 
     const getTrending = async () => {
@@ -105,121 +78,164 @@ export default function BlogHome() {
         setTrending(data);
     }
 
-        const getHistory = async () => {
-        const response = await fetch(`${API_URL}/analytics/history`, {
-            method: "get",
-            credentials: 'include'
-        })
-        const data = await response.json()
-        console.log(data)
-    }
-
-    {/* ----------------------- TO GET FOR YOU SECTION BLOGS ---------------------------------------------------------------------------------------------------- */}   
-
     useEffect(() => {
+        console.log("user context value:", user);
+        if (!user) return;
+
         getBlogs();
         getTrending();
         getRecommendations();
-        getHistory();
-    }, []);
+    }, [user]);
 
-    useEffect(() => {
-        console.log(trending)
-    }, [trending])
+    const trendingPosts = trending?.[0]?.posts ?? [];
+
+    const renderSection = () => {
+        if (section === "For You") {
+            return recommendations.map((b, idx) => (
+                <BlogPostCard
+                    key={b._id}
+                    id={b._id}
+                    postUser={b.user}
+                    title={b.title}
+                    releaseDate={b.releaseDate}
+                    summary={b.summary}
+                    content={b.content}
+                    comments={b.comments}
+                    likes={b.likes}
+                    visualIndex={idx}
+                />
+            ));
+        }
+
+        if (section === "Search Results") {
+            return searchResults.map((b, idx) => (
+                <BlogPostCard
+                    key={b._id}
+                    id={b._id}
+                    postUser={b.user}
+                    title={b.title}
+                    releaseDate={b.releaseDate}
+                    summary={b.summary}
+                    content={b.content}
+                    comments={b.comments}
+                    likes={b.likes}
+                    visualIndex={idx}
+                />
+            ));
+        }
+
+        return blogs.map((b, idx) => (
+            <BlogPostCard
+                key={b._id}
+                id={b._id}
+                postUser={b.user}
+                title={b.title}
+                releaseDate={b.releaseDate}
+                summary={b.summary}
+                content={b.content}
+                comments={b.comments}
+                likes={b.likes}
+                visualIndex={idx}
+            />
+        ));
+    };
+
+        // Redirect or show login page if not logged in
+    if (!user) {
+        return (
+        <div className="flex flex-col items-center justify-center min-h-screen bg-[#0e0e1a] text-white text-center p-6">
+            <h1 className="text-3xl font-bold mb-4">Welcome to DevRim</h1>
+            <p className="text-lg mb-6 text-gray-300">
+            Please <span className="text-[#5D64F4] font-semibold">log in</span> or <span className="text-[#5D64F4] font-semibold">sign up</span> to explore personalized blog recommendations and trending posts.
+            </p>
+            <div className="flex gap-4">
+            <a
+                href="/login"
+                className="px-6 py-2 bg-[#5D64F4] text-white rounded hover:bg-[#444BEE] transition-all duration-300"
+            >
+                Log In
+            </a>
+            <a
+                href="/register"
+                className="px-6 py-2 border border-[#5D64F4] text-[#5D64F4] rounded hover:bg-[#5D64F4] hover:text-white transition-all duration-300"
+            >
+                Sign Up
+            </a>
+            </div>
+        </div>
+        )
+    }
+    
 
     return (
-        <div className='flex gap-2'>
-            
+        <div className="blog-home min-h-screen bg-[#0a1118]">
+            <div className="blog-shell">
+                <Sidebar />
 
-            {/* ----------------------- THE BLOGS! ---------------------------------------------------------------------------------------------------- */}   
+                <section className="blog-feed">
+                    <div className="feed-header">
+                        <div className="feed-tabs">
+                            {["For You", "Search Results", "Latest"].map((label) => (
+                                <button
+                                    key={label}
+                                    onClick={() => setSection(label as typeof section)}
+                                    className={`feed-tab ${section === label ? "is-active" : ""}`}
+                                >
+                                    {label}
+                                </button>
+                            ))}
+                        </div>
+                        <div className="feed-actions">
+                            <button className="pill-btn"><Bell size={16}/> Alerts</button>
+                            <button className="pill-btn"><Compass size={16}/> Explore</button>
+                        </div>
+                    </div>
 
-            <div id="blogs">
-                <div className='border-y-[1px] flex gap-5 '>
-                    <div className={`${section == "For You" ? ("bg-[#5D64F4]") : ("")} p-2 cursor-pointer`} onClick={() => {setSection('For You')}}>For you</div>
-                    {/* <div className={`${section == "Featured" ? ("bg-[#229197]") : ("")} p-2 cursor-pointer`} onClick={() => {setSection('Featured')}}>Featured</div> */}
-                    <div className={`${section == "Search Results" ? ("bg-[#5D64F4]") : ("")} p-2 cursor-pointer`} onClick={() => {setSection('Search Results')}}>Search Results</div>
-                    <div className={`${section == "Latest" ? ("bg-[#5D64F4]") : ("")} p-2 cursor-pointer`} onClick={() => {setSection('Latest')}}>Latest</div>
-                </div>
-                
-                {section == "For You" && recommendations.map((b) => (
-                    <BlogPostCard
-                        key={b._id}
-                        id={b._id}
-                        postUser={b.user}
-                        title={b.title}
-                        releaseDate={b.releaseDate}
-                        summary={b.summary}
-                        content={b.content}
-                        comments={b.comments}
-                        likes={b.likes}
-                    />
-                ))}
+                    <div className="feed-list">
+                        {renderSection()}
+                    </div>
+                </section>
 
-                {section == "Search Results" && searchResults.map((b:Blog) => (
-                    <BlogPostCard
-                        key={b._id}
-                        id={b._id}
-                        postUser={b.user}
-                        title={b.title}
-                        releaseDate={b.releaseDate}
-                        summary={b.summary}
-                        content={b.content}
-                        comments={b.comments}
-                        likes={b.likes}
-                    />
-                ))}
+                <aside className="blog-right">
+                    <div className="top-picks">
+                        <div className="top-picks__header">
+                            <h3>Top Picks</h3>
+                            <TrendingUp size={18}/>
+                        </div>
+                        <div className="top-picks__list">
+                            {user && trendingPosts.map((b: any) => (
+                                <button
+                                    key={b.blog._id}
+                                    className="top-picks__item"
+                                    onClick={() => window.location.href = `/blog/${b.blog._id}`}
+                                >
+                                    <div className="top-picks__title">{b.blog.title}</div>
+                                    <div className="top-picks__meta">
+                                        <span><Heart size={14}/> {b.blog.likes?.length ?? 0}</span>
+                                        <span><MessageCircle size={14}/> {b.blog.comments?.length ?? 0}</span>
+                                    </div>
+                                </button>
+                            ))}
+                            {!trendingPosts.length && (
+                                <div className="top-picks__empty">Trending posts appear here once available.</div>
+                            )}
+                        </div>
+                    </div>
 
-                {section == "Latest" && blogs.map((b:Blog) => (
-                    <BlogPostCard
-                        key={b._id}
-                        id={b._id}
-                        postUser={b.user}
-                        title={b.title}
-                        releaseDate={b.releaseDate}
-                        summary={b.summary}
-                        content={b.content}
-                        comments={b.comments}
-                        likes={b.likes}
-                    />
-                ))}
+                    <div className="community-rail">
+                        <div className="community-rail__title">Your Communities</div>
+                        <div className="community-rail__list">
+                            {communityChips.map((chip, idx) => (
+                                <div key={idx} className="community-chip">
+                                    {chip.icon}
+                                    <span>{chip.label}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </aside>
             </div>
-
-            {/* ----------------------- THE TRENDING SECTION ---------------------------------------------------------------------------------------------------- */}
-
-            <div className='hidden md:block border-l-[1px] p-2 w-[400px]'>
-                <div className='flex gap-2 items-center mb-2'><TrendingUpIcon/><h3>TRENDING</h3></div>
-                {trending && trending[0]?.posts.map((b:any) => (
-                    // <BlogPostCard
-                    //     key={b.blog._id}
-                    //     id={b.blog._id}
-                    //     postUser={b.blog.user}
-                    //     title={b.blog.title}
-                    //     summary={b.blog.summary}
-                    //     releaseDate={b.blog.releaseDate}
-                    //     content={b.blog.content}
-                    //     comments={b.blog.comments}
-                    //     likes={b.blog.likes}
-                    // />
-                    <div key={b.blog._id} className='border-b-[1px] border-solid border-[#979797] flex flex-col p-2 gap-3 cursor-pointer hover:bg-[#211F2D] hover:duration-400 hover:Ease-in-out'>
-                        {b.blog.user._id == user?._id ? 
-                        (
-                        <div className='items-center flex gap-2'>
-                            <img src={b.blog.user.picture} className='rounded-3xl' width={24}/>
-                            <div className='text-xs'>Your publication</div>
-                        </div>
-                        
-                        ):(
-                        <div className='items-center flex gap-2'>
-                            <img src={b.blog.user.picture} className='rounded-3xl' width={24}/>
-                            <div className='text-xs'>{b.blog.user.name}</div>
-                        </div>
-                        )}
-                        <div className='text-sm'>{b.blog.title}</div>
-                        
-                    </div>    
-                    
-                ))}
-            </div> 
         </div>
     );
+    
 }

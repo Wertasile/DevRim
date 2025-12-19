@@ -1,8 +1,8 @@
 // cron job
-const cron = require("node-cron")
-const Post = require("../models/post")
-const Log = require("../models/log")
-const Trending = require("../models/trending")
+import cron from "node-cron";
+import Post from "../models/post.js";
+import Log from "../models/log.js";
+import Trending from "../models/trending.js";
 
 function aggregateStats () {
     cron.schedule("0 * * * *", async () => {
@@ -66,4 +66,4 @@ setInterval(() => {
 }, 60 * 1000);
 
 
-module.exports = aggregateStats
+export default aggregateStats;

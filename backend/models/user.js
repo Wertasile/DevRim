@@ -1,12 +1,15 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
   googleId: String,
   family_name: String,
   given_name: String,
-  email: String,
+  email: { type: String, unique: true, required: true },
+  emailVerified: { type: Boolean, default: false },
   name: String,
   picture: String,
+  byline: String,
+  about: String,
   liked: [{type: mongoose.Schema.Types.ObjectId, ref:"post"}],
   lists: [{type: mongoose.Schema.Types.ObjectId, ref:"list"}],
   following: [{type: mongoose.Schema.Types.ObjectId, ref:"user"}],
@@ -18,4 +21,4 @@ const userSchema = new mongoose.Schema({
   lastSeen: {type: Date, default:null}
 });
 
-module.exports = mongoose.model('user', userSchema);
+export default mongoose.model('user', userSchema);

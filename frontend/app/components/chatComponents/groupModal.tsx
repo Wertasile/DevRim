@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import type { Chat, User } from '~/types/types';
+import { Search } from 'lucide-react';
 
 
 type groupModalProps = {
@@ -52,63 +53,87 @@ const GroupModal = ({groupName, setGroupName, searchUser, setSearchUser, groupUs
     }
 
   return (
-    <div className="absolute z-2 flex h-[100vh] w-[100vw] justify-center items-center backdrop-blur-xs" onClick={() => {setGroupModal(false)}}>
+    <div className="fixed z-50 flex h-[100vh] w-[100vw] justify-center items-center bg-black/60 backdrop-blur-sm" onClick={() => {setGroupModal(false)}}>
         
       <div 
-        className="w-[300px] h-[400px] bg-[#393E46] border-solid border-[1px] border-[#979797] flex flex-col gap-2 items-center justify-center p-2" 
+        className="w-[400px] max-h-[600px] bg-[#0f1926] border border-[#1f2735] rounded-lg flex flex-col gap-4 p-6 shadow-xl" 
         onClick={(e) => {e.stopPropagation()}}
       >
-        <div><h3>Select Connections</h3></div>
-        <div>
-          <label className="hidden" htmlFor="groupName" id="groupName"></label>
-          <input id="groupName" name="groupName" value={groupName}
-          placeholder='Enter group name'
+        <div className="flex items-center justify-between">
+          <h3 className="text-white font-semibold text-lg">Create Group Chat</h3>
+          <button 
+            onClick={() => setGroupModal(false)}
+            className="text-[#9aa4bd] hover:text-white transition-colors"
+          >
+            ×
+          </button>
+        </div>
+        
+        <div className="flex flex-col gap-3">
+          <label htmlFor="groupName" className="text-[#9aa4bd] text-sm">Group Name</label>
+          <input 
+            id="groupName" 
+            name="groupName" 
+            value={groupName}
+            placeholder='Enter group name'
             onChange={(e) => setGroupName(e.target.value)}
+            className="w-full px-4 py-2 bg-[#121b2a] border border-[#1f2735] rounded-lg text-white placeholder-[#9aa4bd] focus:outline-none focus:border-[#31415f]"
           />
         </div>
-        <div>
-          <label className="hidden" htmlFor="userSearch" id="userSearch"></label>
-          <input
-                id="userSearch"
-                name="userSearch"
-                value={input ?? ""}
-                placeholder="Enter Users in your group"
-                onChange={(e) => {
-                    setInput(e.target.value);          // update state
-                    handleSearch(e.target.value);          // trigger search
-            }}
+        
+        <div className="flex flex-col gap-3">
+          <label htmlFor="userSearch" className="text-[#9aa4bd] text-sm">Search Users</label>
+          <div className="relative">
+            <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#9aa4bd] pointer-events-none z-10" />
+            <input
+              id="userSearch"
+              name="userSearch"
+              value={input ?? ""}
+              placeholder="Search users to add"
+              onChange={(e) => {
+                  setInput(e.target.value);
+                  handleSearch(e.target.value);
+              }}
+              className="w-full pl-10 pr-4 py-2 bg-[#121b2a] border border-[#1f2735] rounded-lg text-white placeholder-[#9aa4bd] focus:outline-none focus:border-[#31415f] relative z-0"
             />
+          </div>
         </div>
-        <div className='h-[50px] flex'>
+        
+        {groupUsers.length > 0 && (
+          <div className='flex flex-wrap gap-2 p-2 bg-[#121b2a] rounded-lg border border-[#1f2735]'>
             {groupUsers.map( (user) => (
-                <div className="flex gap-1 bg-[#111] p-1 text-sm" key={user._id}>
-                    <img src={user.picture} width={24}/>
-                    {user.name}
+                <div className="flex items-center gap-2 bg-[#1f2735] px-3 py-1 rounded-lg text-sm text-white" key={user._id}>
+                    <img src={user.picture} width={20} height={20} className="rounded-full"/>
+                    <span>{user.name}</span>
                 </div>
             ))}
-        </div>
-        <div className="h-[225px] text-sm overflow-y-auto border w-full p-2">
+          </div>
+        )}
+        
+        <div className="h-[200px] text-sm overflow-y-auto border border-[#1f2735] rounded-lg p-3 bg-[#121b2a]">
             {searchUser.length > 0 ? (
                 searchUser.map((user) => (
                 <div
                     key={user._id}
-                    className="cursor-pointer p-1 hover:bg-[#111] flex flex-row gap-2"
+                    className="cursor-pointer p-2 hover:bg-[#1f2735] rounded-lg flex flex-row gap-3 items-center transition-colors mb-2"
                     onClick={() => {
                         console.log("Selected user:", user);
                         setGroupUsers( prev => [...prev, user])
                     }}
                 >   
-                        <img width={24} src={user.picture}/>
-                        <div>{user.name}</div>
+                        <img width={32} height={32} src={user.picture} className="rounded-full"/>
+                        <div className="text-white">{user.name}</div>
                 </div>
                 ))
             ) : (
-                <div className="text-gray-500">No users found</div>
+                <div className="text-[#9aa4bd] text-center py-4">No users found</div>
             )}
         </div>
 
         <div>
-            <button className='primary-btn' onClick={createGroup}>CREATE GROUP</button>
+            <button className='w-full primary-btn py-3 rounded-lg' onClick={createGroup}>
+              <span>CREATE GROUP</span>
+            </button>
         </div>
         
       </div>

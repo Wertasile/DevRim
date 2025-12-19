@@ -16,6 +16,12 @@ import {
   Trash2Icon,
   UserIcon,
   Users,
+  Menu,
+  Search,
+  Send,
+  Compass,
+  Heart,
+  Settings,
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import ChatMenu from "~/components/chatComponents/ChatMenu";
@@ -23,6 +29,7 @@ import { useChat, useNotification, useUser } from "~/context/userContext";
 import type { Chat, Message, User } from "~/types/types";
 import io from "socket.io-client" // io is a function to call an individual socket
 import { socket } from "../components/socket";
+import Sidebar from "../components/Sidebar"
 import GroupModal from "~/components/chatComponents/groupModal";
 import FindUserModal from "~/components/chatComponents/findUserModal";
 import Friends from "~/components/chatComponents/Friends";
@@ -32,6 +39,7 @@ import AddGCUsers from "~/components/chatComponents/addGCUsersModal";
 import deleteMessage from "~/apiCalls/message/deleteMessage";
 import PinModal from "~/components/chatComponents/pinModal";
 import pinMessage from "~/apiCalls/message/pinMessage";
+import AudioPlayer from "~/components/AudioPlayer";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -53,10 +61,16 @@ const ChatPage = () => {
   const [isRecording, setIsRecording] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
+  const streamRef = useRef<MediaStream | null>(null);
 
   const [mediaUrls, setMediaUrls] = useState<{ [key: string]: string }>({});
   const [file, setFile] = useState<File | null>(null);
   const [image, setImage] = useState<File | null>(null);
+  const [isUserAtBottom, setIsUserAtBottom] = useState(true);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const isUserAtBottomRef = useRef(true);
+  const isInitialLoadRef = useRef(true);
+  const [isLoadingMessages, setIsLoadingMessages] = useState(false);
 
   const [socketConnected, setSocketConnected] = useState(false)
 
@@ -82,6 +96,7 @@ const ChatPage = () => {
   const [addUsersModal, setAddUsersModal] = useState<boolean>(false)
 
   const [section, setSection] = useState<string>("messages")
+  const [searchQuery, setSearchQuery] = useState<string>("")
 
   const [hoveredMessageId, setHoveredMessageId] = useState<string>("");
 
@@ -150,15 +165,47 @@ const ChatPage = () => {
   };
 
   const fetchMessages = async (chatId: string) => {
-    const res = await fetch(`${API_URL}/messages/${chatId}`, {
-      method: "get",
-      credentials: "include",
-    });
-    if (!res.ok) return;
+    setIsLoadingMessages(true);
+    const startTime = Date.now();
+    
+    try {
+      const res = await fetch(`${API_URL}/messages/${chatId}`, {
+        method: "get",
+        credentials: "include",
+      });
+      if (!res.ok) {
+        setIsLoadingMessages(false);
+        return;
+      }
 
-    const messageData = await res.json();
-    setMessages(messageData);
-    socket.emit("join chat", chat?._id)
+      const messageData = await res.json();
+      
+      // Ensure minimum loading time of 500ms
+      const elapsed = Date.now() - startTime;
+      const minLoadTime = 500; // 0.5 seconds
+      const remainingTime = Math.max(0, minLoadTime - elapsed);
+      
+      setTimeout(() => {
+        // Set messages and scroll to bottom
+        setMessages(messageData);
+        socket.emit("join chat", chat?._id);
+        
+        // Wait for DOM to update, then scroll
+        setTimeout(() => {
+          messagesEndRef.current?.scrollIntoView({ 
+            behavior: 'auto',
+            block: 'end'
+          });
+          // Small delay before hiding loading to ensure smooth transition
+          setTimeout(() => {
+            setIsLoadingMessages(false);
+          }, 100);
+        }, 50);
+      }, remainingTime);
+    } catch (error) {
+      console.error('Failed to fetch messages:', error);
+      setIsLoadingMessages(false);
+    }
   };
 
   const handleDeleteMessage = async (message: Message) => {
@@ -200,7 +247,14 @@ const ChatPage = () => {
   }, []);
 
   useEffect(() => {
-    if (chat?._id) fetchMessages(chat._id);
+    if (chat?._id) {
+      setIsInitialLoad(true);
+      isInitialLoadRef.current = true;
+      setIsUserAtBottom(true);
+      isUserAtBottomRef.current = true;
+      setMessages([]); // Clear previous messages immediately
+      fetchMessages(chat._id);
+    }
     selectedChatCompare = chat
   }, [chat]);
 
@@ -215,46 +269,100 @@ const ChatPage = () => {
 
   // ---------- AUDIO RECORDING ----------
 
-  useEffect(() => {
-    navigator.mediaDevices
-      .getUserMedia({ audio: true })
-      .then((stream) => {
-        mediaRecorderRef.current = new MediaRecorder(stream, {
-          mimeType: "audio/webm",
-        });
-        setIsBlocked(false);
-      })
-      .catch(() => {
-        console.log("PERMISSION DENIED FOR AUDIO");
-        setIsBlocked(true);
-      });
-  }, []);
+  const startRecording = async () => {
+    try {
+      // Stop any existing stream
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+      }
 
-  const startRecording = () => {
-    if (!mediaRecorderRef.current) return;
-    chunksRef.current = [];
-    mediaRecorderRef.current.start();
-    setIsRecording(true);
+      // Request new media stream
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
+      setIsBlocked(false);
 
-    mediaRecorderRef.current.ondataavailable = (e) => {
-      if (e.data.size > 0) chunksRef.current.push(e.data);
-    };
+      // Check for supported MIME types
+      let mimeType = 'audio/webm';
+      if (!MediaRecorder.isTypeSupported('audio/webm')) {
+        if (MediaRecorder.isTypeSupported('audio/mp4')) {
+          mimeType = 'audio/mp4';
+        } else if (MediaRecorder.isTypeSupported('audio/ogg')) {
+          mimeType = 'audio/ogg';
+        } else {
+          mimeType = ''; // Use default
+        }
+      }
+
+      // Create new MediaRecorder
+      const mediaRecorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+      mediaRecorderRef.current = mediaRecorder;
+
+      chunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) {
+          chunksRef.current.push(e.data);
+        }
+      };
+
+      mediaRecorder.onstop = () => {
+        try {
+          const blob = new Blob(chunksRef.current, { type: mimeType || 'audio/webm' });
+          const file = new File([blob], `audio-${Date.now()}.${mimeType.includes('mp4') ? 'm4a' : 'webm'}`, {
+            type: blob.type,
+          });
+          setAudio(file);
+          setAttachment(false);
+        } catch (error) {
+          console.error('Error creating audio file:', error);
+        } finally {
+          // Stop all tracks to release microphone
+          if (streamRef.current) {
+            streamRef.current.getTracks().forEach(track => track.stop());
+            streamRef.current = null;
+          }
+        }
+      };
+
+      // Start recording
+      mediaRecorder.start();
+      setIsRecording(true);
+    } catch (error) {
+      console.error('Error starting recording:', error);
+      setIsBlocked(true);
+      setIsRecording(false);
+      alert('Failed to access microphone. Please check your permissions.');
+    }
   };
 
   const stopRecording = () => {
-    if (!mediaRecorderRef.current) return;
-    mediaRecorderRef.current.stop();
-    setIsRecording(false);
-
-    mediaRecorderRef.current.onstop = () => {
-      const blob = new Blob(chunksRef.current, { type: "audio/webm" });
-      const file = new File([blob], `${Date.now()}.webm`, {
-        type: "audio/webm",
-      });
-      setAudio(file);
-      setAttachment(false);
-    };
+    if (!mediaRecorderRef.current || !isRecording) return;
+    
+    try {
+      if (mediaRecorderRef.current.state === 'recording') {
+        mediaRecorderRef.current.stop();
+      }
+      setIsRecording(false);
+    } catch (error) {
+      console.error('Error stopping recording:', error);
+      setIsRecording(false);
+      
+      // Clean up stream
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+        streamRef.current = null;
+      }
+    }
   };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (audio) uploadFile(audio, "audio");
@@ -371,67 +479,144 @@ const ChatPage = () => {
 
   const renderMessageContent = (message: Message) => {
     const url = mediaUrls[message._id] || message.url; // presigned URL if available
+    const isLoading = (message.messageType === "image" || message.messageType === "audio" || message.messageType === "file") && !url;
 
     switch (message.messageType) {
       case "image":
         return (
-          <img src={url} className="cursor-pointer" width="200" alt="Message content" onClick={() => openImageModal(url)}/>
+          <div className="relative" style={{ minWidth: '200px', minHeight: '150px' }}>
+            {isLoading ? (
+              <div className="w-[200px] h-[150px] bg-[#1f2735] rounded-lg flex items-center justify-center animate-pulse">
+                <div className="text-[#9aa4bd] text-xs">Loading image...</div>
+              </div>
+            ) : (
+              <img 
+                src={url} 
+                className="cursor-pointer rounded-lg" 
+                width="200" 
+                alt="Message content" 
+                onClick={() => openImageModal(url)}
+                style={{ maxWidth: '200px', height: 'auto' }}
+                onLoad={() => {
+                  // Only scroll if user is at bottom
+                  if (isUserAtBottomRef.current) {
+                    setTimeout(() => scrollToBottomIfNeeded(true), 50);
+                  }
+                }}
+              />
+            )}
+          </div>
         );
       case "audio":
-        return (<audio controls src={url} style={{ maxWidth: "250px" }} />);
+        return (
+          <div style={{ minWidth: "250px" }}>
+            {isLoading ? (
+              <div className="w-[250px] h-[60px] bg-[#1f2735] rounded-lg flex items-center justify-center animate-pulse">
+                <div className="text-[#9aa4bd] text-xs">Loading audio...</div>
+              </div>
+            ) : (
+              <AudioPlayer 
+                src={url} 
+                messageId={message._id}
+                isOwnMessage={message.sender._id === user?._id}
+              />
+            )}
+          </div>
+        );
       case "file":
         return (
-          <div className="file-download">
-            <a href={url} download>
-              {message.content}
-            </a>
+          <div className="file-download" style={{ minHeight: "24px" }}>
+            {isLoading ? (
+              <div className="text-[#9aa4bd] text-sm animate-pulse">Loading file...</div>
+            ) : (
+              <a href={url} download className="text-white hover:text-[#5D64F4] transition-colors">
+                {message.content}
+              </a>
+            )}
           </div>
         );
       default:
         return (
-          <div>
+          <div className="text-white">
             {message.reply && 
-            <div className="border-l-[3px] border-[#AAACFF] border-solid border-solid border-[0.5px] p-2 flex-col rounded-[5px]">
-              <div className="text-sm text-[#9A9CEF]">{message.reply.sender.name}</div>
-              <div className="text-xs">{message.reply.content}  </div>            
+            <div className="border-l-2 border-[#AAACFF] pl-2 mb-2 opacity-80">
+              <div className="text-xs text-[#AAACFF] font-medium">{message.reply.sender.name}</div>
+              <div className="text-xs text-white/70 truncate">{message.reply.content}</div>            
             </div>
             }
-            {message.content}
+            <div className="break-words">{message.content}</div>
           </div>
         );
     }
   };
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
+  // Check if user is near bottom of scroll
+  const checkIfAtBottom = () => {
+    const container = messagesContainerRef.current;
+    if (!container) return false;
+    
+    const threshold = 100; // pixels from bottom
+    const isNearBottom = 
+      container.scrollHeight - container.scrollTop - container.clientHeight < threshold;
+    
+    setIsUserAtBottom(isNearBottom);
+    isUserAtBottomRef.current = isNearBottom;
+    return isNearBottom;
+  };
+
+  // Scroll to bottom only if user is already at bottom or it's initial load
+  const scrollToBottomIfNeeded = (smooth = false) => {
+    if (isUserAtBottomRef.current || isInitialLoadRef.current) {
+      messagesEndRef.current?.scrollIntoView({ 
+        behavior: smooth ? 'smooth' : 'auto',
+        block: 'end'
+      });
+    }
+  };
+
+  // Handle scroll events
   useEffect(() => {
-    const scrollToBottom = () => {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
-    };
-
-    // Scroll immediately for text messages
-    scrollToBottom();
-
-    // After images/files load, scroll again
-    const container = document.querySelector('.feed-container') as HTMLElement;
+    const container = messagesContainerRef.current;
     if (!container) return;
 
-    const imgs = container.querySelectorAll('img');
-    let loadedCount = 0;
+    const handleScroll = () => {
+      checkIfAtBottom();
+    };
 
-    if (imgs.length === 0) return;
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, []);
 
-    imgs.forEach((img) => {
-      if (img.complete) loadedCount++;
-      else
-        img.addEventListener('load', () => {
-          loadedCount++;
-          if (loadedCount === imgs.length) scrollToBottom();
-        });
-    });
+  // Scroll when messages change (only if at bottom or initial load)
+  useEffect(() => {
+    if (!messages || messages.length === 0) return;
 
-    if (loadedCount === imgs.length) scrollToBottom();
-  }, [messages, mediaUrls]);
+    // On initial load, scroll immediately
+    if (isInitialLoadRef.current) {
+      setTimeout(() => {
+        scrollToBottomIfNeeded(false);
+        setIsInitialLoad(false);
+        isInitialLoadRef.current = false;
+      }, 100);
+    } else {
+      // Otherwise, only scroll if user is at bottom
+      scrollToBottomIfNeeded(true);
+    }
+  }, [messages]);
+
+  // Handle media loading - don't auto-scroll, just update URLs
+  useEffect(() => {
+    // Only scroll if user is at bottom and it's not initial load
+    if (!isInitialLoadRef.current && isUserAtBottomRef.current) {
+      // Small delay to let DOM update
+      setTimeout(() => {
+        scrollToBottomIfNeeded(true);
+      }, 50);
+    }
+  }, [mediaUrls]);
 
   // =========== ESTABLISHING SOCKET CONNECTION ==============================================================================================================================
 
@@ -520,9 +705,25 @@ const ChatPage = () => {
   return (
     <>
     {imageModal &&
-      <div className="fixed h-full w-full bg-[rgba(0,0,0,0.6)] z-2 cursor-pointer" onClick={() => closeImageModal()}>
-        <div className="w-[90vw] max-h-[90vh] mx-auto bg-[rgba(0,0,0,0.9)] border-solid border-[1px]" onClick={(e) => e.stopPropagation()}>
-          <img src={ImageSrc} className="mx-auto max-w-[90vw] max-h-[90vh] object-contain"/>
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 cursor-pointer flex items-center justify-center p-4" onClick={() => closeImageModal()}>
+        <div className="w-full max-w-7xl h-full max-h-[95vh] bg-[#0f1926] border border-[#1f2735] rounded-lg shadow-xl flex flex-col overflow-hidden" onClick={(e) => e.stopPropagation()}>
+          <div className="flex justify-end items-center p-3 sm:p-4 border-b border-[#1f2735] flex-shrink-0">
+            <button 
+              onClick={() => closeImageModal()}
+              className="text-[#9aa4bd] hover:text-white transition-colors text-2xl sm:text-3xl font-bold w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg hover:bg-[#1f2735]"
+              aria-label="Close image"
+            >
+              ×
+            </button>
+          </div>
+          <div className="flex-1 overflow-auto flex items-center justify-center p-2 sm:p-4">
+            <img 
+              src={ImageSrc} 
+              className="max-w-full max-h-full w-auto h-auto object-contain rounded-lg"
+              alt="Message image"
+              style={{ maxWidth: '100%', maxHeight: 'calc(95vh - 80px)' }}
+            />
+          </div>
         </div>
       </div>
     }
@@ -548,198 +749,323 @@ const ChatPage = () => {
     
     
     
-    <div className="flex flex-row h-[100vh]">
-      {/* SIDEBAR */}
-      <div className="w-[80px] flex flex-col items-center h-full border-[1px] border-r border-[#353535] justify-between py-5">
-        <div className="flex flex-col gap-5">
-          <a href="/">
-            <img src="/Images/DevRim_Logo_0.png" width={48} />
-          </a>
-          <MessageSquare 
-             strokeWidth={'1px'}
-            onClick={() => setSection("messages")} 
-            className={`cursor-pointer w-[48px] text-[#FFF] ${section === "messages" && ('bg-[#5D64F4] rounded-3xl ')}`} 
-          />
-          <UserIcon 
-             strokeWidth={'1px'}
-            onClick={() => setSection("friends")} 
-            className={`cursor-pointer w-[48px] text-[#FFF] ${section === "friends" && ('bg-[#5D64F4] rounded-3xl ')}`}  
-          />
-        </div>
-        <div className="flex flex-col gap-5">
-          <CircleQuestionMark  strokeWidth={'1px'} className="cursor-pointer w-[48px] text-[#FFF]" />
-          <LayoutGrid  strokeWidth={'1px'} className="cursor-pointer w-[48px] text-[#FFF]" />
-          <img src={user?.picture} width={48} className="rounded-3xl" />
-        </div>
-      </div>
+    <div className="flex flex-row gap-6 px-6 py-8 w-full h-[calc(100vh-76px)]">
+      {/* Left Sidebar - Global Navigation */}
+      <Sidebar/>
 
-      {/* CHAT MENU */}
+      {/* Chat List Sidebar */}
       { section === "messages" && 
-      
-      <div className="w-[400px] flex flex-col border-r border-[#353535]">
-        <div className="h-[50px] border-b border-[#353535] flex items-center p-2 gap-3 ">
-          <div className="primary-btn p-2 rounded-xl w-full text-center" onClick={() => {setFindUsersModal(!findUsersModal)}}>
-            <span>Find or Start a Conversation</span>
-          </div>
-          <div className="flex primary-btn p-2 " onClick={() => {setGroupModal(!groupModal)}}>
-              +
-              <Users  strokeWidth={'1px'}/>
-
+      <div className="w-[360px] flex flex-col bg-[#0f1926] border border-[#1f2735] rounded-lg overflow-hidden">
+        {/* Top Section - Menu and Search */}
+        <div className="p-4 border-b border-[#1f2735] flex flex-col gap-3">
+          
+          <div className="flex gap-2">
+            <button
+              onClick={() => {setFindUsersModal(!findUsersModal)}}
+              className="flex-1 px-3 py-2 bg-[#121b2a] border border-[#1f2735] rounded-lg text-white text-sm hover:bg-[#1f2735] transition-colors"
+            >
+              Find User
+            </button>
+            <button
+              onClick={() => {setGroupModal(!groupModal)}}
+              className="px-3 py-2 bg-[#121b2a] border border-[#1f2735] rounded-lg text-white hover:bg-[#1f2735] transition-colors"
+            >
+              <Users size={18} />
+            </button>
           </div>
         </div>
-        <div className="flex flex-col gap-5 p-2">
-          {chats?.map((chatx, index) => (
-            <ChatMenu key={index} Chat={chatx} />
-          ))}
+
+        {/* Chat List */}
+        <div className="flex-1 overflow-y-auto">
+          {chats?.map((chatx, index) => {
+            const otherUser = chatx.chatName === "sender" 
+              ? chatx.users.find((u) => u._id !== user?._id)
+              : null;
+            const chatName = chatx.chatName === "sender" 
+              ? otherUser?.name || "Unknown"
+              : chatx.chatName;
+            const chatPicture = chatx.chatName === "sender"
+              ? otherUser?.picture
+              : '/Images/group_chat.png';
+            const lastMessage = chatx.latestMessage;
+            const lastMessagePreview = lastMessage 
+              ? `${lastMessage.sender._id === user?._id ? 'You: ' : ''}${lastMessage.content?.substring(0, 30)}${lastMessage.content?.length > 30 ? '...' : ''}`
+              : 'No messages yet';
+            const timestamp = chatx.updatedAt 
+              ? new Date(chatx.updatedAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
+              : '';
+            const isSelected = chat?._id === chatx._id;
+
+            return (
+              <div
+                key={index}
+                className={`cursor-pointer p-3 flex items-center gap-3 hover:bg-[#121b2a] transition-colors border-b border-[#1f2735] ${
+                  isSelected ? 'bg-[#1f2b3f] border-l-2 border-l-[#5D64F4]' : ''
+                }`}
+                onClick={() => {setChat(chatx)}}
+              >
+                <img 
+                  src={chatPicture} 
+                  alt={chatName}
+                  className="w-12 h-12 rounded-full border border-[#1f2735] object-cover"
+                />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-1">
+                    <h3 className="text-white font-semibold text-sm truncate">{chatName}</h3>
+                    {timestamp && (
+                      <span className="text-[#9aa4bd] text-xs ml-2">{timestamp}</span>
+                    )}
+                  </div>
+                  <p className="text-[#9aa4bd] text-xs truncate">{lastMessagePreview}</p>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
-      
       }
 
       {/* MESSAGES */}
       { section === "messages" && 
 
-      <div className="flex-grow flex flex-col feed-container overflow-y-scroll">
-        <div className="h-[50px] flex justify-between cursor-pointer items-center border-b border-[#353535] px-5 sticky top-0 bg-[#000] z-1">
-          <h2
-            className="w-fit cursor-pointer"
+      <div className="flex-grow flex flex-col bg-[#0f1926] border border-[#1f2735] rounded-lg overflow-hidden">
+        {/* Chat Header */}
+        <div className="h-[60px] flex items-center justify-between px-5 border-b border-[#1f2735] bg-[#121b2a]">
+          <div 
+            className="flex items-center gap-3 cursor-pointer"
             onClick={() => {
               if (chat?.isGroupChat) setGCModal(true);
             }}
           >
-            {chat?.chatName === "sender"
-              ? chat.users
-                  .filter((u) => u._id !== user?._id)
-                  .map((u) => 
-                  <h2 key={u._id}>{u.name}</h2>
-              )
-              : 
-              <h2>{chat?.chatName}</h2>
-              }
-          </h2>
+            {chat && (
+              <>
+                <img 
+                  src={
+                    chat.chatName === "sender"
+                      ? chat.users.find((u) => u._id !== user?._id)?.picture || user?.picture
+                      : '/Images/group_chat.png'
+                  }
+                  alt="Chat"
+                  className="w-10 h-10 rounded-full border border-[#1f2735] object-cover"
+                />
+                <h2 className="text-white font-semibold">
+                  {chat.chatName === "sender"
+                    ? chat.users.find((u) => u._id !== user?._id)?.name || "Unknown"
+                    : chat.chatName}
+                </h2>
+              </>
+            )}
+          </div>
           <div className="flex gap-2">
             <PinModal pinModal={pinModal} setPinModal={setPinModal}/>
             <GCUsersPanel setAddUsersModal={setAddUsersModal} chat={chat}/>
           </div>
         </div>
 
-        <div className="flex flex-col gap-2 px-5 flex-grow justify-end ">
-          {messages?.map((message, index) => (
-            <div
-              key={index}
-              id={`message:${message._id}`}
-              className={`relative rounded-[5px] flex flex-col gap-2 p-2 w-fit border border-[#979797] font-semibold ${
-                message.sender._id === user?._id
-                  ? "bg-green-300 text-black self-end"
-                  : "bg-[#9A9CD4] text-black self-start"
-              }`}
-
-              onMouseEnter={() => {setHoveredMessageId(message?._id)}}
-              onMouseLeave={() => {setHoveredMessageId("")}}
-            >
-              {renderMessageContent(message)}
-              <i className="text-xs text-right font-light">
-                {message.updatedAt.split("T")[1].slice(0, 5)}
-              </i>
-              
-              {/* ------------------------------- HOVER MENU ---------------------------------------- */}
-
-              { message._id === hoveredMessageId &&
-              <div 
-                className={`absolute flex flex-row gap-2 p-2 -top-10 ${message.sender._id === user?._id ? ("right-0") : ("left-0")} text-black rounded-[5px] 
-                  ${
-                  message.sender._id === user?._id
-                    ? "bg-green-500 text-black self-end"
-                    : "bg-[#9A9CEF] text-black self-start"
-                  } `
-                }
-              >
-                <CopyIcon className="cursor-pointer"  strokeWidth={'1px'} onClick={() => copy(message._id)}/>
-                {message.sender._id !== user?._id && <ReplyIcon  strokeWidth={'1px'} className="cursor-pointer" strokeWidth={1} onClick={() => {setReply(message)}}/>}
-                <PinIcon  strokeWidth={'1px'} className="cursor-pointer" onClick={() => handlePin(message)}/>
-                {message.sender._id === user?._id && <Trash2Icon strokeWidth={1} className="cursor-pointer" onClick={() => {handleDeleteMessage(message)}}/>}
+        {/* Messages Area */}
+        <div 
+          ref={messagesContainerRef}
+          className="flex-1 overflow-y-auto px-5 py-4 feed-container flex flex-col gap-3 relative"
+        >
+          {/* Loading Overlay */}
+          {isLoadingMessages && (
+            <div className="absolute inset-0 bg-[#0f1926]/95 backdrop-blur-sm z-10 flex items-center justify-center">
+              <div className="flex flex-col items-center gap-4">
+                <div className="w-12 h-12 border-4 border-[#1f2735] border-t-[#5D64F4] rounded-full animate-spin"></div>
+                <p className="text-[#9aa4bd] text-sm">Loading messages...</p>
               </div>
-              }
             </div>
+          )}
+
+          {/* Messages being mapped*/}
+          {messages?.map((message, index) => {
+            const messageDate = new Date(message.createdAt || message.updatedAt);
+            const prevMessageDate = index > 0 && messages[index - 1] 
+              ? new Date(messages[index - 1].createdAt || messages[index - 1].updatedAt)
+              : null;
             
-          ))}
+            // Check if this is a new day
+            const isNewDay = !prevMessageDate || 
+              messageDate.toDateString() !== prevMessageDate.toDateString();
+            
+            // Format date for display
+            const formatDateLabel = (date: Date) => {
+              const today = new Date();
+              const yesterday = new Date(today);
+              yesterday.setDate(yesterday.getDate() - 1);
+              
+              if (date.toDateString() === today.toDateString()) {
+                return 'Today';
+              } else if (date.toDateString() === yesterday.toDateString()) {
+                return 'Yesterday';
+              } else {
+                return date.toLocaleDateString('en-US', { 
+                  weekday: 'long', 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                });
+              }
+            };
+            
+            return (
+              <React.Fragment key={index}>
+
+                {/* Day indicator*/}
+                {isNewDay && (
+                  <div className="flex items-center justify-center my-2">
+                    <div className="px-3 py-1.5 bg-[#121b2a] border border-[#1f2735] rounded-full">
+                      <span className="text-[#9aa4bd] text-xs font-medium">
+                        {formatDateLabel(messageDate)}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {/* {message} */}
+                <div
+                  className="relative w-fit min-w-[150px] max-w-[70%]"
+                  style={{
+                    marginLeft: message.sender._id === user?._id ? 'auto' : '0',
+                    marginRight: message.sender._id === user?._id ? '0' : 'auto',
+                  }}
+                  onMouseEnter={() => {setHoveredMessageId(message?._id)}}
+                  onMouseLeave={() => {setHoveredMessageId("")}}
+                >
+                  <div
+                    id={`message:${message._id}`}
+                    className={`relative rounded-lg flex flex-col gap-2 p-3 ${
+                      message.sender._id === user?._id
+                        ? "bg-[#7c82ff] text-white"
+                        : "bg-[#1f2735] text-white"
+                    }`}
+                  >
+                    {renderMessageContent(message)}
+                    <div className="flex items-center justify-end gap-2">
+                      {hoveredMessageId === message._id && (
+                        <>
+                        <CopyIcon className="cursor-pointer text-white/80 hover:text-white transition-colors" size={16} onClick={() => copy(message._id)}/>
+                        {message.sender._id !== user?._id && (
+                          <ReplyIcon className="cursor-pointer text-white/80 hover:text-white transition-colors" size={16} onClick={() => {setReply(message)}}/>
+                        )}
+                        <PinIcon className="cursor-pointer text-white/80 hover:text-white transition-colors" size={16} onClick={() => handlePin(message)}/>
+                        {message.sender._id === user?._id && (
+                          <Trash2Icon className="cursor-pointer text-white/80 hover:text-red-300 transition-colors" size={16} onClick={() => {handleDeleteMessage(message)}}/>
+                        )}
+                        </>
+                      )}
+
+                      <span className="text-xs opacity-70">
+                        {new Date(message.updatedAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
+                      </span>
+                    </div>
+                  </div>                  
+                </div>
+              </React.Fragment>
+            );
+          })}
           <div ref={messagesEndRef} />
+          
+          {/* Typing Indicator */}
+          {isTyping && (
+            <div className="text-[#9aa4bd] text-sm italic">Typing...</div>
+          )}
         </div>
 
-        <div className="h-[30px]">
-          {isTyping ? (<div style={{fontSize: "20px"}}> ... </div>) : (<></>)}
-        </div>
-
-        {/* INPUT */}
-        <div className="flex flex-row items-center relative gap-2 px-2 sticky bottom-0 backdrop-blur-md">
+        {/* Message Input */}
+        <div className="border-t border-[#1f2735] p-4 bg-[#121b2a] relative">
+          {reply && 
+            <div className="absolute bottom-full left-0 right-0 mb-2 mx-4 rounded-lg bg-[#1f2735] border border-[#31415f] px-3 py-2">
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-[#9aa4bd] text-sm">Replying to {reply.sender.name}</span>
+                <button onClick={() => setReply(null)} className="text-white hover:text-[#9aa4bd] text-sm font-bold">
+                  ×
+                </button>
+              </div>  
+              <div className="text-white text-sm truncate">{reply.content}</div>
+            </div>  
+          }
+          
           {isRecording ? (
-            <div className="flex justify-around">
-              <div>VOICE IS BEING RECORDED</div>
-              <div onClick={stopRecording}>
-                <MicOff strokeWidth={'1px'}/>
+            <div className="flex items-center justify-center gap-4 py-2">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                <span className="text-[#9aa4bd]">Recording audio...</span>
               </div>
+              <button 
+                onClick={stopRecording}
+                className="p-2 bg-red-500 rounded-full hover:bg-red-600 transition-colors"
+                title="Stop recording"
+              >
+                <MicOff size={20} className="text-white"/>
+              </button>
             </div>
           ) : (
-            <input
-              placeholder="Send Message"
-              className="mx-5 my-1 flex-grow"
-              value={newMessage}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  sendMessage();
-                }
-              }}
-              onChange={(e) => setNewMessage(e.target.value)}
-            />
-          )}
-          <div className="primary-btn">
-            <SendHorizonal  strokeWidth={'1px'} onClick={sendMessage} />
-          </div>
-
-          <div className="relative primary-btn">
-            <Paperclip
-              strokeWidth={'1px'}
-              className="cursor-pointer"
-              onClick={() => setAttachment(!attachment)}
-            />
-            {attachment && (
-              <div className="p-2 flex flex-col bg-[#111] border-solid border-[1px] border-[#353535] rounded-3xl z-50 text-white shadow-md absolute gap-2 right-0 bottom-10 w-[200px]">
-                <label className="flex items-center hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer gap-2 text-sm">
-                  <Image strokeWidth={'1px'}/> UPLOAD IMAGE
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleImageUpload}
-                  />
-                </label>
-                <div
-                  onClick={startRecording}
-                  className="flex items-center hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer gap-2 text-sm"
-                >
-                  <Mic  strokeWidth={'1px'}/> RECORD AUDIO
-                </div>
-                <label className="flex items-center hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer gap-2 cursor-pointer text-sm">
-                  <FileIcon  strokeWidth={'1px'}/> UPLOAD FILES
-                  <input
-                    type="file"
-                    className="hidden"
-                    onChange={handleFileUpload}
-                  />
-                </label>
+            <div className="flex items-center gap-3">
+              <div className="relative flex-1">
+                <input
+                  placeholder="Type a message..."
+                  className="w-full px-4 py-3 bg-[#0f1926] border border-[#1f2735] rounded-lg text-white placeholder-[#9aa4bd] focus:outline-none focus:border-[#31415f]"
+                  value={newMessage}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      sendMessage();
+                    }
+                  }}
+                  onChange={(e) => {
+                    typingHandler(e);
+                  }}
+                />
               </div>
-            )}
-          </div>
-          {reply && 
-          <div className="absolute bottom-[50px] mx-5 rounded-[5px] w-[75%] bg-[#9A9CEF] text-black px-3 py-1">
-            <div className="flex justify-between">
-              <div>from {reply.sender.name}</div>
-              <div onClick={() => setReply(null)} className="text-sm font-bold cursor-pointer">X</div>
-            </div>  
-            <div className="bg-[#9A9CD4] border-[0.5px] p-1">{reply.content}</div>
-          </div>  
-          }
+              
+              <div className="relative">
+                <button
+                  className="p-3 bg-[#0f1926] border border-[#1f2735] rounded-lg hover:bg-[#1f2735] transition-colors"
+                  onClick={() => setAttachment(!attachment)}
+                >
+                  <Paperclip size={20} className="text-white"/>
+                </button>
+                {attachment && (
+                  <div className="absolute bottom-full right-0 mb-2 p-2 bg-[#121b2a] border border-[#1f2735] rounded-lg shadow-lg z-50 min-w-[200px]">
+                    <label className="flex items-center gap-2 p-2 hover:bg-[#1f2735] rounded cursor-pointer text-white text-sm">
+                      <Image size={16}/>
+                      Upload Image
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleImageUpload}
+                      />
+                    </label>
+                    <div
+                      onClick={startRecording}
+                      className="flex items-center gap-2 p-2 hover:bg-[#1f2735] rounded cursor-pointer text-white text-sm"
+                    >
+                      <Mic size={16}/>
+                      Record Audio
+                    </div>
+                    <label className="flex items-center gap-2 p-2 hover:bg-[#1f2735] rounded cursor-pointer text-white text-sm">
+                      <FileIcon size={16}/>
+                      Upload File
+                      <input
+                        type="file"
+                        className="hidden"
+                        onChange={handleFileUpload}
+                      />
+                    </label>
+                  </div>
+                )}
+              </div>
+              
+              <button
+                className="p-3 bg-[#5D64F4] rounded-lg hover:bg-[#4d54e4] transition-colors"
+                onClick={sendMessage}
+              >
+                <Send size={20} className="text-white"/>
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
