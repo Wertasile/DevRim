@@ -206,7 +206,7 @@ const Settings = () => {
 
   // Skeleton Loading Component
   const SkeletonLoader = () => (
-    <div className="min-h-screen bg-[#0a1118]">
+    <div className="min-h-screen bg-[#EDEDE9]">
       <div className="flex flex-row gap-6 px-6 py-8 mx-auto max-w-[1400px]">
         {/* Left Sidebar Skeleton */}
         <Sidebar />
@@ -294,14 +294,14 @@ const Settings = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-[#0a1118] flex items-center justify-center">
-        <div className="text-white text-lg">Please log in to access settings.</div>
+      <div className="min-h-screen flex items-center justify-center">
+        <h3>Please log in to access settings.</h3>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0a1118]">
+    <div className="min-h-screen">
       <div className="flex flex-row gap-6 px-6 py-8 mx-auto max-w-[1400px]">
         {/* Left Sidebar */}
         <Sidebar />
@@ -309,10 +309,7 @@ const Settings = () => {
         {/* Main Content */}
         <div className="flex-grow flex flex-col gap-6">
           {/* Header */}
-          <div className="flex flex-col gap-2">
-            <h1 className="text-3xl font-bold text-white">Settings</h1>
-            <p className="text-[#979797]">Manage your personal information and preferences</p>
-          </div>
+            <h1>SETTINGS</h1>
 
           {/* Success/Error Messages */}
           {successMessage && (
@@ -329,16 +326,16 @@ const Settings = () => {
           {/* Settings Form */}
           <form onSubmit={handleSubmit} className="flex flex-col gap-6">
             {/* Personal Information Section */}
-            <div className="bg-[#111a29] border border-[#1f2735] rounded-lg p-6">
+            <div className="border border-[#1f2735] p-6">
               <div className="flex items-center gap-3 mb-6">
                 <User size={20} className="text-[#5D64F4]" />
-                <h2 className="text-xl font-semibold text-white">Personal Information</h2>
+                <h2>PERSONAL INFORMATION</h2>
               </div>
 
               <div className="flex flex-col gap-5">
                 {/* Email (Read-only) */}
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="email" className="text-white text-sm font-medium flex items-center gap-2">
+                  <label htmlFor="email" className="flex items-center gap-2">
                     <Mail size={16} className="text-[#979797]" />
                     Email Address
                   </label>
@@ -347,14 +344,14 @@ const Settings = () => {
                     type="email"
                     value={user.email || ''}
                     disabled
-                    className="bg-[#0a1118] text-[#979797] border border-[#353535] rounded-lg px-4 py-2 cursor-not-allowed"
+                    className="cursor-not-allowed text-[#979797]"
                   />
                   <p className="text-[#979797] text-xs">Email cannot be changed as you're signed in with Google OAuth</p>
                 </div>
 
                 {/* Full Name */}
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="name" className="text-white text-sm font-medium flex items-center gap-2">
+                  <label htmlFor="name" className="flex items-center gap-2">
                     <User size={16} className="text-[#979797]" />
                     Full Name
                   </label>
@@ -365,13 +362,12 @@ const Settings = () => {
                     value={formData.name}
                     onChange={handleInputChange}
                     placeholder="Enter your full name"
-                    className="bg-[#111] text-white border border-[#353535] rounded-lg px-4 py-2 focus:outline-none focus:border-[#5D64F4] transition-colors"
                   />
                 </div>
 
                 {/* Given Name */}
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="given_name" className="text-white text-sm font-medium">
+                  <label htmlFor="given_name" className="">
                     First Name
                   </label>
                   <input
@@ -381,13 +377,12 @@ const Settings = () => {
                     value={formData.given_name}
                     onChange={handleInputChange}
                     placeholder="Enter your first name"
-                    className="bg-[#111] text-white border border-[#353535] rounded-lg px-4 py-2 focus:outline-none focus:border-[#5D64F4] transition-colors"
                   />
                 </div>
 
                 {/* Family Name */}
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="family_name" className="text-white text-sm font-medium">
+                  <label htmlFor="family_name" className="">
                     Last Name
                   </label>
                   <input
@@ -397,23 +392,22 @@ const Settings = () => {
                     value={formData.family_name}
                     onChange={handleInputChange}
                     placeholder="Enter your last name"
-                    className="bg-[#111] text-white border border-[#353535] rounded-lg px-4 py-2 focus:outline-none focus:border-[#5D64F4] transition-colors"
                   />
                 </div>
               </div>
             </div>
 
             {/* Profile Section */}
-            <div className="bg-[#111a29] border border-[#1f2735] rounded-lg p-6">
+            <div className="border border-[#1f2735] p-6">
               <div className="flex items-center gap-3 mb-6">
                 <ImageIcon size={20} className="text-[#5D64F4]" />
-                <h2 className="text-xl font-semibold text-white">Profile</h2>
+                <h2>PROFILE</h2>
               </div>
 
               <div className="flex flex-col gap-5">
                 {/* Profile Picture Upload */}
                 <div className="flex flex-col gap-4">
-                  <label className="text-white text-sm font-medium flex items-center gap-2">
+                  <label className="flex items-center gap-2">
                     <ImageIcon size={16} className="text-[#979797]" />
                     Profile Picture
                   </label>
@@ -424,7 +418,7 @@ const Settings = () => {
                       <img
                         src={previewUrl}
                         alt="Profile preview"
-                        className="w-32 h-32 rounded-full border-2 border-[#353535] object-cover"
+                        className="w-32 h-32 rounded-full object-cover"
                         onError={(e) => {
                           e.currentTarget.style.display = 'none';
                         }}
@@ -453,10 +447,10 @@ const Settings = () => {
                     />
                     <label
                       htmlFor="picture-upload"
-                      className={`inline-flex items-center gap-2 px-4 py-2 border border-[#353535] rounded-lg cursor-pointer transition-colors ${
+                      className={`inline-flex items-center gap-2 cursor-pointer ${
                         isUploading
-                          ? 'bg-[#353535] text-[#979797] cursor-not-allowed w-fit'
-                          : 'bg-[#111] text-white hover:bg-[#1a1a1a] hover:border-[#5D64F4] w-fit'
+                          ? 'cursor-not-allowed w-fit'
+                          : 'hover:bg-[#1a1a1a] w-fit'
                       }`}
                     >
                       <Upload size={16} />
@@ -470,7 +464,7 @@ const Settings = () => {
 
                 {/* Byline */}
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="byline" className="text-white text-sm font-medium flex items-center gap-2">
+                  <label htmlFor="byline" className="flex items-center gap-2">
                     <Briefcase size={16} className="text-[#979797]" />
                     Byline
                   </label>
@@ -482,14 +476,13 @@ const Settings = () => {
                     onChange={handleInputChange}
                     placeholder="e.g., Software Engineer at Company"
                     maxLength={100}
-                    className="bg-[#111] text-white border border-[#353535] rounded-lg px-4 py-2 focus:outline-none focus:border-[#5D64F4] transition-colors"
                   />
                   <p className="text-[#979797] text-xs">{formData.byline.length}/100 characters</p>
                 </div>
 
                 {/* About */}
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="about" className="text-white text-sm font-medium flex items-center gap-2">
+                  <label htmlFor="about" className="flex items-center gap-2">
                     <FileText size={16} className="text-[#979797]" />
                     About
                   </label>
@@ -500,8 +493,7 @@ const Settings = () => {
                     onChange={handleInputChange}
                     placeholder="Tell us about yourself..."
                     rows={6}
-                    maxLength={500}
-                    className="bg-[#111] text-white border border-[#353535] rounded-lg px-4 py-2 focus:outline-none focus:border-[#5D64F4] transition-colors resize-none"
+                    maxLength={500} 
                   />
                   <p className="text-[#979797] text-xs">{formData.about.length}/500 characters</p>
                 </div>
@@ -513,10 +505,9 @@ const Settings = () => {
               <button
                 type="submit"
                 disabled={isSaving}
-                className={`primary-btn flex items-center gap-2 ${isSaving ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`primary-btn ${isSaving ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                <Save size={16} />
-                <span>{isSaving ? 'SAVING...' : 'SAVE CHANGES'}</span>
+                <span>{isSaving ? 'SAVING...' : 'SAVE'}</span>
               </button>
             </div>
           </form>

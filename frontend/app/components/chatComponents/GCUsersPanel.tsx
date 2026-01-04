@@ -33,19 +33,19 @@ const GCUsersPanel = ({chat, setAddUsersModal}:GCUsersPanelProps) => {
 
   return (
     <>
-        <button 
-          className='p-2 bg-[#0f1926] border border-[#1f2735] rounded-lg hover:bg-[#1f2735] transition-colors' 
+        <div 
+          className='icon' 
           onClick={openPanel}
         >
-          <Users size={18} className="text-white" strokeWidth={'1px'}/>
-        </button>
+          <Users size={20}/>
+        </div>
         <div 
             ref={usersPanel} 
             className='fixed flex flex-col gap-4 h-[100vh] top-0 right-0 max-w-[400px] sm:w-[400px] border-l border-[#1f2735] p-6 bg-[#0f1926] shadow-xl z-60'
             style={{transform: "translateX(100%)"}}
         >   
             <div className='flex items-center justify-between'>
-                <h3 className="text-white font-semibold text-lg">Group Members</h3>
+                <h3 className="text-white font-semibold text-lg">MEMBERS</h3>
                 <button 
                   className="text-[#9aa4bd] hover:text-white transition-colors text-xl font-bold cursor-pointer"
                   onClick={closePanel}
@@ -66,7 +66,7 @@ const GCUsersPanel = ({chat, setAddUsersModal}:GCUsersPanelProps) => {
                   chat.users.map(( user, index) => (
                     <div 
                       key={index}
-                      className='p-3 bg-[#121b2a] border border-[#1f2735] rounded-lg hover:bg-[#1f2735] transition-colors'
+                      className='p-3 bg-[#121b2a] border border-[#000000] rounded-lg hover:bg-[#1f2735] transition-colors'
                     >
                         <div className="flex items-center gap-3">
                             <img 

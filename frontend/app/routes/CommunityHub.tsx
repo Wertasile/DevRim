@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useUser } from '~/context/userContext';
 import type { Community } from '~/types/types';
 import Sidebar from '~/components/Sidebar';
-import { Search, Compass, Settings, Heart, Users, Plus } from 'lucide-react';
+import { Search, Compass, Settings, Heart, Users, Plus, PlusIcon } from 'lucide-react';
 import CreateCommunityModal from '~/components/CreateCommunityModal';
+import joinCommunity from '~/apiCalls/Community/joinCommunity';
+import leaveCommunity from '~/apiCalls/Community/leaveCommunity';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -78,7 +80,7 @@ const CommunityHub = () => {
   };
 
   return (
-    <div className='min-h-screen bg-[#0a1118]'>
+    <div className='min-h-screen'>
       <CreateCommunityModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
@@ -94,21 +96,19 @@ const CommunityHub = () => {
           {/* Search Bar and Create Button */}
           <div className='flex gap-3'>
             <div className='relative flex-1'>
-              <Search size={20} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#9aa4bd] pointer-events-none z-10" />
               <input
                 type="text"
                 placeholder="Search for Communities"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-[#121b2a] border border-[#1f2735] rounded-lg text-white placeholder-[#9aa4bd] focus:outline-none focus:border-[#31415f] relative z-0"
               />
             </div>
             <button
               onClick={() => setIsCreateModalOpen(true)}
-              className="px-6 py-3 bg-[#5D64F4] hover:bg-[#4d54e4] rounded-lg text-white font-medium transition-colors flex items-center gap-2"
+              className="primary-btn flex gap-[10px] items-center"
             >
               <Plus size={20} />
-              Create Community
+              CREATE COMMUNITY
             </button>
           </div>
 
@@ -118,27 +118,30 @@ const CommunityHub = () => {
               return (
                 <div
                   key={community._id}
-                  className='bg-[#0f1926] border border-[#1f2735] rounded-lg overflow-hidden cursor-pointer hover:border-[#31415f] transition-all group'
+                  className='bg-[#EDEDE9] border border-[#1f2735] overflow-hidden cursor-pointer hover:border-[#31415f] transition-all group'
                   onClick={() => window.location.href = `/community/${community._id}`}
                 >
                   
 
                   {/* Card Content */}
-                  <div className='p-5 flex flex-col gap-3 bg-[#0f1926]'>
-                    <div className='flex items-start gap-3'>
-                      <div className='w-28 h-28 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-lg'>
+                  <div className='flex flex-col gap-3'>
+                    <div className='flex items-start gap-[10px]'>
+                      <div className='w-28 h-28 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg'>
                         <img 
                           src={community.picture} 
                           alt={community.title}
-                          className='w-full h-full object-cover rounded-[25px]'
+                          className='w-full h-full object-cover'
                         />
                       </div>
-                      <div className='flex-1 min-w-0'>
-                        <h3 className='text-white font-bold text-xl mb-1'>{community.title}</h3>
-                        <p className='text-[#9aa4bd] text-sm mb-2'>{formatMemberCount(community.members?.length)} members</p>
-                        <p className='text-[#9aa4bd] text-sm line-clamp-2'>
+                      <div className='flex flex-col'>
+                        <div className='flex gap-[10px] items-center'>
+                          <h3>{community.title}</h3>
+                          <div className='text-mini text-[#9aa4bd]'>{formatMemberCount(community.members?.length)} members</div>
+                        </div>  
+
+                        <div className='text-small'>
                           {community.description || 'Join this community to connect with like-minded people'}
-                        </p>
+                        </div>
                       </div>
                     </div>
                   </div>

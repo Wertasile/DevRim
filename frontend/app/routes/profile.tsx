@@ -322,7 +322,7 @@ const profile = ({params}: Route.ComponentProps) => {
   };
 
   return (
-    <div className='min-h-screen bg-[#0a1118]'>
+    <div className='min-h-screen'>
         {listModal && 
             <CreateListModal setListModal={setListModal} listModal={listModal} setLists={setLists} profile={profile} />
         }
@@ -334,15 +334,15 @@ const profile = ({params}: Route.ComponentProps) => {
         }
         
         {/* Main Layout Container */}
-        <div className='flex flex-row gap-6 px-6 py-8 mx-auto max-w-[1400px]'>
-            {/* Left Sidebar */}
+        <div className='flex flex-row gap-6 px-6 py-8 mx-auto'>
+            {/* Left SIDE */}
             <Sidebar/>
 
-            {/* Central Content Area */}
-            <div className='flex-grow flex flex-col gap-6'>
+            {/* MIDDLE */}
+            <div className='flex-grow flex flex-col items-center gap-6'>
                 {/* Profile Header */}
-                <div className='flex flex-col gap-4'>
-                    <div className='flex items-start gap-6'>
+                <div className='flex flex-col justify-center w-fullgap-4'>
+                    <div className='flex flex-col items-center gap-6'>
                         <img 
                             className="rounded-full border-2 border-[#353535]" 
                             src={profile?.picture} 
@@ -351,45 +351,39 @@ const profile = ({params}: Route.ComponentProps) => {
                             alt={profile?.name}
                         />
                         <div className='flex flex-col gap-2 flex-grow'>
-                            <div className='flex items-start justify-between gap-4'>
+                            <div className='flex items-center justify-between gap-4'>
+
                                 <div className='flex flex-col gap-2'>
-                                    <h1 className='text-3xl font-bold text-white'>{profile?.name}</h1>
-                                    <p className='text-[#979797] text-lg'>{getUsername(profile?.email)}</p>
-                                    {profile?.byline && (
-                                        <p className='text-white mt-2'>{profile.byline}</p>
-                                    )}
+                                    <h1>{profile?.name.toUpperCase()}</h1>
                                     <div className='flex gap-6 mt-2'>
                                         {profile?._id === user?._id ? (
                                             <>
-                                                <button 
+                                                <h3 
                                                     onClick={() => {
                                                         setView("followersFollowing");
                                                         setFollowersView("followers");
                                                     }}
-                                                    className='text-white hover:text-[#5D64F4] transition-colors cursor-pointer'
                                                 >
-                                                    {profile?.followers?.length || 0} followers
-                                                </button>
-                                                <button 
+                                                    {profile?.followers?.length || 0} FOLLOWERS
+                                                </h3>
+                                                <h3 
                                                     onClick={() => {
                                                         setView("followersFollowing");
                                                         setFollowersView("following");
                                                     }}
-                                                    className='text-white hover:text-[#5D64F4] transition-colors cursor-pointer'
                                                 >
-                                                    {profile?.following?.length || 0} following
-                                                </button>
+                                                    {profile?.following?.length || 0} FOLLOWING
+                                                </h3>
                                             </>
                                         ) : (
                                             <>
-                                                <span className='text-white'>{profile?.followers?.length || 0} followers</span>
-                                                <span className='text-white'>{profile?.following?.length || 0} following</span>
+                                                <h3>{profile?.followers?.length || 0} FOLLOWERS</h3>
+                                                <h3>{profile?.following?.length || 0} FOLLOWING</h3>
                                             </>
                                         )}
                                     </div>
-                                </div>
-                                {profile?._id !== user?._id && (
-                                    <div className='flex flex-col gap-2 items-end'>
+                                    {profile?._id !== user?._id && (
+                                    <div className='flex flex-col items-center gap-2'>
                                         {connected ? (
                                             <button 
                                                 className='primary-btn' 
@@ -400,16 +394,10 @@ const profile = ({params}: Route.ComponentProps) => {
                                         ) : (
                                             <>
                                                 <div className='flex gap-2'>
-                                                    <button 
-                                                        className='primary-btn' 
-                                                        onClick={handleFollow}
-                                                    >
+                                                    <button className='primary-btn' onClick={handleFollow}>
                                                         {following ? (<span>UNFOLLOW</span>) : (<span>FOLLOW</span>)}
                                                     </button>
-                                                    <button 
-                                                        className='primary-btn'
-                                                        onClick={handleConnect}
-                                                    >
+                                                    <button className='primary-btn'onClick={handleConnect}>
                                                         {user?.requestsReceived && profile?._id && user.requestsReceived.includes(profile._id) ? (
                                                             <span>ACCEPT</span>
                                                         ) : user?.requestsSent && profile?._id && user.requestsSent.includes(profile._id) ? (
@@ -425,35 +413,36 @@ const profile = ({params}: Route.ComponentProps) => {
                                             </>
                                         )}
                                     </div>
-                                )}
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 {/* Navigation Tabs */}
-                <div className='flex flex-row gap-4 border-b border-[#353535] pb-2'>
+                <div className='flex flex-row gap-4 border-[1px] w-fit border-black'>
                     <button 
-                        className={`px-4 py-2 rounded-t-lg transition-colors ${view === "highlights" ? 'bg-[#5D64F4] text-white' : 'text-[#979797] hover:text-white'}`}
+                        className={`px-4 py-2 transition-colors ${view === "highlights" ? 'bg-[#E95444] border-b-[3px] border-black' : ''}`}
                         onClick={() => setView("highlights")}
                     >
                         Highlights
                     </button>
                     <button 
-                        className={`px-4 py-2 rounded-t-lg transition-colors ${view === "blogs" ? 'bg-[#5D64F4] text-white' : 'text-[#979797] hover:text-white'}`}
+                        className={`px-4 py-2 transition-colors ${view === "blogs" ? 'bg-[#E95444] border-b-[3px] border-black' : ''}`}
                         onClick={() => setView("blogs")}
                     >
                         Posts
                     </button>
                     <button 
-                        className={`px-4 py-2 rounded-t-lg transition-colors ${view === "lists" ? 'bg-[#5D64F4] text-white' : 'text-[#979797] hover:text-white'}`}
+                        className={`px-4 py-2 transition-colors ${view === "lists" ? 'bg-[#E95444] border-b-[3px] border-black' : ''}`}
                         onClick={() => setView("lists")}
                     >
                         Collections
                     </button>
                     {profile?._id === user?._id && (
                         <button 
-                            className={`px-4 py-2 rounded-t-lg transition-colors ${view === "liked" ? 'bg-[#5D64F4] text-white' : 'text-[#979797] hover:text-white'}`}
+                            className={`px-4 py-2 transition-colors ${view === "liked" ? 'bg-[#E95444] border-b-[3px] border-black' : ''}`}
                             onClick={() => setView("liked")}
                         >
                             Liked
@@ -461,7 +450,7 @@ const profile = ({params}: Route.ComponentProps) => {
                     )}
                     {profile?._id === user?._id && (
                         <button 
-                            className={`px-4 py-2 rounded-t-lg transition-colors flex items-center gap-2 ${view === "requests" ? 'bg-[#5D64F4] text-white' : 'text-[#979797] hover:text-white'}`}
+                            className={`px-4 py-2 transition-colors flex items-center gap-2 ${view === "requests" ? 'bg-[#FF5A48] border-b-[3px] border-black' : ''}`}
                             onClick={() => setView("requests")}
                         >
                             Requests {profile?.requestsReceived && profile.requestsReceived.length > 0 && <DotIcon strokeWidth={'4px'} color='yellow'/>}
@@ -469,7 +458,7 @@ const profile = ({params}: Route.ComponentProps) => {
                     )}
                     {profile?._id === user?._id && (
                         <button 
-                            className={`px-4 py-2 rounded-t-lg transition-colors ${view === "connections" ? 'bg-[#5D64F4] text-white' : 'text-[#979797] hover:text-white'}`}
+                            className={`px-4 py-2 transition-colors ${view === "connections" ? 'bg-[#FF5A48] border-b-[3px] border-black' : ''}`}
                             onClick={() => setView("connections")}
                         >
                             Connections
@@ -490,7 +479,7 @@ const profile = ({params}: Route.ComponentProps) => {
                                 return (
                                     <div 
                                         key={b._id} 
-                                        className='bg-[#111a29] border border-[#1f2735] rounded-lg overflow-hidden cursor-pointer hover:border-[#2c3a55] transition-all'
+                                        className='bg-[#FED259] border-[1px] border-[#000000] overflow-hidden cursor-pointer hover:border-[#2c3a55] transition-all'
                                         onClick={() => window.location.href = `/blog/${b._id}`}
                                     >
                                         <div className='relative h-48 overflow-hidden'>
@@ -500,21 +489,24 @@ const profile = ({params}: Route.ComponentProps) => {
                                                 className='w-full h-full object-cover'
                                             />
                                         </div>
-                                        <div className='p-4 flex flex-col gap-3'>
-                                            <h3 className='text-white font-semibold text-lg line-clamp-2'>{b.title}</h3>
-                                            <p className='text-[#979797] text-sm'>{formattedDate}</p>
-                                            <div className='flex items-center gap-4 text-[#979797] text-sm'>
-                                                <span className='flex items-center gap-1'>
-                                                    <ThumbsUp size={16} />
-                                                    {b.likes?.length || 0}
-                                                </span>
-                                                <span className='flex items-center gap-1'>
-                                                    <MessageCircle size={16} />
-                                                    {b.comments?.length || 0}
-                                                </span>
-                                                <Share2 size={16} className='ml-auto' />
-                                                <Bookmark size={16} />
-                                            </div>
+                                        <div className='p-4 flex flex-col justify-between gap-3 group-hover:bg-[#FED259] transition-all'>
+                                            <h3 className='line-clamp-2'>{b.title}</h3>
+                                            <div className='flex flex-col gap-2'>
+                                                <p className='text-[#353535] text-sm'>{formattedDate}</p>
+                                                <div className='flex items-center gap-4 text-[#353535] text-sm'>
+                                                    <span className='flex items-center gap-1'>
+                                                        <ThumbsUp size={16} />
+                                                        {b.likes?.length || 0}
+                                                    </span>
+                                                    <span className='flex items-center gap-1'>
+                                                        <MessageCircle size={16} />
+                                                        {b.comments?.length || 0}
+                                                    </span>
+                                                    <Share2 size={16} className='ml-auto' />
+                                                    <Bookmark size={16} />
+                                                </div>
+                                            </div>    
+
                                         </div>
                                     </div>
                                 );
@@ -609,13 +601,13 @@ const profile = ({params}: Route.ComponentProps) => {
                         <div>
                             <div className='flex flex-row gap-4 border-b border-[#353535] pb-2 mb-4'>
                                 <button 
-                                    className={`px-4 py-2 rounded-t-lg transition-colors ${requestView === "RequestsReceived" ? 'bg-[#5D64F4] text-white' : 'text-[#979797] hover:text-white'}`}
+                                    className={`px-4 py-2 transition-colors ${requestView === "RequestsReceived" ? 'bg-[#FF5A48] border-b-[3px] border-black' : ''}`}
                                     onClick={() => setRequestView("RequestsReceived")}
                                 >
                                     Requests Received {profile?.requestsReceived?.length || 0}
                                 </button>
                                 <button 
-                                    className={`px-4 py-2 rounded-t-lg transition-colors ${requestView === "RequestsSent" ? 'bg-[#5D64F4] text-white' : 'text-[#979797] hover:text-white'}`}
+                                    className={`px-4 py-2 transition-colors ${requestView === "RequestsSent" ? 'bg-[#FF5A48] border-b-[3px] border-black' : ''}`}
                                     onClick={() => setRequestView("RequestsSent")}
                                 >
                                     Requests Sent {profile?.requestsSent?.length || 0}
@@ -703,7 +695,7 @@ const profile = ({params}: Route.ComponentProps) => {
                                     className={`px-4 py-2 rounded-t-lg transition-colors ${followersView === "followers" ? 'bg-[#5D64F4] text-white' : 'text-[#979797] hover:text-white'}`}
                                     onClick={() => setFollowersView("followers")}
                                 >
-                                    Followers {profile?.followers?.length || 0}
+                                    FOLLOWERS {profile?.followers?.length || 0}
                                 </button>
                                 <button 
                                     className={`px-4 py-2 rounded-t-lg transition-colors ${followersView === "following" ? 'bg-[#5D64F4] text-white' : 'text-[#979797] hover:text-white'}`}
@@ -755,6 +747,21 @@ const profile = ({params}: Route.ComponentProps) => {
                 </div>
             </div>
 
+            {/* RIGHT SIDE*/}
+            <div className='max-w-[300px] min-w-[300px] flex flex-col gap-[30px]'>
+
+                {/* ABOUT */}
+                <div className='w-full bg-[#EDEDE9] border-[3px] border-[#000000] p-[5px]'>
+                    <h3>ABOUT</h3>
+                    <p className='text-[#353535]'>{profile?.about}</p>
+                    <div>Joined on {formatDate(profile?.created_at || "")}</div>
+                </div>
+
+                {/* LOVED TOPICS / COMMUNITIES*/}
+                <div className='w-full bg-[#EDEDE9] border-[3px] border-[#000000] p-[5px]'>
+                    <h3>LOVED TOPICS / COMMUNITIES</h3>
+                </div>
+            </div>
             
         </div>
     </div>

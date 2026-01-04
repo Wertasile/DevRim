@@ -1,5 +1,6 @@
 import community from "../models/community.js";
 import post from "../models/post.js";
+import user from "../models/user.js";
 
 const getAllCommunity = async(req, res) => {
     try
@@ -12,6 +13,36 @@ const getAllCommunity = async(req, res) => {
         console.log(e)
         res.status(500).json({ error: "Failed to fetch communities" })
     }     
+}
+
+const joinCommunity = async(req, res) => {
+    try
+    {
+        const currentUser = req.user
+        const communityId = req.params.communityId
+        const data = await community.findByIdAndUpdate(communityId, { $push: { members: currentUser } }, { new: true }).exec()
+        await user.findByIdAndUpdate(currentUser, { $addToSet: { communities: data } }, { new: true }).exec()
+        res.send(data)
+    }
+    catch(e){
+        console.log(e)
+        res.status(500).json({ error: "Failed to join community" })
+    }
+}
+
+const leaveCommunity = async(req, res) => {
+    try
+    {
+        const currentUser = req.user
+        const communityId = req.params.communityId
+        const data = await community.findByIdAndUpdate(communityId, { $pull: { members: currentUser } }, { new: true }).exec()
+        await user.findByIdAndUpdate(currentUser, { $pull: { communities: data } }, { new: true }).exec()
+        res.json({ message: "Left community successfully", data })
+    }
+    catch(e){
+        console.log(e)
+        res.status(500).json({ error: "Failed to leave community" })
+    }
 }
 
 const getCommunity = async(req, res) => {
@@ -167,4 +198,4 @@ const deleteCommunity = async(req, res) => {
     }   
 }
 
-export { getAllCommunity, getCommunity, deleteCommunity, createCommunity, editCommunity}
+export { getAllCommunity, getCommunity, deleteCommunity, createCommunity, editCommunity, joinCommunity, leaveCommunity}

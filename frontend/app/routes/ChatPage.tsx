@@ -22,6 +22,7 @@ import {
   Compass,
   Heart,
   Settings,
+  X,
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import ChatMenu from "~/components/chatComponents/ChatMenu";
@@ -486,7 +487,7 @@ const ChatPage = () => {
         return (
           <div className="relative" style={{ minWidth: '200px', minHeight: '150px' }}>
             {isLoading ? (
-              <div className="w-[200px] h-[150px] bg-[#1f2735] rounded-lg flex items-center justify-center animate-pulse">
+              <div className="w-[200px] h-[150px] items-center justify-center animate-pulse">
                 <div className="text-[#9aa4bd] text-xs">Loading image...</div>
               </div>
             ) : (
@@ -512,7 +513,7 @@ const ChatPage = () => {
           <div style={{ minWidth: "250px" }}>
             {isLoading ? (
               <div className="w-[250px] h-[60px] bg-[#1f2735] rounded-lg flex items-center justify-center animate-pulse">
-                <div className="text-[#9aa4bd] text-xs">Loading audio...</div>
+                <div className="text-xs">Loading audio...</div>
               </div>
             ) : (
               <AudioPlayer 
@@ -529,7 +530,7 @@ const ChatPage = () => {
             {isLoading ? (
               <div className="text-[#9aa4bd] text-sm animate-pulse">Loading file...</div>
             ) : (
-              <a href={url} download className="text-white hover:text-[#5D64F4] transition-colors">
+              <a href={url} download>
                 {message.content}
               </a>
             )}
@@ -537,11 +538,11 @@ const ChatPage = () => {
         );
       default:
         return (
-          <div className="text-white">
+          <div>
             {message.reply && 
-            <div className="border-l-2 border-[#AAACFF] pl-2 mb-2 opacity-80">
-              <div className="text-xs text-[#AAACFF] font-medium">{message.reply.sender.name}</div>
-              <div className="text-xs text-white/70 truncate">{message.reply.content}</div>            
+            <div className="border-2 p-2 border-[#000] border-solid pl-2 mb-2 opacity-80">
+              <div className="text-xs font-medium">{message.reply.sender.name}</div>
+              <div className="text-xs truncate">{message.reply.content}</div>            
             </div>
             }
             <div className="break-words">{message.content}</div>
@@ -699,6 +700,32 @@ const ChatPage = () => {
     }, timerLength)
   };
 
+  // Redirect or show login page if not logged in
+  if (!user) {
+    return (
+    <div className="flex flex-col gap-[10px] items-center justify-center min-h-screen bg-[#D6D6CD] text-center p-6">
+        <h1>Welcome to DevRim</h1>
+        <p>
+        Please <span className="text-[#5D64F4] font-semibold">log in</span> or <span className="text-[#5D64F4] font-semibold">sign up</span> to explore personalized blog recommendations and trending posts.
+        </p>
+        <div className="flex gap-4">
+        <a
+            href="/login"
+            className="primary-btn"
+        >
+            Log In
+        </a>
+        <a
+            href="/register"
+            className="secondary-btn"
+        >
+            Sign Up
+        </a>
+        </div>
+    </div>
+    )
+}
+
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -706,20 +733,19 @@ const ChatPage = () => {
     <>
     {imageModal &&
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 cursor-pointer flex items-center justify-center p-4" onClick={() => closeImageModal()}>
-        <div className="w-full max-w-7xl h-full max-h-[95vh] bg-[#0f1926] border border-[#1f2735] rounded-lg shadow-xl flex flex-col overflow-hidden" onClick={(e) => e.stopPropagation()}>
-          <div className="flex justify-end items-center p-3 sm:p-4 border-b border-[#1f2735] flex-shrink-0">
+        <div className="w-full max-w-7xl h-full max-h-[95vh] bg-[#EDEDE9] border border-[#1f2735] flex flex-col overflow-hidden" onClick={(e) => e.stopPropagation()}>
+          <div className="flex justify-end items-center p-1 border-b border-[#1f2735] flex-shrink-0">
             <button 
               onClick={() => closeImageModal()}
-              className="text-[#9aa4bd] hover:text-white transition-colors text-2xl sm:text-3xl font-bold w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg hover:bg-[#1f2735]"
-              aria-label="Close image"
+              className="icon"
             >
-              ×
+              <X size={20}/>
             </button>
           </div>
-          <div className="flex-1 overflow-auto flex items-center justify-center p-2 sm:p-4">
+          <div className="flex-1 flex items-center justify-center p-2 sm:p-4">
             <img 
               src={ImageSrc} 
-              className="max-w-full max-h-full w-auto h-auto object-contain rounded-lg"
+              className="max-w-full max-h-full w-auto h-auto object-contain border border-[#000]"
               alt="Message image"
               style={{ maxWidth: '100%', maxHeight: 'calc(95vh - 80px)' }}
             />
@@ -755,28 +781,24 @@ const ChatPage = () => {
 
       {/* Chat List Sidebar */}
       { section === "messages" && 
-      <div className="w-[360px] flex flex-col bg-[#0f1926] border border-[#1f2735] rounded-lg overflow-hidden">
+      <div className="w-[400px]">
         {/* Top Section - Menu and Search */}
-        <div className="p-4 border-b border-[#1f2735] flex flex-col gap-3">
+        <div className="p-4 flex flex-col gap-3">
           
           <div className="flex gap-2">
             <button
               onClick={() => {setFindUsersModal(!findUsersModal)}}
-              className="flex-1 px-3 py-2 bg-[#121b2a] border border-[#1f2735] rounded-lg text-white text-sm hover:bg-[#1f2735] transition-colors"
-            >
-              Find User
+              className="primary-btn">
+                FIND USER
             </button>
-            <button
-              onClick={() => {setGroupModal(!groupModal)}}
-              className="px-3 py-2 bg-[#121b2a] border border-[#1f2735] rounded-lg text-white hover:bg-[#1f2735] transition-colors"
-            >
-              <Users size={18} />
-            </button>
+            <div className='icon' onClick={() => {setGroupModal(!groupModal)}}>
+              <Users size={20} />
+            </div>
           </div>
         </div>
 
         {/* Chat List */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex flex-col gap-[20px] p-[10px] overflow-y-auto">
           {chats?.map((chatx, index) => {
             const otherUser = chatx.chatName === "sender" 
               ? chatx.users.find((u) => u._id !== user?._id)
@@ -799,24 +821,27 @@ const ChatPage = () => {
             return (
               <div
                 key={index}
-                className={`cursor-pointer p-3 flex items-center gap-3 hover:bg-[#121b2a] transition-colors border-b border-[#1f2735] ${
-                  isSelected ? 'bg-[#1f2b3f] border-l-2 border-l-[#5D64F4]' : ''
+                className={`cursor-pointer p-[5px] flex items-center gap-[5px] border-[1px] border-solid border-[#000000] ${
+                  isSelected ? 'bg-[#4DD499] ' : 'bg-[#EDEDE9]'
                 }`}
                 onClick={() => {setChat(chatx)}}
+                style={{boxShadow: isSelected ? '4px 4px 0px 2px rgb(0, 0, 0)' : 'none'}}
               >
                 <img 
                   src={chatPicture} 
                   alt={chatName}
-                  className="w-12 h-12 rounded-full border border-[#1f2735] object-cover"
+                  width={50}
+                  height={50}
+                  className="rounded-full"
                 />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-1">
-                    <h3 className="text-white font-semibold text-sm truncate">{chatName}</h3>
+                <div className="flex flex-col w-full ">
+                  <div className="flex items-center justify-between ">
+                    <div className="">{chatName}</div>
                     {timestamp && (
-                      <span className="text-[#9aa4bd] text-xs ml-2">{timestamp}</span>
+                      <span className="text-mini">{timestamp}</span>
                     )}
                   </div>
-                  <p className="text-[#9aa4bd] text-xs truncate">{lastMessagePreview}</p>
+                  <div className="text-mini">{lastMessagePreview}</div>
                 </div>
               </div>
             );
@@ -828,9 +853,9 @@ const ChatPage = () => {
       {/* MESSAGES */}
       { section === "messages" && 
 
-      <div className="flex-grow flex flex-col bg-[#0f1926] border border-[#1f2735] rounded-lg overflow-hidden">
+      <div className="flex-grow flex flex-col border border-[#1f2735] overflow-hidden">
         {/* Chat Header */}
-        <div className="h-[60px] flex items-center justify-between px-5 border-b border-[#1f2735] bg-[#121b2a]">
+        <div className="h-[60px] flex bg-[#4DD499] items-center justify-between px-5 border-b border-[#1f2735]">
           <div 
             className="flex items-center gap-3 cursor-pointer"
             onClick={() => {
@@ -848,7 +873,7 @@ const ChatPage = () => {
                   alt="Chat"
                   className="w-10 h-10 rounded-full border border-[#1f2735] object-cover"
                 />
-                <h2 className="text-white font-semibold">
+                <h2>
                   {chat.chatName === "sender"
                     ? chat.users.find((u) => u._id !== user?._id)?.name || "Unknown"
                     : chat.chatName}
@@ -869,10 +894,10 @@ const ChatPage = () => {
         >
           {/* Loading Overlay */}
           {isLoadingMessages && (
-            <div className="absolute inset-0 bg-[#0f1926]/95 backdrop-blur-sm z-10 flex items-center justify-center">
+            <div className="absolute inset-0 bg-[##FEC72F]/95 backdrop-blur-sm z-10 flex items-center justify-center">
               <div className="flex flex-col items-center gap-4">
-                <div className="w-12 h-12 border-4 border-[#1f2735] border-t-[#5D64F4] rounded-full animate-spin"></div>
-                <p className="text-[#9aa4bd] text-sm">Loading messages...</p>
+                <div className="w-12 h-12 border-4 border-[#1f2735] border-t-[#4DD499] rounded-full animate-spin"></div>
+                <p className="">LOADING</p>
               </div>
             </div>
           )}
@@ -914,8 +939,8 @@ const ChatPage = () => {
                 {/* Day indicator*/}
                 {isNewDay && (
                   <div className="flex items-center justify-center my-2">
-                    <div className="px-3 py-1.5 bg-[#121b2a] border border-[#1f2735] rounded-full">
-                      <span className="text-[#9aa4bd] text-xs font-medium">
+                    <div className="px-3 py-1.5 border-[2px] border-[#000000]">
+                      <span>
                         {formatDateLabel(messageDate)}
                       </span>
                     </div>
@@ -934,23 +959,23 @@ const ChatPage = () => {
                 >
                   <div
                     id={`message:${message._id}`}
-                    className={`relative rounded-lg flex flex-col gap-2 p-3 ${
+                    className={`relative border-[2px] border-[#000000] flex flex-col gap-2 p-3 ${
                       message.sender._id === user?._id
-                        ? "bg-[#7c82ff] text-white"
-                        : "bg-[#1f2735] text-white"
+                        ? "bg-[#4DD499]"
+                        : "bg-[#EDEDE9]"
                     }`}
                   >
                     {renderMessageContent(message)}
                     <div className="flex items-center justify-end gap-2">
                       {hoveredMessageId === message._id && (
                         <>
-                        <CopyIcon className="cursor-pointer text-white/80 hover:text-white transition-colors" size={16} onClick={() => copy(message._id)}/>
+                        <CopyIcon className="cursor-pointer" size={16} onClick={() => copy(message._id)}/>
                         {message.sender._id !== user?._id && (
-                          <ReplyIcon className="cursor-pointer text-white/80 hover:text-white transition-colors" size={16} onClick={() => {setReply(message)}}/>
+                          <ReplyIcon className="cursor-pointer" size={16} onClick={() => {setReply(message)}}/>
                         )}
-                        <PinIcon className="cursor-pointer text-white/80 hover:text-white transition-colors" size={16} onClick={() => handlePin(message)}/>
+                        <PinIcon className="cursor-pointer" size={16} onClick={() => handlePin(message)}/>
                         {message.sender._id === user?._id && (
-                          <Trash2Icon className="cursor-pointer text-white/80 hover:text-red-300 transition-colors" size={16} onClick={() => {handleDeleteMessage(message)}}/>
+                          <Trash2Icon className="cursor-pointer" size={16} onClick={() => {handleDeleteMessage(message)}}/>
                         )}
                         </>
                       )}
@@ -973,16 +998,16 @@ const ChatPage = () => {
         </div>
 
         {/* Message Input */}
-        <div className="border-t border-[#1f2735] p-4 bg-[#121b2a] relative">
+        <div className="border-t border-[#1f2735] p-4 relative">
           {reply && 
-            <div className="absolute bottom-full left-0 right-0 mb-2 mx-4 rounded-lg bg-[#1f2735] border border-[#31415f] px-3 py-2">
+            <div className="absolute bottom-full left-0 right-0 mb-2 mx-4 bg-[#EDEDE9] border border-[#000] p-[5px]">
               <div className="flex justify-between items-center mb-1">
-                <span className="text-[#9aa4bd] text-sm">Replying to {reply.sender.name}</span>
-                <button onClick={() => setReply(null)} className="text-white hover:text-[#9aa4bd] text-sm font-bold">
+                <span className="text-small">REPLYING TO {reply.sender.name}</span>
+                <button onClick={() => setReply(null)} className="cursor-pointer">
                   ×
                 </button>
               </div>  
-              <div className="text-white text-sm truncate">{reply.content}</div>
+              <div className="text-mini truncate">{reply.content}</div>
             </div>  
           }
           
@@ -1005,7 +1030,7 @@ const ChatPage = () => {
               <div className="relative flex-1">
                 <input
                   placeholder="Type a message..."
-                  className="w-full px-4 py-3 bg-[#0f1926] border border-[#1f2735] rounded-lg text-white placeholder-[#9aa4bd] focus:outline-none focus:border-[#31415f]"
+                  className=""
                   value={newMessage}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
@@ -1021,14 +1046,14 @@ const ChatPage = () => {
               
               <div className="relative">
                 <button
-                  className="p-3 bg-[#0f1926] border border-[#1f2735] rounded-lg hover:bg-[#1f2735] transition-colors"
+                  className="p-3 icon"
                   onClick={() => setAttachment(!attachment)}
                 >
-                  <Paperclip size={20} className="text-white"/>
+                  <Paperclip size={20}/>
                 </button>
                 {attachment && (
-                  <div className="absolute bottom-full right-0 mb-2 p-2 bg-[#121b2a] border border-[#1f2735] rounded-lg shadow-lg z-50 min-w-[200px]">
-                    <label className="flex items-center gap-2 p-2 hover:bg-[#1f2735] rounded cursor-pointer text-white text-sm">
+                  <div className="absolute bottom-full right-0 mb-2 p-2 bg-[#EDEDE9] border-[3px] border-[#1f2735] z-50 min-w-[200px]">
+                    <label className="flex items-center hover:bg-[#D6D6CD] gap-2 p-2 cursor-pointer">
                       <Image size={16}/>
                       Upload Image
                       <input
@@ -1040,12 +1065,12 @@ const ChatPage = () => {
                     </label>
                     <div
                       onClick={startRecording}
-                      className="flex items-center gap-2 p-2 hover:bg-[#1f2735] rounded cursor-pointer text-white text-sm"
+                      className="flex items-center hover:bg-[#D6D6CD] gap-2 p-2 cursor-pointer"
                     >
                       <Mic size={16}/>
                       Record Audio
                     </div>
-                    <label className="flex items-center gap-2 p-2 hover:bg-[#1f2735] rounded cursor-pointer text-white text-sm">
+                    <label className="flex items-center hover:bg-[#D6D6CD] gap-2 p-2 cursor-pointer">
                       <FileIcon size={16}/>
                       Upload File
                       <input
@@ -1059,10 +1084,10 @@ const ChatPage = () => {
               </div>
               
               <button
-                className="p-3 bg-[#5D64F4] rounded-lg hover:bg-[#4d54e4] transition-colors"
+                className="icon"
                 onClick={sendMessage}
               >
-                <Send size={20} className="text-white"/>
+                <Send size={20}/>
               </button>
             </div>
           )}

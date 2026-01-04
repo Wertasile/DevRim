@@ -154,25 +154,24 @@ const BlogPostCard = ({
 
   return (
     <div className="blog-card" onClick={handleNav}>
-      <div className="blog-card__media">
-        <img src={coverImage} alt={title} loading="lazy" />
-        <div className="blog-card__chip">Latest</div>
+      <div>
+        <img src={coverImage} alt={title} loading="lazy" height={166} width={250} className='object-fill min-h-[166px]' />
       </div>
 
-      <div className="blog-card__body">
-        <div className="blog-card__meta">
-          <div className="blog-card__author">
-            <img src={postUser.picture} className="blog-card__avatar" width={32} height={32} />
-            <div className="blog-card__author-text">
-              <span className="blog-card__byline">{postUser._id === user?._id ? "Your publication" : postUser.name}</span>
-              <span className="blog-card__date"><CalendarDays size={14} /> {formattedDate}</span>
+      <div className='flex flex-col justify-between py-[10px] w-full'>
+        <div className='flex justify-between w-full'>
+          <div className='flex gap-[10px] p-[5px]'>
+            <img src={postUser.picture} className="rounded-full" width={48} height={48} />
+            <div className='flex flex-col'>
+              <span className="text-small">{postUser._id === user?._id ? "Your publication" : postUser.name}</span>
+              <span className="text-mini">{formattedDate}</span>
             </div>
           </div>
           <div className="flex items-center gap-2">
             {isOwnPost && (
               <div className="relative">
                 <button
-                  className="flex p-2 border border-[#1f2735] bg-[#121B2A] rounded-lg items-center justify-center hover:bg-[#1f2735] cursor-pointer transition-colors"
+                  className=""
                   aria-label="Post options"
                   onClick={(e) => {
                     e.stopPropagation();
@@ -205,6 +204,28 @@ const BlogPostCard = ({
                 )}
               </div>
             )}
+          </div>
+        </div>
+
+        <div>{title}</div>
+          <div className="flex gap-[10px]">
+
+            <button
+              className={`flex gap-[5px]${liked ? 'blog-card__stat--liked' : ''}`}
+              onClick={handleLike}
+              aria-label={liked ? 'Unlike post' : 'Like post'}
+              title={liked ? 'Unlike' : 'Like'}
+            >
+              <ThumbsUp 
+                size={16} 
+                className={liked ? 'text-[#5D64F4] fill-[#5D64F4]' : ''}
+              />
+              <span className={liked ? 'text-[#5D64F4]' : ''}>{likeCount}</span>
+            </button>
+            <div className="flex gap-[5px]">
+              <MessageCircle size={16} className="text-[#979797]"/>
+              <span>{comments.length}</span>
+            </div>
             <div className="relative">
               {(() => {
                 const isInCollection = usersLists?.some(list => 
@@ -217,7 +238,7 @@ const BlogPostCard = ({
                 return (
                   <>
                     <button
-                      className="flex p-2 border border-[#1f2735] bg-[#121B2A] rounded-lg items-center justify-center hover:bg-[#1f2735] cursor-pointer transition-colors"
+                      className="flex"
                       aria-label="Save for later"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -237,7 +258,7 @@ const BlogPostCard = ({
               })()}
 
               {listModal && (
-                <div className="absolute bottom-full right-0 mb-2 flex flex-col bg-[#0f1926] border border-[#1f2735] rounded-lg shadow-xl gap-3 p-4 w-[250px] text-center text-sm z-50 max-h-[400px] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                <div className="absolute bottom-full right-0 mb-2 flex flex-col bg-[#EDEDE9] border border-[#1f2735] gap-3 p-4 w-[250px] text-center text-sm z-50 max-h-[400px] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                   {(() => {
                     const collectionsWithPost = usersLists?.filter(list => 
                       list.blogs?.some(b => b._id === id)
@@ -273,9 +294,9 @@ const BlogPostCard = ({
                             </div>
                           </div>
                         )}
-                        <h3 className='text-white mb-2 text-xs font-semibold'>
+                        <div>
                           {isInAnyCollection ? 'ADD TO MORE COLLECTIONS:' : 'ADD BLOG TO COLLECTION:'}
-                        </h3>
+                        </div>
                         {usersLists && usersLists.length > 0 ? (
                           usersLists.map((list, index) => {
                             const isInThisCollection = list.blogs?.some(b => b._id === id);
@@ -287,13 +308,13 @@ const BlogPostCard = ({
                                 className='flex gap-2 justify-between items-center'
                               >
                                 <div 
-                                  className="primary-btn hover:none w-full text-left px-3 py-2"
+                                  className="hover:none w-full text-left px-3 py-2"
                                   onClick={(e) => e.stopPropagation()}
                                 >
                                   {list.name}
                                 </div>
                                 <div 
-                                  className='primary-btn h-fit px-2 py-2'
+                                  className='icon h-fit px-2 py-2'
                                   onClick={async (e) => {
                                     e.stopPropagation();
                                     await AddToList(list._id, id);
@@ -315,41 +336,7 @@ const BlogPostCard = ({
                 </div>
               )}
             </div> 
-          </div>
-        </div>
-
-        <h2 className="blog-card__title">{title}</h2>
-        {summary && summary.trim() && (
-          <p className="blog-card__summary">{summary}</p>
-        )}
-
-        <div className="blog-card__footer">
-          <div className="blog-card__stats">
-            <button
-              className={`blog-card__stat ${liked ? 'blog-card__stat--liked' : ''}`}
-              onClick={handleLike}
-              aria-label={liked ? 'Unlike post' : 'Like post'}
-              title={liked ? 'Unlike' : 'Like'}
-            >
-              <ThumbsUp 
-                size={16} 
-                className={liked ? 'text-[#5D64F4] fill-[#5D64F4]' : ''}
-              />
-              <span className={liked ? 'text-[#5D64F4]' : ''}>{likeCount}</span>
-            </button>
-            <span className="blog-card__stat">
-              <MessageCircle size={16} className="text-[#979797]"/>
-              <span>{comments.length}</span>
-            </span>
-          </div>
-          <button
-            className="flex p-2 border border-[#1f2735] bg-[#121B2A] rounded-lg items-center justify-center hover:bg-[#1f2735] cursor-pointer transition-colors"
-            aria-label="Share post"
-            onClick={(e) => e.stopPropagation()}
-            title="Share post"
-          >
-            <Share2 size={16} />
-          </button>
+            
         </div>
       </div>
     </div>

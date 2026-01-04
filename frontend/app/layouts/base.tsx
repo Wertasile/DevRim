@@ -107,18 +107,18 @@ const base = () => {
     
     return (
         <div className="layout-shell">
-            <header className='w-full bg-[#0606061a] border-solid border-b-[2px] border-[#DDFFFD] sticky top-0 flex justify-between items-center px-3 py-2 backdrop-blur-sm z-50'>
+            <header className='w-full sticky top-0 flex justify-between items-start px-3 py-1 backdrop-blur-lg z-50'>
                 
                 <a href='/' className='flex gap-2 items-center'>
                     <img src="/Images/DevRim_Logo_0.png" width="32"/>
-                    <h2 className="text-white" style={{ fontFamily: "'Figtree', 'Arial Narrow', Arial, sans-serif" }}>DevRim</h2>
+                    <h2>MIRVED</h2>
                 </a>
 
-                <nav className='hidden sm:flex relative items-center gap-7' style={{ fontFamily: "'Space Grotesk', 'Arial Narrow', Arial, sans-serif" }}>
-                    <NavLink to="/dashboard" target="_self" className="text-white hover:text-[#DDFFFD] transition-colors">Dashboard</NavLink>
-                    <NavLink to="/chats" target="_self" className="text-white hover:text-[#DDFFFD] transition-colors">Chats</NavLink>
-                    <NavLink to="/chats" target="_self" className="text-white hover:text-[#DDFFFD] transition-colors">About</NavLink>
-                    <NavLink to="/chats" target="_self" className="text-white hover:text-[#DDFFFD] transition-colors">Help</NavLink>
+                <nav className='hidden sm:flex relative items-center gap-[20px]'>
+                    <NavLink to="/dashboard" target="_self" className=""><p>Dashboard</p></NavLink>
+                    <NavLink to="/chats" target="_self" className=""><p>Chats</p></NavLink>
+                    <NavLink to="/chats" target="_self" className=""><p>About</p></NavLink>
+                    <NavLink to="/chats" target="_self" className=""><p>Help</p></NavLink>
                     {user ? 
                         (<img 
                             src={user?.picture} 
@@ -144,19 +144,19 @@ const base = () => {
                     
                     {menu && 
                         <div className='absolute p-2 flex flex-col bg-[#111] border-solid border-[1px] border-[#353535] rounded-3xl shadow-md right-0 top-20 gap-3 p-2 w-[200px]' style={{ fontFamily: "'Space Grotesk', 'Arial Narrow', Arial, sans-serif" }}>
-                            <a className="hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer text-white transition-colors" href={`/profile/${user?._id}`}>Profile</a>
-                            <a className="hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer text-white transition-colors" href="/settings">Settings</a>
-                            <a className="hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer text-white transition-colors">Help</a>
-                            <div className="hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer text-white transition-colors" onClick={handleLogout}>Sign Out</div>
+                            <a className="" href={`/profile/${user?._id}`}>Profile</a>
+                            <a className="" href="/settings">Settings</a>
+                            <a className="">Help</a>
+                            <div className="" onClick={handleLogout}>Sign Out</div>
                         </div>
                     }
 
                     {otherMenu && 
                         <div className='absolute p-2 flex flex-col bg-[#111] border-solid border-[1px] border-[#353535] rounded-3xl shadow-md right-0 top-20 gap-3 p-2 w-[200px]' style={{ fontFamily: "'Space Grotesk', 'Arial Narrow', Arial, sans-serif" }}>
-                            <a className="hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer text-white transition-colors" href={`/profile/${user?._id}`}>Profile</a>
-                            <a className="hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer text-white transition-colors" href="/settings">Settings</a>
-                            <a className="hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer text-white transition-colors">Help</a>
-                            <div className="hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer text-white transition-colors" onClick={logout}>Sign Out</div>
+                            <a className="" href={`/profile/${user?._id}`}>Profile</a>
+                            <a className="" href="/settings">Settings</a>
+                            <a className="">Help</a>
+                            <div className="" onClick={logout}>Sign Out</div>
                         </div>
                     }  
                     

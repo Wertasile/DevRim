@@ -30,6 +30,7 @@ export type User = {
     requestsSent: string[]
     requestsReceived: string[]
     connections : string[]
+    communities: Community[]
 }
 
 export type Session = {

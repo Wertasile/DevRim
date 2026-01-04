@@ -9,7 +9,7 @@ import TextAlign from '@tiptap/extension-text-align';
 import { ListItem } from '@tiptap/extension-list';
 import Image from '@tiptap/extension-image';
 import { useUser } from '~/context/userContext';
-import { Bookmark, CirclePlusIcon, CircleXIcon, MessageSquare, Share, Share2, ThumbsDown, ThumbsUp, ChevronRight, ChevronDown, ChevronUp, X, Trash2, MoreVertical, Edit } from 'lucide-react';
+import { Bookmark, SendIcon, CirclePlusIcon, CircleXIcon, MessageSquare, Share, Share2, ThumbsDown, ThumbsUp, ChevronRight, ChevronDown, ChevronUp, X, Trash2, MoreVertical, Edit } from 'lucide-react';
 import gsap from 'gsap';
 import getAllList from '~/apiCalls/list/getAllLists';
 import AddToList from '~/apiCalls/list/addToList';
@@ -370,7 +370,7 @@ export default function BlogPost({ params }: Route.ComponentProps) {
   ])
 
   return (
-    <div id='blog-post' className='min-h-screen bg-[#0a1118] flex flex-row gap-6 px-6 py-8 mx-auto max-w-[1400px]'>
+    <div id='blog-post' className='min-h-screen flex flex-row gap-6 px-6 py-8 mx-auto max-w-[1400px]'>
 
       <Sidebar/>
       
@@ -380,7 +380,7 @@ export default function BlogPost({ params }: Route.ComponentProps) {
         {/* ----------------------- TITLE SECTION ---------------------------------------------------------------------------------------------------- */}
         <div className='pb-6 border-b border-[#1f2735]'>
           <div className='flex items-start justify-between gap-4'>
-            <h1 className='text-4xl font-bold text-white mb-4 flex-1'>{blog.title}</h1>
+            <h1>{blog.title}</h1>
             {isOwnPost && (
               <div className="relative">
                 <button
@@ -420,7 +420,7 @@ export default function BlogPost({ params }: Route.ComponentProps) {
         {/* ----------------------- SUMMARY SECTION ---------------------------------------------------------------------------------------------------- */}
         {blog.summary && blog.summary.trim() && (
           <div className='pb-6 border-b border-[#1f2735]'>
-            <h3 className='text-xl text-[#9aa4bd] italic leading-relaxed'>
+            <h3 className='leading-relaxed'>
               {blog.summary}
             </h3>
           </div>
@@ -429,7 +429,7 @@ export default function BlogPost({ params }: Route.ComponentProps) {
         {/* ----------------------- ACTUAL BLOG POST CONTENT ---------------------------------------------------------------------------------------------------- */}
         <div className='pt-4 prose prose-invert '>
           <div 
-            className='text-[#cdd5e9] leading-relaxed'
+            className='leading-relaxed'
             dangerouslySetInnerHTML={{ __html: html }} 
           />
         </div>
@@ -474,7 +474,7 @@ export default function BlogPost({ params }: Route.ComponentProps) {
       </div>
       
       {/* ----------------------- INTERACTION BUTTONS - STICKY RIGHT BAR ---------------------------------------------------------------------------------------------------- */}   
-      <div className='sticky top-24 self-start flex flex-col gap-6 items-center text-[#979797] px-2 py-1 bg-secondary rounded-lg h-fit'>
+      <div className='sticky top-24 self-start flex flex-col gap-6 items-center px-2 py-1 h-fit'>
         {/* Username Section */}
         <div className='flex flex-col gap-3 items-center cursor-pointer group' onClick={handleNavProfile}>
           <img 
@@ -485,26 +485,21 @@ export default function BlogPost({ params }: Route.ComponentProps) {
             alt={blogUser?.name}
           />
           <div className='text-xs text-center max-w-[100px]'>
-            <div className='text-white font-medium truncate'>{blogUser?.name}</div>
+            <div>{blogUser?.name}</div>
           </div>
         </div>
-
-        <div className='w-full h-px bg-[#353535]'></div>
 
         {/* Date */}
         <div className='text-xs text-[#979797] text-center'>
           {blog?.releaseDate ? blog.releaseDate.split("T")[0] : ''}
         </div>
 
-        <div className='w-full h-px bg-[#353535]'></div>
-
         {/* Edit and Delete Buttons - Only show if user owns the post */}
         {isOwnPost && (
-          <>
-            <div className='flex flex-col gap-2 w-full'>
+          <div className='flex flex-col gap-2'>
               <button
                 onClick={() => window.location.href = `/edit/${blog?._id}`}
-                className='flex items-center justify-center gap-2 px-3 py-2 bg-[#121b2a] border border-[#1f2735] rounded-lg text-white text-xs hover:bg-[#1f2735] hover:border-[#31415f] transition-colors'
+                className='icon'
                 title="Edit post"
               >
                 <Edit size={14} />
@@ -513,50 +508,44 @@ export default function BlogPost({ params }: Route.ComponentProps) {
               <button
                 onClick={handleDelete}
                 disabled={isDeleting}
-                className='flex items-center justify-center gap-2 px-3 py-2 bg-[#121b2a] border border-red-500/30 rounded-lg text-red-400 text-xs hover:bg-red-500/10 hover:border-red-500/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+                className='icon'
                 title="Delete post"
               >
                 <Trash2 size={14} />
                 
               </button>
             </div>
-            <div className='w-full h-px bg-[#353535]'></div>
-          </>
+
         )}
 
-        <div className={`flex gap-2 w-full items-center flex p-2 border border-[#1f2735] bg-[#121B2A] rounded-lg items-center justify-center hover:bg-[#1f2735] cursor-pointer transition-colors ${like ? "text-[#5D64F4]" : ""}`}>
           {like ? (
-            <>
-              <ThumbsUp className='text-[#5D64F4] fill-[#5D64F4] cursor-pointer hover:scale-110 transition-transform hover:text-[#6d75fd] hover:fill-[#6d75fd]' size={18} onClick={handleLike}/>
-              <b className='text-[#5D64F4] text-sm'>{noLikes}</b>
-            </>
+            <div className='icon relative'>
+              <ThumbsUp size={18} onClick={handleLike}/>
+              <b className='absolute -top-2.5 -right-2.5 bg-red-800 text-white rounded-full px-2 py-1 text-xs'>{noLikes}</b>
+            </div>
           ) : (
-            <>
-              <ThumbsUp className='cursor-pointer hover:scale-110 transition-transform hover:text-white' size={18} onClick={handleLike}/>
-              <span className='text-sm'>{noLikes}</span>
-            </>
+            <div className='icon relative'>
+              <ThumbsUp size={18} onClick={handleLike}/>
+              <b className='absolute -top-2.5 -right-2.5 bg-red-800 text-white rounded-full px-2 py-1 text-xs'>{noLikes}</b>
+            </div>
           )}
-        </div>
         
-        <div className='flex p-2 w-full border border-[#1f2735] bg-[#121B2A] rounded-lg items-center justify-center hover:bg-[#1f2735] cursor-pointer transition-colors'>
-          <Share2 className='cursor-pointer hover:scale-110 transition-transform hover:text-white' size={18}/>
+        <div className='icon relative'>
+          <Share2 size={18}/>
         </div>
 
-        <div className='flex p-2 gap-2 w-full border border-[#1f2735] bg-[#121B2A] rounded-lg items-center justify-center hover:bg-[#1f2735] cursor-pointer transition-colors'
+        <div className='icon relative'
             onClick={() => {
               (!commentsOpen) ? (openCommentsPanel()) : (closeCommentsPanel())
             }}
             title="Toggle comments"
           >
-            <MessageSquare 
-              size={18} 
-              className={commentsOpen ? 'text-[#5D64F4] fill-[#5D64F4]' : ''}
-            />
-            {comments.length}
+            <MessageSquare size={18}/>
+            <b className='absolute -top-2.5 -right-2.5 bg-red-800 text-white rounded-full px-2 py-1 text-xs'>{comments.length}</b>
           
         </div>
         
-        <div className="flex p-2 w-full border border-[#1f2735] bg-[#121B2A] rounded-lg items-center justify-center hover:bg-[#1f2735] cursor-pointer transition-colors">
+        <div className="icon relative">
           {(() => {
             const isInCollection = usersLists?.some(list => 
               list.blogs?.some(b => b._id === blog._id)
@@ -664,39 +653,39 @@ export default function BlogPost({ params }: Route.ComponentProps) {
       {/* ----------------------- COMMENTS PANEL - RIGHT SIDE ---------------------------------------------------------------------------------------------------- */}
       <div 
         ref={commentsPanel}
-        className='fixed top-24 right-0 self-start w-[380px] h-[calc(100vh-120px)] bg-[#0f1926] border border-[#1f2735] rounded-lg flex flex-col shadow-xl overflow-hidden z-50'
+        className='fixed top-24 right-0 self-start w-[380px] h-[calc(100vh-120px)] bg-[#EDEDE9] border border-[#000000] flex flex-col overflow-hidden z-50'
         style={{transform: "translateX(100%)"}}
       >
         <div className='flex items-center justify-between p-4 border-b border-[#1f2735]'>
-          <h2 className='text-white font-semibold text-lg'>
-            Comments ({comments.filter(c => {
+          <h3>
+            COMMENTS ({comments.filter(c => {
               const replyToId = typeof c.replyTo === 'string' ? c.replyTo : c.replyTo?._id;
               return !replyToId;
             }).length})
-          </h2>
+          </h3>
           <button 
             onClick={closeCommentsPanel}
-            className='text-[#9aa4bd] hover:text-white transition-colors'
+            className='text-[#9aa4bd] hover:text-black transition-colors'
           >
             <X size={20} />
           </button>
         </div>
           
-          <div className='flex-1 overflow-y-auto p-4'>
+          <div className='flex flex-col gap-4 overflow-y-auto p-4'>
             {/* Add Comment Form */}
-            <div className='mb-4 pb-4 border-b border-[#1f2735]'>
+            <div>
 
               
               {replyingTo && (
-                <div className='mb-2 p-2 bg-[#121b2a] rounded border border-[#1f2735] text-sm'>
+                <div className='mb-2 p-2 bg-[#EDEDE9] rounded border border-[#000000] text-sm'>
                   <div className='flex items-center justify-between'>
-                    <span className='text-[#9aa4bd]'>Replying to <span className='text-white'>{replyingTo.user.name}</span></span>
+                    <span className='text-[#9aa4bd]'>Replying to <span className='text-black'>{replyingTo.user.name}</span></span>
                     <button 
                       onClick={() => {
                         setReplyingTo(null)
                         setReplyText("")
                       }}
-                      className='text-[#9aa4bd] hover:text-white'
+                      className='text-[#9aa4bd] hover:text-black'
                     >
                       <X size={14} />
                     </button>
@@ -708,7 +697,7 @@ export default function BlogPost({ params }: Route.ComponentProps) {
               
               <div className='flex gap-2'>
                 <input 
-                  className='flex-grow px-3 py-2 bg-[#121b2a] border border-[#1f2735] rounded-lg text-white placeholder-[#9aa4bd] focus:outline-none focus:border-[#31415f] text-sm'
+                  className=''
                   placeholder={replyingTo ? 'Write a reply...' : 'What are your thoughts?'}
                   value={replyingTo ? replyText : (comment ?? "")}
                   onChange={(e) => replyingTo ? setReplyText(e.target.value) : setComment(e.target.value)}
@@ -724,7 +713,7 @@ export default function BlogPost({ params }: Route.ComponentProps) {
                   }}
                 />
                 <button 
-                  className='primary-btn px-4 py-2 text-sm'
+                  className='icon'
                   onClick={() => {
                     if (replyingTo) {
                       addReply(replyingTo._id, replyText)
@@ -733,7 +722,7 @@ export default function BlogPost({ params }: Route.ComponentProps) {
                     }
                   }}
                 >
-                  <span>SEND</span>
+                  <SendIcon size={16} />
                 </button>
               </div>
             </div>
@@ -753,7 +742,7 @@ export default function BlogPost({ params }: Route.ComponentProps) {
                 const isExpanded = expandedReplies.has(comment._id);
                 
                 return (
-                  <div key={comment._id} className={`flex flex-col gap-3 ${index > 0 ? 'pt-6 border-t border-[#1f2735]' : ''}`}>
+                  <div key={comment._id} className={`flex flex-col gap-3 ${index > 0 ? 'pt-6 border-t border-[#000000]' : ''}`}>
                     <div className='flex gap-3'>
                       <img 
                         src={comment.user.picture} 
@@ -764,19 +753,19 @@ export default function BlogPost({ params }: Route.ComponentProps) {
                       />
                       <div className='flex-grow'>
                         <div className='flex items-center gap-2 mb-1'>
-                          <span className='text-white font-medium text-sm'>{comment.user.name}</span>
-                          <span className='text-[#9aa4bd] text-xs'>
+                          <div>{comment.user.name}</div>
+                          <div className='text-mini'>
                             {comment.createdAt ? new Date(comment.createdAt).toLocaleDateString() : ''}
-                          </span>
+                          </div>
                         </div>
-                        <p className='text-[#cdd5e9] text-sm mb-2'>{comment.comment}</p>
+                        <p>{comment.comment}</p>
                         <div className='flex items-center gap-3'>
                           <button 
                             onClick={(e) => {
                               e.stopPropagation();
                               setReplyingTo(comment);
                             }}
-                            className='text-[#9aa4bd] hover:text-[#5D64F4] text-[10px] uppercase tracking-wide transition-colors font-medium'
+                            className='text-mini flex gap-[5px] items-center cursor-pointer hover:bg-white/50 rounded-[5px] p-[5px]'
                           >
                             REPLY
                           </button>
@@ -792,7 +781,7 @@ export default function BlogPost({ params }: Route.ComponentProps) {
                                 }
                                 setExpandedReplies(newExpanded);
                               }}
-                              className='flex items-center gap-1 text-[#9aa4bd] hover:text-[#5D64F4] text-[10px] uppercase tracking-wide transition-colors font-medium'
+                              className='text-mini flex gap-[5px] items-center cursor-pointer hover:bg-white/50 rounded-[5px] p-[5px]'
                             >
                               {isExpanded ? (
                                 <>

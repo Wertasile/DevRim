@@ -9,10 +9,12 @@ import {
     Headphones,
     Heart,
     MessageCircle,
+    Plus,
     TrendingUp,
     Video,
 } from 'lucide-react';
 import Sidebar from '~/components/Sidebar';
+import BlogPostSmall from '~/components/blogPostSmall';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -24,7 +26,7 @@ export default function BlogHome() {
     const [recommendations, setRecommendations] = useState<Blog []>([]);
     const [trending, setTrending] = useState<Trending[]>([]);
     const [searchResults, setSearchResults] = useState<Blog[]>([]);
-    const [section, setSection] = useState<"For You" | "Featured" | "Search Results" | "Latest">("Latest");
+    const [section, setSection] = useState<"For You" | "Featured" | "Search Results" | "Latest">("For You");
 
     const communityChips = [
         { label: "Travel", icon: <Compass size={16} /> },
@@ -143,21 +145,21 @@ export default function BlogHome() {
         // Redirect or show login page if not logged in
     if (!user) {
         return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-[#0e0e1a] text-white text-center p-6">
-            <h1 className="text-3xl font-bold mb-4">Welcome to DevRim</h1>
-            <p className="text-lg mb-6 text-gray-300">
+        <div className="flex flex-col gap-[10px] items-center justify-center min-h-screen bg-[#D6D6CD] text-center p-6">
+            <h1>Welcome to DevRim</h1>
+            <p>
             Please <span className="text-[#5D64F4] font-semibold">log in</span> or <span className="text-[#5D64F4] font-semibold">sign up</span> to explore personalized blog recommendations and trending posts.
             </p>
             <div className="flex gap-4">
             <a
                 href="/login"
-                className="px-6 py-2 bg-[#5D64F4] text-white rounded hover:bg-[#444BEE] transition-all duration-300"
+                className="primary-btn"
             >
                 Log In
             </a>
             <a
                 href="/register"
-                className="px-6 py-2 border border-[#5D64F4] text-[#5D64F4] rounded hover:bg-[#5D64F4] hover:text-white transition-all duration-300"
+                className="secondary-btn"
             >
                 Sign Up
             </a>
@@ -168,27 +170,33 @@ export default function BlogHome() {
     
 
     return (
-        <div className="blog-home min-h-screen bg-[#0a1118]">
-            <div className="blog-shell">
+        <div className="blog-home min-h-screen px-[25px]">
+            <div className="flex gap-[20px]">
+
                 <Sidebar />
 
-                <section className="blog-feed">
-                    <div className="feed-header">
-                        <div className="feed-tabs">
-                            {["For You", "Search Results", "Latest"].map((label) => (
-                                <button
-                                    key={label}
-                                    onClick={() => setSection(label as typeof section)}
-                                    className={`feed-tab ${section === label ? "is-active" : ""}`}
-                                >
-                                    {label}
-                                </button>
-                            ))}
+                <section className="flex flex-col flex-grow gap-[10px]">
+
+                    <div className='flex justify-between items-center'>
+                        <h1>DASHBOARD</h1>
+                        <div className='flex gap-[10px]'>
+                            <button className='icon' onClick={() => window.location.href = '/blog/new'}>
+                                <Plus size={16} />
+                            </button>
                         </div>
-                        <div className="feed-actions">
-                            <button className="pill-btn"><Bell size={16}/> Alerts</button>
-                            <button className="pill-btn"><Compass size={16}/> Explore</button>
-                        </div>
+                    </div>
+
+                    <div className="w-fit flex ">
+                        {(["For You", "Search Results", "Latest"] as const).map((label,index) => (
+                            <button
+                                key={label}
+                                onClick={() => setSection(label)}
+                                className={`tab ${section === label ? "bg-[#E95444]" : "bg-[#FFFFFF]"}`}
+                            >
+                                {label}
+                            </button>
+                        ))}
+ 
                     </div>
 
                     <div className="feed-list">
@@ -196,37 +204,32 @@ export default function BlogHome() {
                     </div>
                 </section>
 
-                <aside className="blog-right">
-                    <div className="top-picks">
-                        <div className="top-picks__header">
-                            <h3>Top Picks</h3>
-                            <TrendingUp size={18}/>
-                        </div>
-                        <div className="top-picks__list">
+                <aside className="flex gap-[20px] flex-col">
+                    <div className="w-[400px] flex border-[3px] bg-[#EDEDE9] border-solid border-[#000000] p-[10px] flex-col gap-[10px]">
+                        <h3>TRENDING POSTS</h3>
+                        <div className='flex flex-col gap-[10px]'>
                             {user && trendingPosts.map((b: any) => (
-                                <button
-                                    key={b.blog._id}
-                                    className="top-picks__item"
-                                    onClick={() => window.location.href = `/blog/${b.blog._id}`}
-                                >
-                                    <div className="top-picks__title">{b.blog.title}</div>
-                                    <div className="top-picks__meta">
-                                        <span><Heart size={14}/> {b.blog.likes?.length ?? 0}</span>
-                                        <span><MessageCircle size={14}/> {b.blog.comments?.length ?? 0}</span>
-                                    </div>
-                                </button>
+                                // <div key={b.blog._id} className="bg-[#EDEDE9] p-[5px] border-[1px] border-[#000000]" onClick={() => window.location.href = `/blog/${b.blog._id}`}>
+                                //     <div className="text-small">{b.blog.title}</div>
+                                //     <div className="flex gap-[10px]">
+                                //         <span><Heart size={14}/> {b.blog.likes?.length ?? 0}</span>
+                                //         <span><MessageCircle size={14}/> {b.blog.comments?.length ?? 0}</span>
+                                //     </div>
+                                // </div>
+                                <BlogPostSmall blog={b.blog} />
                             ))}
+
                             {!trendingPosts.length && (
-                                <div className="top-picks__empty">Trending posts appear here once available.</div>
+                                <div>Trending posts appear here once available.</div>
                             )}
                         </div>
                     </div>
 
-                    <div className="community-rail">
-                        <div className="community-rail__title">Your Communities</div>
-                        <div className="community-rail__list">
+                    <div className="w-[400px] bg-[#EDEDE9] flex border-[3px] border-solid border-[#000000] flex-col gap-[10px]">
+                        <h3>COMMUNITIES</h3>
+                        <div>
                             {communityChips.map((chip, idx) => (
-                                <div key={idx} className="community-chip">
+                                <div key={idx}>
                                     {chip.icon}
                                     <span>{chip.label}</span>
                                 </div>

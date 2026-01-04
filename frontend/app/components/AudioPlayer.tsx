@@ -99,15 +99,15 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, messageId, isOwnMessage 
   const playerBgColor = 'bg-transparent';
   
   const buttonColor = isOwnMessage
-    ? 'bg-white/20 hover:bg-white/30'
-    : 'bg-[#1f2735] hover:bg-[#2a3441]';
+    ? 'bg-black/50 hover:bg-black/70'
+    : 'bg-white/50 hover:bg-white/70';
   
   const progressBgColor = isOwnMessage
-    ? 'bg-white/30'
+    ? 'bg-black/30'
     : 'bg-white/20';
   
   const progressFillColor = isOwnMessage
-    ? 'bg-white'
+    ? 'bg-black'
     : 'bg-white/80';
 
   return (
@@ -118,15 +118,15 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, messageId, isOwnMessage 
       <button
         onClick={togglePlayPause}
         disabled={isLoading}
-        className={`${buttonColor} rounded-full p-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0`}
+        className={`${buttonColor} p-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0`}
         title={isPlaying ? 'Pause' : 'Play'}
       >
         {isLoading ? (
-          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+          <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin"></div>
         ) : isPlaying ? (
-          <Pause size={16} className="text-white" />
+          <Pause size={16}/>
         ) : (
-          <Play size={16} className="text-white ml-0.5" />
+          <Play size={16}/>
         )}
       </button>
 
@@ -149,7 +149,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, messageId, isOwnMessage 
         </div>
 
         {/* Time Display */}
-        <div className="flex items-center justify-between text-xs text-white/70">
+        <div className="flex items-center justify-between text-xs text-black/70">
           <span>{formatTime(currentTime)}</span>
           <span>{formatTime(duration)}</span>
         </div>
@@ -158,13 +158,13 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, messageId, isOwnMessage 
       {/* Volume Button */}
       <button
         onClick={toggleMute}
-        className={`${buttonColor} rounded-full p-2 transition-colors flex-shrink-0`}
+        className={`${buttonColor} p-2 transition-colors flex-shrink-0`}
         title={isMuted ? 'Unmute' : 'Mute'}
       >
         {isMuted ? (
-          <VolumeX size={14} className="text-white" />
+          <VolumeX size={14}/>
         ) : (
-          <Volume2 size={14} className="text-white" />
+          <Volume2 size={14}/>
         )}
       </button>
     </div>

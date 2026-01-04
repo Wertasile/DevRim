@@ -17,6 +17,7 @@ const userSchema = new mongoose.Schema({
   connections: [{type: mongoose.Schema.Types.ObjectId, ref:"user"}],
   requestsSent: [{type: mongoose.Schema.Types.ObjectId, ref:"user"}],
   requestsReceived: [{type: mongoose.Schema.Types.ObjectId, ref:"user"}],
+  communities: [{type: mongoose.Schema.Types.ObjectId, ref:"community"}],
   status: {type:String, enum: ["online","offline"], default:"offline"},
   lastSeen: {type: Date, default:null}
 });

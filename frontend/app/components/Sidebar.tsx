@@ -3,18 +3,19 @@ import React from 'react';
 import { NavLink } from 'react-router';
 
 const items = [
-  { icon: <Compass size={18} />, label: 'Dashboard', to: '/dashboard', variant: 'is-menu' },
-  { icon: <MessageSquare size={18} />, label: 'Messages', to: '/chats' },
-  { icon: <Users size={18} />, label: 'Connections', to: '/connections' },
-  { icon: <Handshake size={18} />, label: 'Communities', to: '/community' },
-  { icon: <Settings size={18} />, label: 'Settings', to: '/settings' },
+  { icon: <Compass size={20} />, label: 'Dashboard', to: '/dashboard', variant: 'is-menu' },
+  { icon: <MessageSquare size={20} />, label: 'Messages', to: '/chats' },
+  { icon: <Users size={20} />, label: 'Connections', to: '/connections' },
+  { icon: <Handshake size={20} />, label: 'Communities', to: '/community' },
+  { icon: <Settings size={20} />, label: 'Settings', to: '/settings' },
 ];
 
 const Sidebar = () => {
   return (
-    <aside className="flex gap-[10px] flex-col bg-[#0D1E26] p-[5px] h-fit rounded-[5px] top-[100px] sticky" aria-label="Primary navigation">
+    <aside className="flex gap-[20px] flex-col bg-[#EDEDE9] p-[5px] border-[3px] border-solid border-[#000000] h-fit top-[100px] sticky" aria-label="Primary navigation">
 
         {items.map((item, idx) => (
+          <div className='px-[25px] py-[10px]'>
           <NavLink
             key={idx}
             to={item.to}
@@ -25,6 +26,7 @@ const Sidebar = () => {
           >
             {item.icon}
           </NavLink>
+          </div>
         ))}
 
     </aside>

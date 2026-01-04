@@ -7,9 +7,6 @@ import { Film, Handshake, NotebookPen, Users, MessageSquare, BookOpen, Sparkles,
 import gsap from "gsap";
 import Lenis from "lenis"
 
-
-
-
 export function meta({}: Route.MetaArgs) {
   return [
     { title: "DevRim - Where Ideas Meet Community" },
@@ -132,17 +129,11 @@ const Home = () => {
         <section id="hero" className="relative min-h-screen w-full overflow-hidden">
             <div className="relative z-10 flex flex-col h-screen items-center justify-center text-center gap-8 px-4 mx-auto max-w-[1200px]">
                 <div className="flex flex-col items-center gap-6 max-w-4xl">
-                    <div className="flex items-center gap-2 px-4 py-2 bg-[#5D64F4]/20 border border-[#5D64F4]/30 rounded-full mb-4">
-                        <Sparkles size={16} className="text-[#5D64F4]" />
-                        <span className="text-[#5D64F4] text-sm font-medium">Medium meets Reddit</span>
-                    </div>
-                    <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight">
-                        Where Ideas Meet Community
-                    </h2>
-                    <h3 className="text-xl md:text-2xl lg:text-3xl text-white/80 max-w-3xl leading-relaxed font-light">
+                    <h1>Where Ideas Meet Community</h1>
+                    <h3>
                         Publish long-form stories like Medium. Build communities like Reddit. Connect, discuss, and grow together.
                     </h3>
-                    <p className="text-lg text-white/70 max-w-2xl mt-4">
+                    <p>
                         A platform that combines the depth of Medium's storytelling with the engagement of Reddit's communities.
                     </p>
                 </div>
@@ -158,9 +149,9 @@ const Home = () => {
 
         <section id="overview" className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 max-w-[1200px] gap-6 px-6 py-16 mx-auto">
 
-            <div className="overview-item flex flex-col justify-between gap-4 border-solid border-[0.5px] border-[#353535] p-6">
+            <div className="overview-item flex flex-col justify-between gap-4 border-solid border-[0.5px] border-[#353535] bg-[#E95444]/70 p-6">
                 <div className="w-fit border-solid border-[0.5px] border-[#979797] p-5 rounded-[200px] bg-[#111]">
-                    <NotebookPen/>
+                    <NotebookPen className="text-white"/>
                 </div>
                 <div className="flex flex-col gap-3">
                     <h2>Blogging without Limits</h2>
@@ -170,9 +161,9 @@ const Home = () => {
                     {/* <img src="/images/placeholder_img.png" width="100px"/> */}
                 </div>
             </div>
-            <div className="overview-item flex flex-col justify-between gap-4 border-solid border-[0.5px] border-[#353535] p-6">
+            <div className="overview-item flex flex-col justify-between gap-4 border-solid border-[0.5px] border-[#353535] bg-[#4DD499]/70 p-6">
                 <div className="w-fit border-solid border-[0.5px] border-[#979797] p-5 rounded-[200px] bg-[#111]">
-                    <Handshake/>
+                    <Handshake className="text-white"/>
                 </div>
                 <div className="flex flex-col gap-3">
                     <h2>Follow & Connect</h2>
@@ -182,9 +173,9 @@ const Home = () => {
                     {/* <img src="/images/placeholder_img.png" width="200px"/> */}
                 </div>
             </div>
-            <div className="overview-item flex flex-col justify-between gap-4 border-solid border-[0.5px] border-[#353535] p-6">
+            <div className="overview-item flex flex-col justify-between gap-4 border-solid border-[0.5px] border-[#353535] bg-[#FFE48A]/30 p-6">
                 <div className="w-fit border-solid border-[0.5px] border-[#979797] p-5 rounded-[200px] bg-[#111]">
-                    <Film/>
+                    <Film className="text-white"/>
                 </div>
                 <div className="flex flex-col gap-3">
                     <h2>Chat Beyond Text</h2>
@@ -201,28 +192,28 @@ const Home = () => {
         {/* How It Works Section */}
         <section id="features" className="max-w-[1400px] mx-auto px-6 py-16 mb-[100px]">
             <div className="text-center mb-16">
-                <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">How It Works</h2>
-                <p className="text-xl text-white/70 max-w-2xl mx-auto">
+                <h1>How It Works</h1>
+                <p>
                     Three simple steps to start your journey
                 </p>
             </div>
             
             <div className="card-container">
                 <div className="cards">
-                    <div className="cards-item bg-[#0f1926] border border-[#1f2735] rounded-xl p-8 flex flex-col gap-6">
+                    <div className="cards-item bg-[#E95444]/50 backdrop-blur-lg border border-[#000000] rounded-xl p-8 flex flex-col gap-6">
                         <div className="flex items-center gap-4">
-                            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#5D64F4] to-[#7c82ff] flex items-center justify-center flex-shrink-0">
-                                <span className="text-2xl font-bold text-white">1</span>
+                            <div className="w-20 h-20 rounded-full bg-[#CCCCCC] flex items-center justify-center flex-shrink-0">
+                                <h2>1</h2>
                             </div>
                             <div>
-                                <h3 className="text-2xl font-bold text-white mb-2">Write Your Story</h3>
-                                <p className="text-[#9aa4bd]">
+                                <h2>Write Your Story</h2>
+                                <p>
                                     Use our natural editor to write long-form content. Start with a title, then write freely. Add code blocks, images, headings, and formatting to make your post stand out.
                                 </p>
                             </div>
                         </div>
                         <div className="pl-24">
-                            <ul className="text-sm text-[#9aa4bd] space-y-2">
+                            <ul>
                                 <li>• Natural writing experience - feels like writing in a book</li>
                                 <li>• Rich formatting options - headings, lists, code blocks</li>
                                 <li>• Media support - images, audio, and more</li>
@@ -231,20 +222,20 @@ const Home = () => {
                         </div>
                     </div>
 
-                    <div className="cards-item bg-[#0f1926] border border-[#1f2735] rounded-xl p-8 flex flex-col gap-6">
+                    <div className="cards-item bg-[#4DD499]/70 border border-[#000000] backdrop-blur-lg rounded-xl p-8 flex flex-col gap-6">
                         <div className="flex items-center gap-4">
-                            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#5D64F4] to-[#7c82ff] flex items-center justify-center flex-shrink-0">
-                                <span className="text-2xl font-bold text-white">2</span>
+                            <div className="w-20 h-20 rounded-full bg-[#CCCCCC] flex items-center justify-center flex-shrink-0">
+                                <h2>2</h2>
                             </div>
                             <div>
-                                <h3 className="text-2xl font-bold text-white mb-2">Join Communities</h3>
-                                <p className="text-[#9aa4bd]">
+                                <h2>Join Communities</h2>
+                                <p>
                                     Discover communities around topics you love, or create your own. Each community has rules, moderators, and dedicated discussions. Share posts and engage with like-minded people.
                                 </p>
                             </div>
                         </div>
                         <div className="pl-24">
-                            <ul className="text-sm text-[#9aa4bd] space-y-2">
+                            <ul>
                                 <li>• Browse and join existing communities</li>
                                 <li>• Create your own community with custom rules</li>
                                 <li>• Post within communities for targeted audience</li>
@@ -253,20 +244,20 @@ const Home = () => {
                         </div>
                     </div>
 
-                    <div className="cards-item bg-[#0f1926] border border-[#1f2735] rounded-xl p-8 flex flex-col gap-6">
+                    <div className="cards-item bg-[#FFE48A]/30 border border-[#000000] backdrop-blur-lg rounded-xl p-8 flex flex-col gap-6">
                         <div className="flex items-center gap-4">
-                            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#5D64F4] to-[#7c82ff] flex items-center justify-center flex-shrink-0">
-                                <span className="text-2xl font-bold text-white">3</span>
+                            <div className="w-20 h-20 rounded-full bg-[#CCCCCC] flex items-center justify-center flex-shrink-0">
+                                <h2>3</h2>
                             </div>
                             <div>
-                                <h3 className="text-2xl font-bold text-white mb-2">Connect & Engage</h3>
-                                <p className="text-[#9aa4bd]">
+                                <h2>Connect & Engage</h2>
+                                <p>
                                     Follow authors, connect with peers, and build your network. Comment on posts, save favorites to collections, and chat directly with other members. Build meaningful relationships.
                                 </p>
                             </div>
                         </div>
                         <div className="pl-24">
-                            <ul className="text-sm text-[#9aa4bd] space-y-2">
+                            <ul>
                                 <li>• Follow authors and see their latest posts</li>
                                 <li>• Comment and reply to build discussions</li>
                                 <li>• Save posts to collections for later</li>
@@ -278,7 +269,7 @@ const Home = () => {
             </div>
         </section>
 
-        <section id="features" className="max-w-[1400px] mx-auto px-6 py-16">
+        <section id="features" className="max-w-[1400px] mx-auto py-16">
         {/* <section id="messages" className="my-45"> */}
             <div className="message-panels-container flex flex-col gap-16 overflow-clip">
                 <div className="message-panel ">
@@ -299,32 +290,6 @@ const Home = () => {
                 </div>
             </div>
         </section>
-        
-        {/* CTA Section */}
-        <section className="max-w-[1200px] mx-auto px-6 py-16">
-            <div className="bg-gradient-to-br from-[#5D64F4] to-[#7c82ff] rounded-2xl p-12 text-center">
-                <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">Ready to Start?</h2>
-                <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-                    Join thousands of writers, creators, and community builders sharing their ideas and connecting with like-minded people.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <a 
-                        href="/login" 
-                        className="px-8 py-4 bg-white text-[#5D64F4] rounded-lg font-semibold hover:bg-white/90 transition-colors"
-                    >
-                        Get Started
-                    </a>
-                    <a 
-                        href="/dashboard" 
-                        className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-lg font-semibold hover:bg-white/20 transition-colors"
-                    >
-                        Explore Dashboard
-                    </a>
-                </div>
-            </div>
-        </section>
-
-
 
         {/* <section id="pricing" className=" max-w-[1200px] my-15 mx-auto ">
             <h1 className="text-center">Pricing</h1>

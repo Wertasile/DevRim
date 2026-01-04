@@ -130,8 +130,8 @@ const NaturalEditor = ({ content, handleChange, onTitleChange, onSummaryChange }
   }, [editor, content]);
 
   return (
-    <div className="w-full bg-[#0f1926] border border-[#1f2735] rounded-lg overflow-hidden">
-      <div className="border-b border-[#1f2735] bg-[#121b2a] px-4 py-2">
+    <div className="w-full bg-[#EDEDE9] border border-[#1f2735] rounded-lg overflow-hidden">
+      <div className="border-b border-[#1f2735] bg-[#EDEDE9] px-4 py-2">
         <MenuBar editor={editor} />
       </div>
       <div className="prose-wrapper">
@@ -141,7 +141,7 @@ const NaturalEditor = ({ content, handleChange, onTitleChange, onSummaryChange }
             font-weight: 700;
             line-height: 1.2;
             margin-bottom: 2rem;
-            color: #ffffff;
+            color: #000000;
             border-bottom: none;
             padding-bottom: 0;
           }
@@ -151,7 +151,7 @@ const NaturalEditor = ({ content, handleChange, onTitleChange, onSummaryChange }
           .prose p {
             font-size: 1.125rem;
             line-height: 1.75;
-            color: #e5e7eb;
+            color: #000000;
             margin-bottom: 1.5rem;
           }
           .prose p:first-of-type {
