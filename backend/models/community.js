@@ -11,6 +11,7 @@ const communitySchema = new Schema({
     picture: {type: String},
     members: [{type: Schema.Types.ObjectId, ref:"user"}],
     posts: [{type: Schema.Types.ObjectId, ref:"post"}],
+    topics: [{type: String}],
     createdAt: {type: Date, default: Date.now},
     updatedAt: {type: Date, default: Date.now}
 })

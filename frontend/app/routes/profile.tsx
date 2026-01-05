@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { userContext, useUser } from '~/context/userContext'
 import BlogPost from './blogPost'
 import type { Route } from '../+types/root'
-import type { Blog, List, User } from '~/types/types'
+import type { Blog, Community, List, User } from '~/types/types'
 import BlogPostCard from '~/components/blogPostCard'
 import fetchUser from '../apiCalls/fetchUser'
 import CreateListModal from '~/components/CreateListModal'
@@ -18,6 +18,10 @@ import unfollow from '~/apiCalls/user/unfollow'
 import connect from '~/apiCalls/user/connect'
 import { NavLink } from 'react-router'
 import Sidebar from '~/components/Sidebar'
+import getUserCommunities from '~/apiCalls/Community/getUserCommunities'
+import CommunityCardSmall from '~/components/CommunityCardSmall'
+import BlogPostCardSmall from '~/components/blogPostCardSmall'
+import BlogPostSmall from '~/components/blogPostSmall'
 
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -29,16 +33,19 @@ const profile = ({params}: Route.ComponentProps) => {
     const [profile, setProfile] = useState<User>()
     const [blogs, setBlogs] = useState<Blog []>([])
 
-    const [view, setView] = useState<string>("blogs")
+    const [view, setView] = useState<string>("collections")
 
     const [lists, setLists] = useState<List[]>()
     const [listModal, setListModal] = useState(false)
+    const [selectedCollection, setSelectedCollection] = useState<List | undefined>(lists?.[0])
 
     const [viewListModal, setViewListModal] = useState(false)
     const [listIndex, setListIndex] = useState(0)
     const [editListModal, setEditListModal] = useState(false)
     const [editingList, setEditingList] = useState<List | undefined>()
     const [deletingListId, setDeletingListId] = useState<string | null>(null)
+
+    const [userCommunities, setUserCommunities] = useState<Community[]>([])
 
     const [newListName, setNewListName] = useState<string>("")
 
@@ -60,6 +67,12 @@ const profile = ({params}: Route.ComponentProps) => {
         const data = await fetchUser(params.id) // ✅ await the call
         console.log(data)
         setProfile(data)
+        getUserCommunities(params.id).then((data: Community[]) => {
+            setUserCommunities(data);
+            console.log(data);
+        }).catch((err) => {
+            console.error(err);
+        });
     }
 
     useEffect( () => {
@@ -133,6 +146,7 @@ const profile = ({params}: Route.ComponentProps) => {
         console.log("LSIT ARE")
         console.log(data)
         setLists(data)
+        setSelectedCollection(data?.[0])
     }
 
     const createList = async () => {
@@ -435,8 +449,8 @@ const profile = ({params}: Route.ComponentProps) => {
                         Posts
                     </button>
                     <button 
-                        className={`px-4 py-2 transition-colors ${view === "lists" ? 'bg-[#E95444] border-b-[3px] border-black' : ''}`}
-                        onClick={() => setView("lists")}
+                        className={`px-4 py-2 transition-colors ${view === "collections" ? 'bg-[#E95444] border-b-[3px] border-black' : ''}`}
+                        onClick={() => setView("collections")}
                     >
                         Collections
                     </button>
@@ -467,7 +481,7 @@ const profile = ({params}: Route.ComponentProps) => {
                 </div>
 
                 {/* Content Area */}
-                <div className='flex flex-col gap-6'>
+                <div className='flex flex-col gap-6 w-full'>
                     {view === "highlights" && (
                         <div className='text-[#979797]'>Highlights coming soon...</div>
                     )}
@@ -477,123 +491,92 @@ const profile = ({params}: Route.ComponentProps) => {
                             {blogs.map((b, index) => {
                                 const formattedDate = formatDate(b.releaseDate);
                                 return (
-                                    <div 
-                                        key={b._id} 
-                                        className='bg-[#FED259] border-[1px] border-[#000000] overflow-hidden cursor-pointer hover:border-[#2c3a55] transition-all'
-                                        onClick={() => window.location.href = `/blog/${b._id}`}
-                                    >
-                                        <div className='relative h-48 overflow-hidden'>
-                                            <img 
-                                                src={`https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=80`} 
-                                                alt={b.title}
-                                                className='w-full h-full object-cover'
-                                            />
-                                        </div>
-                                        <div className='p-4 flex flex-col justify-between gap-3 group-hover:bg-[#FED259] transition-all'>
-                                            <h3 className='line-clamp-2'>{b.title}</h3>
-                                            <div className='flex flex-col gap-2'>
-                                                <p className='text-[#353535] text-sm'>{formattedDate}</p>
-                                                <div className='flex items-center gap-4 text-[#353535] text-sm'>
-                                                    <span className='flex items-center gap-1'>
-                                                        <ThumbsUp size={16} />
-                                                        {b.likes?.length || 0}
-                                                    </span>
-                                                    <span className='flex items-center gap-1'>
-                                                        <MessageCircle size={16} />
-                                                        {b.comments?.length || 0}
-                                                    </span>
-                                                    <Share2 size={16} className='ml-auto' />
-                                                    <Bookmark size={16} />
-                                                </div>
-                                            </div>    
-
-                                        </div>
-                                    </div>
+                                    <BlogPostCardSmall blog={b} />
                                 );
                             })}
                         </div>
                     )}
 
-                    {view === "lists" && (
-                        <div className='flex flex-col gap-5'>
-                            {profile?._id === user?._id && (
-                                <button 
-                                    className='primary-btn cursor-pointer w-fit'
-                                    onClick={() => setListModal(!listModal)}
-                                >
-                                    <span>+ CREATE COLLECTION</span>
-                                </button>
-                            )}
-                            {lists?.map((list, index) => (
-                                <div 
-                                    className='cursor-pointer p-4 hover:bg-[#111] flex items-center justify-between gap-4 border border-[#353535] rounded-lg group' 
-                                    key={list._id || index} 
-                                    onClick={() => handleViewList(index)}
-                                >
-                                    <div className='flex-1 flex flex-col gap-2'>
-                                        <div className='text-white font-semibold'>- {list.name}</div>
-                                        <div className='text-[#979797]'>{list.blogs?.length || 0} blog(s)</div>
-                                    </div>
-                                    {profile?._id === user?._id && (
-                                        <div className='flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity' onClick={(e) => e.stopPropagation()}>
-                                            <button
-                                                onClick={(e) => handleEditList(list, e)}
-                                                className='p-2 hover:bg-[#1f2735] rounded-lg transition-colors'
-                                                title="Edit collection"
-                                            >
-                                                <Edit size={16} className='text-[#9aa4bd] hover:text-white' />
-                                            </button>
-                                            <button
-                                                onClick={(e) => handleDeleteList(list._id, e)}
-                                                disabled={deletingListId === list._id}
-                                                className='p-2 hover:bg-[#1f2735] rounded-lg transition-colors disabled:opacity-50'
-                                                title="Delete collection"
-                                            >
-                                                <Trash2 size={16} className='text-red-400 hover:text-red-300' />
-                                            </button>
+                    {view === "collections" && (
+                        <div className='flex gap-[30px]'>
+
+                            {/* LEFT SIDE*/}
+                            <div className='flex flex-col'>
+                                {lists?.map((list, index) => (
+                                    <div 
+                                        className={`cursor-pointer p-4 hover:bg-[#EDEDE9] flex items-center justify-between gap-4 border border-[#353535] ${selectedCollection?._id === list._id ? 'bg-[#EDEDE9]' : ''}`} 
+                                        key={list._id || index} 
+                                        onClick={() => {
+                                            // handleViewList(index)
+                                            setSelectedCollection(list)
+                                        }}
+                                    >
+                                        <div className='flex gap-2 items-center'>
+                                            <div className='text-small'>{list.name}</div>
+                                            <div className='text-mini'>{list.blogs?.length || 0} blog(s)</div>
                                         </div>
+                                        {profile?._id === user?._id && (
+                                            <div className='flex items-center gap-2' onClick={(e) => e.stopPropagation()}>
+                                                <button
+                                                    onClick={(e) => handleEditList(list, e)}
+                                                    className='p-2 hover:bg-[#EDEDE9] rounded-lg transition-colors'
+                                                    title="Edit collection"
+                                                >
+                                                    <Edit size={16} className='cursor-pointer' />
+                                                </button>
+                                                <button
+                                                    onClick={(e) => handleDeleteList(list._id, e)}
+                                                    disabled={deletingListId === list._id}
+                                                    className='p-2 hover:bg-[#EDEDE9] rounded-lg transition-colors disabled:opacity-50'
+                                                    title="Delete collection"
+                                                >
+                                                    <Trash2 size={16} className='cursor-pointer' />
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* RIGHT SIDE*/}
+                            <div className='grow'>
+
+                                <div className='mb-4 border flex justify-between items-end gap-[10px] border-[#353535] p-2' >
+                                    <h3>{selectedCollection?.name.toUpperCase() || 'No collection selected'}</h3>
+                                    {profile?._id === user?._id && (
+                                        <button 
+                                            className='icon'
+                                            onClick={() => {
+                                                setListModal(!listModal)
+                                            }}
+                                        >
+                                            +
+                                        </button>
                                     )}
                                 </div>
-                            ))}
+
+                                {/* DISPLAY SELECTED COLLECTION*/}    
+                                <div>
+                                    {selectedCollection && selectedCollection.blogs.length > 0 ? (
+                                        <div>
+                                            {selectedCollection.blogs.map((blog: Blog, index) => (
+                                                <BlogPostSmall blog={blog}/>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div>No blogs in this collection</div>
+                                    )}
+                                </div>        
+
+                            </div>
                         </div>
                     )}
 
                     {view === "liked" && (
                         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
-                            {profile?.liked.map((b, index) => {
-                                const formattedDate = formatDate(b.releaseDate);
-                                return (
-                                    <div 
-                                        key={index} 
-                                        className='bg-[#111a29] border border-[#1f2735] rounded-lg overflow-hidden cursor-pointer hover:border-[#2c3a55] transition-all'
-                                        onClick={() => window.location.href = `/blog/${b._id}`}
-                                    >
-                                        <div className='relative h-48 overflow-hidden'>
-                                            <img 
-                                                src={`https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=80`} 
-                                                alt={b.title}
-                                                className='w-full h-full object-cover'
-                                            />
-                                        </div>
-                                        <div className='p-4 flex flex-col gap-3'>
-                                            <h3 className='text-white font-semibold text-lg line-clamp-2'>{b.title}</h3>
-                                            <p className='text-[#979797] text-sm'>{formattedDate}</p>
-                                            <div className='flex items-center gap-4 text-[#979797] text-sm'>
-                                                <span className='flex items-center gap-1'>
-                                                    <ThumbsUp size={16} />
-                                                    {b.likes?.length || 0}
-                                                </span>
-                                                <span className='flex items-center gap-1'>
-                                                    <MessageCircle size={16} />
-                                                    {b.comments?.length || 0}
-                                                </span>
-                                                <Share2 size={16} className='ml-auto' />
-                                                <Bookmark size={16} />
-                                            </div>
-                                        </div>
-                                    </div>
-                                );
-                            })}
+                            {profile?.liked.map((b, index) => (
+                                <BlogPostCardSmall key={b._id} blog={b} />
+                            ))}
                         </div>
                     )}
 
@@ -748,7 +731,7 @@ const profile = ({params}: Route.ComponentProps) => {
             </div>
 
             {/* RIGHT SIDE*/}
-            <div className='max-w-[300px] min-w-[300px] flex flex-col gap-[30px]'>
+            <div className='max-w-[400px] min-w-[400px] flex flex-col gap-[30px]'>
 
                 {/* ABOUT */}
                 <div className='w-full bg-[#EDEDE9] border-[3px] border-[#000000] p-[5px]'>
@@ -760,6 +743,16 @@ const profile = ({params}: Route.ComponentProps) => {
                 {/* LOVED TOPICS / COMMUNITIES*/}
                 <div className='w-full bg-[#EDEDE9] border-[3px] border-[#000000] p-[5px]'>
                     <h3>LOVED TOPICS / COMMUNITIES</h3>
+                    {userCommunities && userCommunities.length > 0 && (
+                        <div className='flex flex-col gap-[10px] overflow-x-auto'>
+                            {userCommunities.map((community: Community) => (
+                                <CommunityCardSmall key={community._id} community={community} />
+                            ))}
+                        </div>
+                    )}
+                    {userCommunities && userCommunities.length === 0 && (
+                        <div>User is not a member of any communities</div>
+                    )}
                 </div>
             </div>
             

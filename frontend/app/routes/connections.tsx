@@ -75,62 +75,78 @@ const Connections = () => {
   }, [user]);
 
   return (
-    <div className='min-h-screen bg-[#0a1118]'>
+    <div className='min-h-screen'>
       <div className='flex flex-row gap-6 px-6 py-8 mx-auto max-w-[1400px]'>
         {/* Left Sidebar */}
         <Sidebar/>
 
         {/* Main Content Area */}
         <div className='flex-grow flex flex-col gap-6'>
-          <h1 className='text-3xl font-bold text-white'>Connections</h1>
+          <h1>NETWORK</h1>
 
-          {/* Connections List */}
-          <div className='bg-[#0f1926] border border-[#1f2735] rounded-lg p-6'>
-            <h2 className='text-xl font-semibold text-white mb-4'>My Connections ({connectionUsers.length})</h2>
-            <div className='flex flex-col gap-3'>
-              {connectionUsers.length > 0 ? (
-                connectionUsers.map((connection) => (
-                  <div 
-                    key={connection._id}
-                    className='flex flex-row gap-5 justify-between items-center cursor-pointer p-4 border border-[#1f2735] rounded-lg hover:bg-[#121b2a] transition-colors'
-                  >
+          <div className=''>
+            {/* Connections List */}
+            <div className='border border-[#1f2735] rounded-lg p-6'>
+              <h2>MY CONNECTIONS ({connectionUsers.length})</h2>
+              <div className='flex flex-col gap-3'>
+                {connectionUsers.length > 0 ? (
+                  connectionUsers.map((connection) => (
                     <div 
-                      className='flex gap-3 items-center flex-1' 
-                      onClick={() => window.location.href = `/profile/${connection._id}`}
+                      key={connection._id}
+                      className='flex flex-row gap-5 justify-between items-center cursor-pointer p-4 border border-[#000000] hover:bg-[#121b2a] transition-colors'
                     >
-                      <img 
-                        className="rounded-full border border-[#1f2735]" 
-                        src={connection.picture} 
-                        width={48} 
-                        height={48}
-                        alt={connection.name}
-                      />
-                      <div className='flex flex-col'>
-                        <div className='text-white font-medium'>{connection.name}</div>
-                        <div className='text-[#9aa4bd] text-sm'>{connection.email}</div>
+                      <div 
+                        className='flex gap-3 items-center flex-1' 
+                        onClick={() => window.location.href = `/profile/${connection._id}`}
+                      >
+                        <img 
+                          className="rounded-full border border-[#000000]" 
+                          src={connection.picture} 
+                          width={48} 
+                          height={48}
+                          alt={connection.name}
+                        />
+                        <div className='flex flex-col'>
+                          <div className='text-small'>{connection.name}</div>
+                        </div>
                       </div>
+                      <button
+                        onClick={() => handleDisconnect(connection._id)}
+                        className='p-2 hover:bg-[#1f2735] rounded-lg transition-colors'
+                      >
+                        <UserXIcon className='text-[#9aa4bd] hover:text-white' size={20} />
+                      </button>
                     </div>
-                    <button
-                      onClick={() => handleDisconnect(connection._id)}
-                      className='p-2 hover:bg-[#1f2735] rounded-lg transition-colors'
-                    >
-                      <UserXIcon className='text-[#9aa4bd] hover:text-white' size={20} />
-                    </button>
-                  </div>
-                ))
-              ) : (
-                <div className='text-[#9aa4bd] text-center py-8'>No connections</div>
-              )}
+                  ))
+                ) : (
+                  <div className='text-[#9aa4bd] text-center py-8'>No connections</div>
+                )}
+              </div>
             </div>
+
+            {/* COUNT */}
+            <div>
+              {/* FOLLOWERS */}
+              <div>
+
+              </div>
+              {/* FOLLOWING */}
+              <div>
+
+              </div>
+              {/* CONNECTIONS */}
+              <div>
+
+              </div>
+            </div> 
           </div>
+
 
           {/* Requests Section - Tabular Layout */}
           <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
             {/* Requests Received */}
-            <div className='bg-[#0f1926] border border-[#1f2735] rounded-lg p-6'>
-              <h2 className='text-xl font-semibold text-white mb-4'>
-                Requests Received ({requestReceivedUsers.length})
-              </h2>
+            <div className='border border-[#1f2735] rounded-lg p-6'>
+              <h2>REQUESTS RECEIVED ({requestReceivedUsers.length})</h2>
               <div className='flex flex-col gap-3'>
                 {requestReceivedUsers.length > 0 ? (
                   requestReceivedUsers.map((requestUser) => (
@@ -147,8 +163,7 @@ const Connections = () => {
                           alt={requestUser.name}
                         />
                         <div className='flex flex-col flex-1'>
-                          <div className='text-white font-medium'>{requestUser.name}</div>
-                          <div className='text-[#9aa4bd] text-sm'>{requestUser.email}</div>
+                          <div className='text-small'>{requestUser.name}</div>
                         </div>
                       </div>
                       <div className='flex gap-2'>
@@ -174,10 +189,8 @@ const Connections = () => {
             </div>
 
             {/* Requests Sent */}
-            <div className='bg-[#0f1926] border border-[#1f2735] rounded-lg p-6'>
-              <h2 className='text-xl font-semibold text-white mb-4'>
-                Requests Sent ({requestSentUsers.length})
-              </h2>
+            <div className='border border-[#1f2735] rounded-lg p-6'>
+              <h2>REQUESTS SENT ({requestSentUsers.length})</h2>
               <div className='flex flex-col gap-3'>
                 {requestSentUsers.length > 0 ? (
                   requestSentUsers.map((requestUser) => (
@@ -195,10 +208,8 @@ const Connections = () => {
                           alt={requestUser.name}
                         />
                         <div className='flex flex-col flex-1'>
-                          <div className='text-white font-medium'>{requestUser.name}</div>
-                          <div className='text-[#9aa4bd] text-sm'>{requestUser.email}</div>
+                          <div className='text-small'>{requestUser.name}</div>
                         </div>
-                        <div className='text-[#9aa4bd] text-xs'>Pending</div>
                       </div>
                     </div>
                   ))

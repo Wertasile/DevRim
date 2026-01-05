@@ -152,6 +152,7 @@ export type Community = {
     picture: string;
     members: User[];
     posts: Blog[];
+    topics: string[];
     createdAt: string;
     updatedAt: string;
 }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import BlogPostCard from '../components/blogPostCard';
-import type { Blog, Trending } from '~/types/types';
+import type { Blog, Community, Trending } from '~/types/types';
 import { useLocation } from 'react-router';
 import { useUser } from '~/context/userContext';
 import {
@@ -15,6 +15,8 @@ import {
 } from 'lucide-react';
 import Sidebar from '~/components/Sidebar';
 import BlogPostSmall from '~/components/blogPostSmall';
+import getUserCommunities from '~/apiCalls/Community/getUserCommunities';
+import CommunityIcon from '~/components/communityIcon';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -27,13 +29,7 @@ export default function BlogHome() {
     const [trending, setTrending] = useState<Trending[]>([]);
     const [searchResults, setSearchResults] = useState<Blog[]>([]);
     const [section, setSection] = useState<"For You" | "Featured" | "Search Results" | "Latest">("For You");
-
-    const communityChips = [
-        { label: "Travel", icon: <Compass size={16} /> },
-        { label: "Tech", icon: <TrendingUp size={16} /> },
-        { label: "Movies", icon: <Video size={16} /> },
-        { label: "Beauty", icon: <Headphones size={16} /> },
-    ];
+    const [userCommunities, setUserCommunities] = useState<Community[]>([]);
     
     const location = useLocation();
     useEffect(() => {
@@ -45,6 +41,17 @@ export default function BlogHome() {
         setSearchResults(location.state.searchResults);
         }
     }, [location.state]);
+
+    useEffect(() => {
+        if (user?._id) {
+            getUserCommunities(user._id).then((data: Community[]) => {
+                setUserCommunities(data);
+                console.log(data);
+            }).catch((err) => {
+                console.error(err);
+            });
+        }
+    }, [user]);
 
     const getBlogs = async () => {
         const response = await fetch(`${API_URL}/posts/`, {
@@ -186,6 +193,14 @@ export default function BlogHome() {
                         </div>
                     </div>
 
+                    {userCommunities.length > 0 && (
+                    <div className='flex gap-[25px] overflow-x-auto'>
+                        {userCommunities.map((community) => (
+                            <CommunityIcon key={community._id} title={community.title} img={community.picture} />
+                            ))}
+                        </div>
+                    )}
+
                     <div className="w-fit flex ">
                         {(["For You", "Search Results", "Latest"] as const).map((label,index) => (
                             <button
@@ -226,9 +241,9 @@ export default function BlogHome() {
                     </div>
 
                     <div className="w-[400px] bg-[#EDEDE9] flex border-[3px] border-solid border-[#000000] flex-col gap-[10px]">
-                        <h3>COMMUNITIES</h3>
+                        <h3>TRENDING COMMUNITIES</h3>
                         <div>
-                            {communityChips.map((chip, idx) => (
+                            {user.communities.map((chip, idx) => (
                                 <div key={idx}>
                                     {chip.icon}
                                     <span>{chip.label}</span>

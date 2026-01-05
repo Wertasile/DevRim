@@ -2,10 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useUser } from '~/context/userContext';
 import type { Community } from '~/types/types';
 import Sidebar from '~/components/Sidebar';
-import { Search, Compass, Settings, Heart, Users, Plus, PlusIcon } from 'lucide-react';
+import { Search, Compass, Settings, Heart, Users, Plus, PlusIcon, X } from 'lucide-react';
 import CreateCommunityModal from '~/components/CreateCommunityModal';
 import joinCommunity from '~/apiCalls/Community/joinCommunity';
 import leaveCommunity from '~/apiCalls/Community/leaveCommunity';
+import { TOPICS } from '~/constants/topics';
+import TopicPill from '~/components/TopicPill';
+import CommunityCard from '~/components/communityCard';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -15,10 +18,14 @@ const CommunityHub = () => {
   const [userCommunities, setUserCommunities] = useState<Community[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
+  const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
 
   const fetchCommunities = async () => {
     try {
-      const response = await fetch(`${API_URL}/communities`, {
+      const url = selectedTopic 
+        ? `${API_URL}/communities?topic=${encodeURIComponent(selectedTopic)}`
+        : `${API_URL}/communities`;
+      const response = await fetch(url, {
         method: 'get',
         credentials: 'include',
       });
@@ -57,6 +64,9 @@ const CommunityHub = () => {
 
   useEffect(() => {
     fetchCommunities();
+  }, [user, selectedTopic]);
+
+  useEffect(() => {
     fetchUserCommunities();
   }, [user]);
 
@@ -69,10 +79,12 @@ const CommunityHub = () => {
     return count.toString();
   };
 
-  const filteredCommunities = communities.filter(community =>
-    community.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    community.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredCommunities = communities.filter(community => {
+    const matchesSearch = community.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      community.description.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    return matchesSearch;
+  });
 
   const handleCommunityCreated = () => {
     fetchCommunities();
@@ -112,40 +124,37 @@ const CommunityHub = () => {
             </button>
           </div>
 
+          {/* Topic Filter */}
+          <div className='flex flex-col gap-2'>
+            <div className='flex items-center gap-2 flex-wrap'>
+              <span className='text-white text-sm font-medium'>Filter by Topic:</span>
+              {TOPICS.map((topic) => (
+                <TopicPill
+                  key={topic.id}
+                  topicName={topic.name}
+                  onClick={() => setSelectedTopic(selectedTopic === topic.name ? null : topic.name)}
+                  size="medium"
+                  variant={selectedTopic === topic.name ? 'selected' : 'unselected'}
+                  className={selectedTopic === topic.name ? 'font-semibold' : 'opacity-70 hover:opacity-100'}
+                />
+              ))}
+              {selectedTopic && (
+                <button
+                  onClick={() => setSelectedTopic(null)}
+                  className='px-3 py-1 rounded-lg text-sm bg-[#121b2a] border border-[#1f2735] text-[#9aa4bd] hover:border-[#31415f] flex items-center gap-1'
+                >
+                  <X size={14} />
+                  Clear Filter
+                </button>
+              )}
+            </div>
+          </div>
+
           {/* Community Cards */}
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
             {filteredCommunities.map((community) => {
               return (
-                <div
-                  key={community._id}
-                  className='bg-[#EDEDE9] border border-[#1f2735] overflow-hidden cursor-pointer hover:border-[#31415f] transition-all group'
-                  onClick={() => window.location.href = `/community/${community._id}`}
-                >
-                  
-
-                  {/* Card Content */}
-                  <div className='flex flex-col gap-3'>
-                    <div className='flex items-start gap-[10px]'>
-                      <div className='w-28 h-28 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg'>
-                        <img 
-                          src={community.picture} 
-                          alt={community.title}
-                          className='w-full h-full object-cover'
-                        />
-                      </div>
-                      <div className='flex flex-col'>
-                        <div className='flex gap-[10px] items-center'>
-                          <h3>{community.title}</h3>
-                          <div className='text-mini text-[#9aa4bd]'>{formatMemberCount(community.members?.length)} members</div>
-                        </div>  
-
-                        <div className='text-small'>
-                          {community.description || 'Join this community to connect with like-minded people'}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <CommunityCard community={community} />
               );
             })}
           </div>

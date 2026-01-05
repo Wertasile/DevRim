@@ -8,6 +8,7 @@ import type { Route } from './+types/Community';
 import BlogPostSmall from '~/components/blogPostSmall';
 import leaveCommunity from '~/apiCalls/Community/leaveCommunity';
 import joinCommunity from '~/apiCalls/Community/joinCommunity';
+import TopicPill from '~/components/TopicPill';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -259,6 +260,21 @@ export default function Community({ params }: Route.ComponentProps) {
               <div className="text-small leading-relaxed mb-3">
                 {community.description || 'A community for like-minded people'}
               </div>
+              {/* Topics */}
+              {community.topics && community.topics.length > 0 && (
+                <div className="mb-3">
+                  <div className="flex flex-wrap gap-1">
+                    {community.topics.map((topicName) => (
+                      <TopicPill
+                        key={topicName}
+                        topicName={topicName}
+                        size="medium"
+                        variant="default"
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
               <div className="text-small">
                 <p>Creator: @{community.creator?.name || 'Unknown'}</p>
                 <p className="flex items-center gap-1">

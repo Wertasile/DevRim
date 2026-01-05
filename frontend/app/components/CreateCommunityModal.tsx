@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { X, Plus, Trash2, Image as ImageIcon } from 'lucide-react';
+import { TOPICS } from '~/constants/topics';
+import TopicPill from '~/components/TopicPill';
 
 type CreateCommunityModalProps = {
   isOpen: boolean;
@@ -17,6 +19,15 @@ const CreateCommunityModal = ({ isOpen, onClose, onSuccess }: CreateCommunityMod
   const [picturePreview, setPicturePreview] = useState<string>('');
   const [rules, setRules] = useState<string[]>(['']);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
+
+  const toggleTopic = (topicName: string) => {
+    setSelectedTopics(prev => 
+      prev.includes(topicName) 
+        ? prev.filter(name => name !== topicName)
+        : [...prev, topicName]
+    );
+  };
 
   const handlePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -137,6 +148,7 @@ const CreateCommunityModal = ({ isOpen, onClose, onSuccess }: CreateCommunityMod
           moderators: [],
           members: [],
           posts: [],
+          topics: selectedTopics,
         }),
       });
 
@@ -151,6 +163,7 @@ const CreateCommunityModal = ({ isOpen, onClose, onSuccess }: CreateCommunityMod
       setPicture(null);
       setPicturePreview('');
       setRules(['']);
+      setSelectedTopics([]);
       
       onSuccess();
       onClose();
@@ -170,6 +183,7 @@ const CreateCommunityModal = ({ isOpen, onClose, onSuccess }: CreateCommunityMod
       setPicture(null);
       setPicturePreview('');
       setRules(['']);
+      setSelectedTopics([]);
       onClose();
     }
   };
@@ -179,12 +193,12 @@ const CreateCommunityModal = ({ isOpen, onClose, onSuccess }: CreateCommunityMod
   return (
     <div className="fixed z-50 flex h-[100vh] w-[100vw] justify-center items-center bg-black/60 backdrop-blur-sm" onClick={handleClose}>
       <div
-        className="w-full max-w-2xl max-h-[90vh] bg-[#0f1926] border border-[#1f2735] rounded-lg flex flex-col shadow-xl overflow-hidden"
+        className="w-full max-w-2xl max-h-[90vh] bg-[#EDEDE9] border border-[#000000] flex flex-col shadow-xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-[#1f2735]">
-          <h2 className="text-white font-semibold text-xl">Create Community</h2>
+        <div className="flex items-center justify-between p-6">
+          <h3>CREATE COMMUNITY</h3>
           <button
             onClick={handleClose}
             className="text-[#9aa4bd] hover:text-white transition-colors text-2xl font-bold"
@@ -199,7 +213,7 @@ const CreateCommunityModal = ({ isOpen, onClose, onSuccess }: CreateCommunityMod
           <div className="flex flex-col gap-6 w-full">
             {/* Title */}
             <div className="flex flex-col gap-2">
-              <label htmlFor="title" className="text-white font-medium text-sm">
+              <label htmlFor="title">
                 Community Title <span className="text-red-400">*</span>
               </label>
               <input
@@ -210,14 +224,13 @@ const CreateCommunityModal = ({ isOpen, onClose, onSuccess }: CreateCommunityMod
                 placeholder="Enter community title"
                 maxLength={50}
                 required
-                className="w-full px-4 py-2 bg-[#121b2a] border border-[#1f2735] rounded-lg text-white placeholder-[#9aa4bd] focus:outline-none focus:border-[#31415f]"
               />
               <span className="text-[#9aa4bd] text-xs">{title.length}/50</span>
             </div>
 
             {/* Description */}
             <div className="flex flex-col gap-2">
-              <label htmlFor="description" className="text-white font-medium text-sm">
+              <label htmlFor="description">
                 Description <span className="text-red-400">*</span>
               </label>
               <textarea
@@ -228,14 +241,13 @@ const CreateCommunityModal = ({ isOpen, onClose, onSuccess }: CreateCommunityMod
                 maxLength={250}
                 rows={4}
                 required
-                className="w-full px-4 py-2 bg-[#121b2a] border border-[#1f2735] rounded-lg text-white placeholder-[#9aa4bd] focus:outline-none focus:border-[#31415f] resize-none"
               />
               <span className="text-[#9aa4bd] text-xs">{description.length}/250</span>
             </div>
 
             {/* Picture Upload */}
             <div className="flex flex-col gap-2">
-              <label className="text-white font-medium text-sm">Community Picture</label>
+              <label>Community Picture</label>
               <div className="flex flex-col gap-3">
                 {picturePreview ? (
                   <div className="relative">
@@ -273,14 +285,45 @@ const CreateCommunityModal = ({ isOpen, onClose, onSuccess }: CreateCommunityMod
               </div>
             </div>
 
+            {/* Topics */}
+            <div className="flex flex-col gap-2">
+              <label className="text-white font-medium text-sm">Topics</label>
+              <p className="text-[#9aa4bd] text-xs">Select topics that describe your community</p>
+              <div className="flex flex-wrap gap-2">
+                {TOPICS.map((topic) => (
+                  <TopicPill
+                    key={topic.id}
+                    topicName={topic.name}
+                    onClick={() => toggleTopic(topic.name)}
+                    size="medium"
+                    variant={selectedTopics.includes(topic.name) ? 'selected' : 'unselected'}
+                    className={selectedTopics.includes(topic.name) ? 'font-semibold' : 'opacity-70 hover:opacity-100'}
+                  />
+                ))}
+              </div>
+              {selectedTopics.length > 0 && (
+                <div className="flex flex-wrap items-center gap-2 mt-2">
+                  <span className="text-[#9aa4bd] text-xs">Selected:</span>
+                  {selectedTopics.map((topicName) => (
+                    <TopicPill
+                      key={topicName}
+                      topicName={topicName}
+                      size="medium"
+                      variant="selected"
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+
             {/* Rules */}
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
-                <label className="text-white font-medium text-sm">Rules</label>
+                <label>Rules</label>
                 <button
                   type="button"
                   onClick={addRule}
-                  className="flex items-center gap-1 px-3 py-1 bg-[#121b2a] border border-[#1f2735] rounded-lg text-white text-sm hover:bg-[#1f2735] transition-colors"
+                  className="primary-btn flex gap-[5px] items-center"
                 >
                   <Plus size={16} />
                   Add Rule
