@@ -76,27 +76,47 @@ const Connections = () => {
 
   return (
     <div className='min-h-screen'>
-      <div className='flex flex-row gap-6 px-6 py-8 mx-auto max-w-[1400px]'>
+      <div className='flex flex-row gap-6 px-6 py-8 mx-auto'>
         {/* Left Sidebar */}
         <Sidebar/>
 
         {/* Main Content Area */}
-        <div className='flex-grow flex flex-col gap-6'>
+        <div className='flex-grow flex flex-col gap-6 max-w-[1200px] mx-auto'>
           <h1>NETWORK</h1>
 
-          <div className=''>
+          <div className='flex flex-col gap-[20px]'>
+
+            {/* COUNT */}
+            <div className='flex flex-row gap-4 justify-center'>
+              {/* FOLLOWERS */}
+              <div className='border-[3px] border-[#1f2735] bg-[#FED259]/50 flex flex-col items-center p-3 w-fit'>
+                <h2>{user?.connections.length}</h2>
+                <h3>CONNECTION(S)</h3>
+              </div>
+              {/* FOLLOWING */}
+              <div className='border-[3px] border-[#1f2735] bg-[#FED259]/50 flex flex-col items-center p-3 w-fit'>
+                <h2>{user?.following.length}</h2>
+                <h3>FOLLOWING</h3>
+              </div>
+              {/* CONNECTIONS */}
+              <div className='border-[3px] border-[#1f2735] bg-[#FED259]/50 flex flex-col items-center p-3 w-fit'>
+                <h2>{user?.followers.length}</h2>
+                <h3>FOLLOWERS</h3>
+              </div>
+            </div> 
+
             {/* Connections List */}
-            <div className='border border-[#1f2735] rounded-lg p-6'>
+            <div>
               <h2>MY CONNECTIONS ({connectionUsers.length})</h2>
               <div className='flex flex-col gap-3'>
                 {connectionUsers.length > 0 ? (
                   connectionUsers.map((connection) => (
                     <div 
                       key={connection._id}
-                      className='flex flex-row gap-5 justify-between items-center cursor-pointer p-4 border border-[#000000] hover:bg-[#121b2a] transition-colors'
+                      className='flex flex-col bg-[#EDEDE9] w-[150px] gap-[5px] justify-between items-center cursor-pointer p-[10px] border border-[#979797]'
                     >
                       <div 
-                        className='flex gap-3 items-center flex-1' 
+                        className='flex flex-col gap-3 items-center' 
                         onClick={() => window.location.href = `/profile/${connection._id}`}
                       >
                         <img 
@@ -106,16 +126,24 @@ const Connections = () => {
                           height={48}
                           alt={connection.name}
                         />
-                        <div className='flex flex-col'>
-                          <div className='text-small'>{connection.name}</div>
-                        </div>
+                        <div className='text-small'>{connection.name}</div>
+                        <div className='text-mini'>{connection.byline}</div>
                       </div>
-                      <button
-                        onClick={() => handleDisconnect(connection._id)}
-                        className='p-2 hover:bg-[#1f2735] rounded-lg transition-colors'
-                      >
-                        <UserXIcon className='text-[#9aa4bd] hover:text-white' size={20} />
-                      </button>
+                      <div className='flex flex-row gap-2'>
+                        <button
+                          onClick={() => handleDisconnect(connection._id)}
+                          className='icon'
+                        >
+                          <UserXIcon size={20} />
+                        </button>
+                        <button
+                          onClick={() => handleDisconnect(connection._id)}
+                          className='icon'
+                        >
+                          <UserXIcon size={20} />
+                        </button>
+                      </div>  
+                      
                     </div>
                   ))
                 ) : (
@@ -124,35 +152,20 @@ const Connections = () => {
               </div>
             </div>
 
-            {/* COUNT */}
-            <div>
-              {/* FOLLOWERS */}
-              <div>
-
-              </div>
-              {/* FOLLOWING */}
-              <div>
-
-              </div>
-              {/* CONNECTIONS */}
-              <div>
-
-              </div>
-            </div> 
           </div>
 
 
           {/* Requests Section - Tabular Layout */}
           <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
             {/* Requests Received */}
-            <div className='border border-[#1f2735] rounded-lg p-6'>
+            <div>
               <h2>REQUESTS RECEIVED ({requestReceivedUsers.length})</h2>
               <div className='flex flex-col gap-3'>
                 {requestReceivedUsers.length > 0 ? (
                   requestReceivedUsers.map((requestUser) => (
                     <div 
                       key={requestUser._id}
-                      className='p-4 border border-[#1f2735] rounded-lg hover:bg-[#121b2a] transition-colors'
+                      className='p-4 border border-[#1f2735] rounded-lg'
                     >
                       <div className='flex items-center gap-3 mb-3'>
                         <img 
@@ -189,14 +202,14 @@ const Connections = () => {
             </div>
 
             {/* Requests Sent */}
-            <div className='border border-[#1f2735] rounded-lg p-6'>
+            <div>
               <h2>REQUESTS SENT ({requestSentUsers.length})</h2>
               <div className='flex flex-col gap-3'>
                 {requestSentUsers.length > 0 ? (
                   requestSentUsers.map((requestUser) => (
                     <div 
                       key={requestUser._id}
-                      className='p-4 border border-[#1f2735] rounded-lg hover:bg-[#121b2a] transition-colors cursor-pointer'
+                      className='p-4 border border-[#979797] cursor-pointer'
                       onClick={() => window.location.href = `/profile/${requestUser._id}`}
                     >
                       <div className='flex items-center gap-3'>

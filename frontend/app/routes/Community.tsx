@@ -16,6 +16,7 @@ export default function Community({ params }: Route.ComponentProps) {
   const { user } = useUser();
   const [community, setCommunity] = useState<Community | null>(null);
   const [otherCommunities, setOtherCommunities] = useState<Community[]>([]);
+  const [pinnedPosts, setPinnedPosts] = useState<Blog[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [deletingPostId, setDeletingPostId] = useState<string | null>(null);
@@ -88,13 +89,13 @@ export default function Community({ params }: Route.ComponentProps) {
         </div>
       </div>;
     } else if (lowerTitle.includes('travel')) {
-      return <Briefcase size={24} className="text-white" />;
+      return <Briefcase size={24} className="text-black" />;
     } else if (lowerTitle.includes('movie')) {
-      return <Film size={24} className="text-white" />;
+      return <Film size={24} className="text-black" />;
     } else if (lowerTitle.includes('beauty')) {
-      return <FlaskConical size={24} className="text-white" />;
+      return <FlaskConical size={24} className="text-black" />;
     }
-    return <Users size={24} className="text-white" />;
+    return <Users size={24} className="text-black" />;
   };
 
   const filteredPosts = community?.posts?.filter((post: Blog) => {
@@ -148,16 +149,16 @@ export default function Community({ params }: Route.ComponentProps) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0a1118] flex items-center justify-center">
-        <div className="text-[#9aa4bd]">Loading community...</div>
+      <div className="min-h-screen flex items-center justify-center">
+        <h3>LOADING COMMUNITY</h3>
       </div>
     );
   }
 
   if (!community) {
     return (
-      <div className="min-h-screen bg-[#0a1118] flex items-center justify-center">
-        <div className="text-[#9aa4bd]">Community not found</div>
+      <div className="min-h-screen flex items-center justify-center">
+        <h3>COMMUNITY NOT FOUND</h3>
       </div>
     );
   }
@@ -217,6 +218,7 @@ export default function Community({ params }: Route.ComponentProps) {
                   key={post._id}
                   id={post._id}
                   title={post.title}
+                  coverImage={post.coverImage}
                   releaseDate={post.releaseDate}
                   summary={post.summary || ''}
                   postUser={post.user}
@@ -227,7 +229,7 @@ export default function Community({ params }: Route.ComponentProps) {
                 />
               ))
             ) : (
-              <div className="text-[#9aa4bd] text-center py-12 bg-[#0f1926] border border-[#1f2735] rounded-lg">
+              <div className="text-center">
                 {searchQuery ? 'No posts found matching your search.' : 'No posts yet in this community.'}
               </div>
             )}
@@ -319,31 +321,17 @@ export default function Community({ params }: Route.ComponentProps) {
 
             {/* Other Communities */}
             {otherCommunities.length > 0 && (
-              <div>
-                <h3 className="text-white font-semibold text-sm mb-3">OTHER COMMUNITIES</h3>
-                <div className="space-y-3">
-                  {otherCommunities.map((comm) => (
-                    <div
-                      key={comm._id}
-                      className="flex items-center gap-3 cursor-pointer hover:bg-[#121b2a] p-2 rounded-lg transition-colors"
-                      onClick={() => window.location.href = `/community/${comm._id}`}
-                    >
-                      {comm.picture ? (
-                        <img src={comm.picture} alt={comm.title} className="w-10 h-10 rounded-full object-cover" />
-                      ) : (
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
-                          {getCommunityIcon(comm.title)}
-                        </div>
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <h4 className="text-white text-sm font-medium truncate">{comm.title}</h4>
-                        <p className="text-[#9aa4bd] text-xs">
-                          {formatMemberCount(comm.members?.length || 0)} members
-                        </p>
-                      </div>
-                    </div>
+              <div className='bg-[#EDEDE9] border-[3px] border-[#000000] mb-6 p-[5px]'>
+                <h3>PINNED POSTS</h3>
+                <div className='flex flex-col gap-[10px]'>
+                  {user && pinnedPosts.map((b: any) => (
+                      <BlogPostSmall blog={b.blog} />
                   ))}
-                </div>
+
+                  {!pinnedPosts.length && (
+                      <div>Pinned posts appear here once available.</div>
+                  )}
+              </div>
               </div>
             )}
         </aside>

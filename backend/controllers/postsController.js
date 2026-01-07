@@ -27,7 +27,7 @@ const createPost = async(req, res) => {
     try
     {
         const currentUser = req.user._id
-        const {title, summary, content, categories, communityId } = req.body
+        const {title, summary, content, categories, communityId, coverImage } = req.body
         
         // Validate required fields
         if (!title || !title.trim()) {
@@ -51,7 +51,8 @@ const createPost = async(req, res) => {
             content : content,
             releaseDate : Date.now(),
             user : currentUser,
-            categories: categories || []
+            categories: categories || [],
+            coverImage: coverImage || undefined // Optional cover image
         }
         
         const data = await Post.create(postData)
@@ -112,7 +113,7 @@ const updatePost = async(req, res) => {
     {
         const postId = req.params.id
         const currentUser = req.user._id
-        const {title, summary, content, communityId} = req.body
+        const {title, summary, content, communityId, coverImage} = req.body
         
         // Find the post first to check ownership
         const post = await Post.findById(postId);
@@ -144,7 +145,8 @@ const updatePost = async(req, res) => {
         const updateData = {
             title: title.trim(),
             summary: (summary && summary.trim()) ? summary.trim() : '',
-            content: content
+            content: content,
+            coverImage: coverImage !== undefined ? coverImage : post.coverImage // Preserve existing or update
         };
         
         const updatedPost = await Post.findByIdAndUpdate(

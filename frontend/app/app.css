@@ -11,7 +11,8 @@
 }
 
 :root {
-  --background: #D6D6CD;
+  /* --background: #D6D6CD; */
+  --background: #E3E0E9;
   --foreground: oklch(0.985 0 0);
   --primary: #060F13;
   --secondary: #0D1E26;
@@ -46,7 +47,7 @@
 }
 
 ::-webkit-scrollbar-track-piece{
-	background-color: #111;
+	background-color: #EDEDE9;
 }
 
 ::-webkit-scrollbar-thumb{
@@ -123,9 +124,9 @@ li p{margin-top: 0px;}
 .skeleton {
   background: linear-gradient(
     90deg,
-    #1f2735 0%,
-    #2a3441 50%,
-    #1f2735 100%
+    #D6D6CD 0%,
+    #C6C6BD 50%,
+    #D6D6CD 100%
   );
   background-size: 2000px 100%;
   animation: skeleton-shimmer 2s infinite linear;
@@ -165,7 +166,9 @@ p{
   /* background-color: #FF5A48; */
   background-color: #E95444;
   border: 1px solid #000000;
-  padding: 10px 34px;
+  padding: 5px 10px;
+  text-align: center;
+  min-width: 150px;
   box-shadow: 0 2px 0 2px #000000;
   width: fit-content;
   cursor: pointer;
@@ -216,6 +219,43 @@ input, textarea{
     box-shadow: 0 2px 0px 2px#000000;
     padding: 8px 12px;
     border: 1px solid #353535;
+}
+
+/* Form Input Styling - Applied to all inputs and textareas */
+.form-input,
+input.form-input,
+textarea.form-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #000000;
+    border-radius: 8px;
+    box-shadow: 0 2px 0 2px #000000;
+    background-color: #ffffff;
+    transition: all 0.2s ease;
+    font: inherit;
+}
+
+.form-input:focus,
+input.form-input:focus,
+textarea.form-input:focus {
+    outline: none;
+    border-color: transparent;
+    box-shadow: 0 2px 0 2px #000000, 0 0 0 2px #E95444;
+}
+
+.form-input:disabled,
+input.form-input:disabled,
+textarea.form-input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Form Label Styling - Applied to all labels */
+.form-label,
+label.form-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
 }
 
 #blogs{
@@ -301,8 +341,8 @@ form{
   top: 50%;
   left: 50%;
   border-radius: 12px;
-  border: 1px solid #fff;
-  background: #000;
+  border: 1px solid #000;
+  background: #EDEDE9;
 
   transform-style: preserve-3d;
   will-change: transform;
@@ -398,6 +438,8 @@ form{
   display: flex;
   gap: 10px;
   width: 100%;
+  padding: 10px;
+  align-items: center;
   background: #EDEDE9;
   border: 1px solid #000000;
   border-radius: 5px;

@@ -112,6 +112,7 @@ export default function BlogHome() {
                     comments={b.comments}
                     likes={b.likes}
                     visualIndex={idx}
+                    coverImage={b.coverImage}
                 />
             ));
         }
@@ -129,6 +130,7 @@ export default function BlogHome() {
                     comments={b.comments}
                     likes={b.likes}
                     visualIndex={idx}
+                    coverImage={b.coverImage}
                 />
             ));
         }
@@ -145,6 +147,7 @@ export default function BlogHome() {
                 comments={b.comments}
                 likes={b.likes}
                 visualIndex={idx}
+                coverImage={b.coverImage}
             />
         ));
     };
@@ -224,13 +227,6 @@ export default function BlogHome() {
                         <h3>TRENDING POSTS</h3>
                         <div className='flex flex-col gap-[10px]'>
                             {user && trendingPosts.map((b: any) => (
-                                // <div key={b.blog._id} className="bg-[#EDEDE9] p-[5px] border-[1px] border-[#000000]" onClick={() => window.location.href = `/blog/${b.blog._id}`}>
-                                //     <div className="text-small">{b.blog.title}</div>
-                                //     <div className="flex gap-[10px]">
-                                //         <span><Heart size={14}/> {b.blog.likes?.length ?? 0}</span>
-                                //         <span><MessageCircle size={14}/> {b.blog.comments?.length ?? 0}</span>
-                                //     </div>
-                                // </div>
                                 <BlogPostSmall blog={b.blog} />
                             ))}
 

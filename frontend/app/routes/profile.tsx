@@ -604,7 +604,7 @@ const profile = ({params}: Route.ComponentProps) => {
                                             <div className='flex flex-row gap-3 items-center justify-between p-4 border border-[#353535] rounded-lg' key={index}>
                                                 <div className='flex flex-row gap-5 items-center'>
                                                     <img className="rounded-full" src={user.picture} width={48} height={48} alt={user.name}/>
-                                                    <div className='text-white'>{user.name}</div>
+                                                    <div className='text-black'>{user.name}</div>
                                                 </div>
                                                 <div className='flex gap-3'>
                                                     <button className="primary-btn" onClick={() => {acceptConnection(user._id)}}>
@@ -629,7 +629,7 @@ const profile = ({params}: Route.ComponentProps) => {
                                             <div className='flex flex-col gap-3 p-4 border border-[#353535] rounded-lg' key={index}>
                                                 <div className='flex flex-row gap-5 items-center'>
                                                     <img className="rounded-full" src={user.picture} width={48} height={48} alt={user.name}/>
-                                                    <div className='text-white'>{user.name}</div>
+                                                    <div className='text-black'>{user.name}</div>
                                                 </div>
                                             </div>
                                         ))
@@ -646,7 +646,7 @@ const profile = ({params}: Route.ComponentProps) => {
                             {user?.connections && user.connections.length > 0 ? (
                                 connectionUsers.map((connection, index) => (
                                     <div 
-                                        className='flex flex-row gap-5 justify-between items-center cursor-pointer p-4 border border-[#353535] rounded-lg hover:bg-[#111] transition-colors'
+                                        className='flex flex-row gap-5 justify-between items-center cursor-pointer p-4 border border-[#000000] rounded-lg hover:bg-[#D6D6CD] transition-colors'
                                         key={index}
                                     >
                                         <div 
@@ -675,13 +675,13 @@ const profile = ({params}: Route.ComponentProps) => {
                         <div>
                             <div className='flex flex-row gap-4 border-b border-[#353535] pb-2 mb-4'>
                                 <button 
-                                    className={`px-4 py-2 rounded-t-lg transition-colors ${followersView === "followers" ? 'bg-[#5D64F4] text-white' : 'text-[#979797] hover:text-white'}`}
+                                    className={`px-4 py-2 rounded-t-lg transition-colors ${followersView === "followers" ? 'bg-[#5D64F4] text-white' : 'text-[#979797] hover:text-black'}`}
                                     onClick={() => setFollowersView("followers")}
                                 >
                                     FOLLOWERS {profile?.followers?.length || 0}
                                 </button>
                                 <button 
-                                    className={`px-4 py-2 rounded-t-lg transition-colors ${followersView === "following" ? 'bg-[#5D64F4] text-white' : 'text-[#979797] hover:text-white'}`}
+                                    className={`px-4 py-2 rounded-t-lg transition-colors ${followersView === "following" ? 'bg-[#5D64F4] text-white' : 'text-[#979797] hover:text-black'}`}
                                     onClick={() => setFollowersView("following")}
                                 >
                                     Following {profile?.following?.length || 0}
@@ -735,9 +735,10 @@ const profile = ({params}: Route.ComponentProps) => {
 
                 {/* ABOUT */}
                 <div className='w-full bg-[#EDEDE9] border-[3px] border-[#000000] p-[5px]'>
-                    <h3>ABOUT</h3>
-                    <p className='text-[#353535]'>{profile?.about}</p>
-                    <div>Joined on {formatDate(profile?.created_at || "")}</div>
+                    <h3>{profile?.name.toUpperCase()}</h3>
+                    <div className='text-mini'>{profile?.byline}</div>
+                    <p className='text-small'>{profile?.about}</p>
+                    {/* <div>Joined on {formatDate(profile?.created_at || "")}</div> */}
                 </div>
 
                 {/* LOVED TOPICS / COMMUNITIES*/}

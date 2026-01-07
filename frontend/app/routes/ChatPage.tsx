@@ -512,7 +512,7 @@ const ChatPage = () => {
         return (
           <div style={{ minWidth: "250px" }}>
             {isLoading ? (
-              <div className="w-[250px] h-[60px] bg-[#1f2735] rounded-lg flex items-center justify-center animate-pulse">
+              <div className="w-[250px] h-[60px] bg-[#D6D6CD] rounded-lg flex items-center justify-center animate-pulse">
                 <div className="text-xs">Loading audio...</div>
               </div>
             ) : (
@@ -733,8 +733,8 @@ const ChatPage = () => {
     <>
     {imageModal &&
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 cursor-pointer flex items-center justify-center p-4" onClick={() => closeImageModal()}>
-        <div className="w-full max-w-7xl h-full max-h-[95vh] bg-[#EDEDE9] border border-[#1f2735] flex flex-col overflow-hidden" onClick={(e) => e.stopPropagation()}>
-          <div className="flex justify-end items-center p-1 border-b border-[#1f2735] flex-shrink-0">
+        <div className="w-full max-w-7xl h-full max-h-[95vh] bg-[#EDEDE9] border border-[#1f2735] flex flex-col gap-4 p-6 overflow-hidden" onClick={(e) => e.stopPropagation()}>
+          <div className="flex justify-end items-center flex-shrink-0">
             <button 
               onClick={() => closeImageModal()}
               className="icon"
@@ -742,7 +742,7 @@ const ChatPage = () => {
               <X size={20}/>
             </button>
           </div>
-          <div className="flex-1 flex items-center justify-center p-2 sm:p-4">
+          <div className="flex-1 flex items-center justify-center">
             <img 
               src={ImageSrc} 
               className="max-w-full max-h-full w-auto h-auto object-contain border border-[#000]"
@@ -873,11 +873,11 @@ const ChatPage = () => {
                   alt="Chat"
                   className="w-10 h-10 rounded-full border border-[#1f2735] object-cover"
                 />
-                <h2>
+                <h3>
                   {chat.chatName === "sender"
                     ? chat.users.find((u) => u._id !== user?._id)?.name || "Unknown"
                     : chat.chatName}
-                </h2>
+                </h3>
               </>
             )}
           </div>

@@ -193,27 +193,27 @@ const CreateCommunityModal = ({ isOpen, onClose, onSuccess }: CreateCommunityMod
   return (
     <div className="fixed z-50 flex h-[100vh] w-[100vw] justify-center items-center bg-black/60 backdrop-blur-sm" onClick={handleClose}>
       <div
-        className="w-full max-w-2xl max-h-[90vh] bg-[#EDEDE9] border border-[#000000] flex flex-col shadow-xl overflow-hidden"
+        className="w-full max-w-2xl max-h-[90vh] bg-[#EDEDE9] border border-[#1f2735] flex flex-col gap-4 p-6 shadow-xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6">
+        <div className="flex items-center justify-between">
           <h3>CREATE COMMUNITY</h3>
           <button
             onClick={handleClose}
-            className="text-[#9aa4bd] hover:text-white transition-colors text-2xl font-bold"
+            className="icon"
             disabled={isSubmitting}
           >
-            ×
+            <X size={20}/>
           </button>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="flex overflow-y-auto p-3">
-          <div className="flex flex-col gap-6 w-full">
+        <form onSubmit={handleSubmit} className="flex overflow-y-auto">
+          <div className="flex flex-col gap-3 w-full">
             {/* Title */}
             <div className="flex flex-col gap-2">
-              <label htmlFor="title">
+              <label htmlFor="title" className="form-label">
                 Community Title <span className="text-red-400">*</span>
               </label>
               <input
@@ -224,13 +224,14 @@ const CreateCommunityModal = ({ isOpen, onClose, onSuccess }: CreateCommunityMod
                 placeholder="Enter community title"
                 maxLength={50}
                 required
+                className="form-input"
               />
-              <span className="text-[#9aa4bd] text-xs">{title.length}/50</span>
+              <span className="text-[#979797] text-xs">{title.length}/50</span>
             </div>
 
             {/* Description */}
             <div className="flex flex-col gap-2">
-              <label htmlFor="description">
+              <label htmlFor="description" className="form-label">
                 Description <span className="text-red-400">*</span>
               </label>
               <textarea
@@ -241,8 +242,9 @@ const CreateCommunityModal = ({ isOpen, onClose, onSuccess }: CreateCommunityMod
                 maxLength={250}
                 rows={4}
                 required
+                className="form-input"
               />
-              <span className="text-[#9aa4bd] text-xs">{description.length}/250</span>
+              <span className="text-[#979797] text-xs">{description.length}/250</span>
             </div>
 
             {/* Picture Upload */}
@@ -268,11 +270,11 @@ const CreateCommunityModal = ({ isOpen, onClose, onSuccess }: CreateCommunityMod
                     </button>
                   </div>
                 ) : (
-                  <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-[#1f2735] rounded-lg cursor-pointer hover:border-[#31415f] transition-colors bg-[#121b2a]">
+                  <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-[#000000] rounded-lg cursor-pointer hover:border-[#5D64F4] transition-colors bg-[#EDEDE9]">
                     <div className="flex flex-col items-center gap-2">
-                      <ImageIcon size={24} className="text-[#9aa4bd]" />
-                      <span className="text-[#9aa4bd] text-sm">Click to upload picture</span>
-                      <span className="text-[#9aa4bd] text-xs">PNG, JPG up to 10MB</span>
+                      <ImageIcon size={24} className="text-[#000000]" />
+                      <span className="text-[#000000] text-sm">Click to upload picture</span>
+                      <span className="text-[#979797] text-xs">PNG, JPG up to 10MB</span>
                     </div>
                     <input
                       type="file"
@@ -287,8 +289,8 @@ const CreateCommunityModal = ({ isOpen, onClose, onSuccess }: CreateCommunityMod
 
             {/* Topics */}
             <div className="flex flex-col gap-2">
-              <label className="text-white font-medium text-sm">Topics</label>
-              <p className="text-[#9aa4bd] text-xs">Select topics that describe your community</p>
+              <label className="text-black font-medium text-sm">Topics</label>
+              <p className="text-[#979797] text-xs">Select topics that describe your community</p>
               <div className="flex flex-wrap gap-2">
                 {TOPICS.map((topic) => (
                   <TopicPill
@@ -303,7 +305,7 @@ const CreateCommunityModal = ({ isOpen, onClose, onSuccess }: CreateCommunityMod
               </div>
               {selectedTopics.length > 0 && (
                 <div className="flex flex-wrap items-center gap-2 mt-2">
-                  <span className="text-[#9aa4bd] text-xs">Selected:</span>
+                  <span className="text-[#979797] text-xs">Selected:</span>
                   {selectedTopics.map((topicName) => (
                     <TopicPill
                       key={topicName}
@@ -338,15 +340,15 @@ const CreateCommunityModal = ({ isOpen, onClose, onSuccess }: CreateCommunityMod
                       onChange={(e) => updateRule(index, e.target.value)}
                       placeholder={`Rule ${index + 1}`}
                       maxLength={100}
-                      className="flex-1 px-4 py-2 bg-[#121b2a] border border-[#1f2735] rounded-lg text-white placeholder-[#9aa4bd] focus:outline-none focus:border-[#31415f]"
+                      className="flex-1 px-4 py-2 bg-[#EDEDE9] border border-[#000000] rounded-lg text-black placeholder-[#979797] focus:outline-none focus:border-[#5D64F4]"
                     />
                     {rules.length > 1 && (
                       <button
                         type="button"
                         onClick={() => removeRule(index)}
-                        className="p-2 bg-[#121b2a] border border-[#1f2735] rounded-lg hover:bg-[#1f2735] transition-colors"
+                        className="p-2 bg-[#EDEDE9] border border-[#000000] rounded-lg hover:bg-[#D6D6CD] transition-colors"
                       >
-                        <Trash2 size={16} className="text-red-400" />
+                        <Trash2 size={16} className="text-red-600" />
                       </button>
                     )}
                   </div>
@@ -357,11 +359,11 @@ const CreateCommunityModal = ({ isOpen, onClose, onSuccess }: CreateCommunityMod
         </form>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-6 border-t border-[#1f2735]">
+        <div className="flex items-center justify-end gap-3 border-t border-[#000000] pt-4">
           <button
             type="button"
             onClick={handleClose}
-            className="px-4 py-2 bg-[#121b2a] border border-[#1f2735] rounded-lg text-white hover:bg-[#1f2735] transition-colors"
+            className="px-4 py-2 bg-[#EDEDE9] border border-[#000000] rounded-lg text-black hover:bg-[#D6D6CD] transition-colors"
             disabled={isSubmitting}
           >
             Cancel

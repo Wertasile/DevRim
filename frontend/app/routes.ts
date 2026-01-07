@@ -6,7 +6,6 @@ export default [
         route("about", "routes/about.tsx"),
         route("profile/:id", "routes/profile.tsx"),
         route("dashboard", "routes/blogHome.tsx"),
-        route("blog/new", "routes/blogAdd.tsx"),
         route("edit/:postId", "routes/blogEdit.tsx"),
         route("blog/:id", "routes/blogPost.tsx"),
         route("chats", "routes/ChatPage.tsx"),
@@ -18,6 +17,7 @@ export default [
     ]),
     
     route("login", "routes/login.tsx"),
+    route("blog/new", "routes/blogAdd.tsx"),
     
     
 ] satisfies RouteConfig;

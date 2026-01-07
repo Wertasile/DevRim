@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useChat } from '~/context/userContext';
 import type { User } from '~/types/types';
+import { X } from 'lucide-react';
 
 type customiseGCModalProps = {
     groupName: string;
@@ -36,26 +37,26 @@ const CustomiseGCModal = ({groupName, setGroupName, setGroupUsers, groupUsers, s
 
   return (
     <div className='fixed z-50 flex h-[100vh] w-[100vw] justify-center items-center bg-black/60 backdrop-blur-sm' onClick={() => setGCModal(false)}>
-        <div className='w-[400px] bg-[#0f1926] border border-[#1f2735] rounded-lg flex flex-col gap-4 p-6 shadow-xl' onClick={(e) => e.stopPropagation()}>
+        <div className='w-[400px] bg-[#EDEDE9] border border-[#000000] flex flex-col gap-4 p-6 shadow-xl' onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between">
-              <h3 className="text-white font-semibold text-lg">Edit Group Name</h3>
+              <h3>Edit Group Name</h3>
               <button 
                 onClick={() => setGCModal(false)}
-                className="text-[#9aa4bd] hover:text-white transition-colors"
+                className="icon"
               >
-                ×
+                <X size={20}/>
               </button>
             </div>
             
             <div className="flex flex-col gap-3">
-              <label htmlFor="gcname" className="text-[#9aa4bd] text-sm">Group Chat Name</label>
+              <label htmlFor="gcname" className="form-label">Group Chat Name</label>
               <input 
                   name="gcname" 
                   id="gcname" 
                   value={newGCName ?? ""}
                   onChange={(event) => {setNewGCName(event.target.value)}} 
                   placeholder='Enter group chat name'
-                  className="w-full px-4 py-2 bg-[#121b2a] border border-[#1f2735] rounded-lg text-white placeholder-[#9aa4bd] focus:outline-none focus:border-[#31415f]"
+                  className="form-input bg-[#EDEDE9] placeholder-[#979797]"
               />
             </div>
             

@@ -124,17 +124,17 @@ const Home = () => {
     
 
   return(
-    <div className="min-h-screen w-full">
+    <div className="min-h-screen w-full bg-[#E3E0E9]">
+
         {/* Hero Section */}
         <section id="hero" className="relative min-h-screen w-full overflow-hidden">
-            <div className="relative z-10 flex flex-col h-screen items-center justify-center text-center gap-8 px-4 mx-auto max-w-[1200px]">
-                <div className="flex flex-col items-center gap-6 max-w-4xl">
-                    <h1>Where Ideas Meet Community</h1>
-                    <h3>
-                        Publish long-form stories like Medium. Build communities like Reddit. Connect, discuss, and grow together.
-                    </h3>
+            <div className="relative z-10 flex h-screen items-center justify-center gap-8 px-4 mx-auto max-w-[1600px]">
+                <div className="flex flex-col gap-6 max-w-4xl">
+                    <h1 className="flex flex-row gap-[10px]">FIND <div className="text-[#E95444]">COMMUNITY.</div></h1>
+                    <h1 className="flex flex-row gap-[10px]">FIND <div className="bg-[#4DD499] p-[10px] border-solid border-[3px] border-[#000000]" style={{rotate: '-4deg'}}>PEOPLE.</div></h1>
                     <p>
-                        A platform that combines the depth of Medium's storytelling with the engagement of Reddit's communities.
+                        THE BEST PLACE TO FIND BLOGS ON INTERESTING TOPICS AND CONNECT WITH PEOPLE WHO HAVE THE SAME INTERESTS. <br />
+                        JOIN COMMUNITIES, CREATE AND SHARE YOUR EXPERIENCES AND CONNECT
                     </p>
                 </div>
                 <div className="mt-8">
@@ -147,42 +147,24 @@ const Home = () => {
             </div>
         </section>
 
-        <section id="overview" className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 max-w-[1200px] gap-6 px-6 py-16 mx-auto">
+        <section id="overview" className="bg-[#784242] flex flex-wrap justify-center items-center min-h-[600px] gap-6 px-6 py-16 mx-auto">
 
-            <div className="overview-item flex flex-col justify-between gap-4 border-solid border-[0.5px] border-[#353535] bg-[#E95444]/70 p-6">
-                <div className="w-fit border-solid border-[0.5px] border-[#979797] p-5 rounded-[200px] bg-[#111]">
-                    <NotebookPen className="text-white"/>
-                </div>
+            <div className="flex flex-col justify-betweenborder-solid border border-[#000000] bg-white p-[50px] max-w-[450px]" style={{boxShadow: '4px 4px 0px 2px #000000'}}>
                 <div className="flex flex-col gap-3">
-                    <h2>Blogging without Limits</h2>
-                    <p>Publish long-form stories, share code, and add rich media.</p>
-                </div>
-                <div>
-                    {/* <img src="/images/placeholder_img.png" width="100px"/> */}
+                    <h2>COMMUNITY</h2>
+                    <p>Find Like minded people with similar interests. See what people are up to and know what is trending, popping or what you need to know.</p>
+                </div>  
+            </div>
+            <div className="flex flex-col justify-betweenborder-solid border border-[#000000] bg-white p-[50px] max-w-[450px]" style={{boxShadow: '4px 4px 0px 2px #000000'}}>
+                <div className="flex flex-col gap-3">
+                    <h2>PEOPLE</h2>
+                    <p>Find Like minded people with similar interests. See what people are up to and know what is trending, popping or what you need to know.</p>
                 </div>
             </div>
-            <div className="overview-item flex flex-col justify-between gap-4 border-solid border-[0.5px] border-[#353535] bg-[#4DD499]/70 p-6">
-                <div className="w-fit border-solid border-[0.5px] border-[#979797] p-5 rounded-[200px] bg-[#111]">
-                    <Handshake className="text-white"/>
-                </div>
+            <div className="flex flex-col justify-betweenborder-solid border border-[#000000] bg-white p-[50px] max-w-[450px]" style={{boxShadow: '4px 4px 0px 2px #000000'}}>
                 <div className="flex flex-col gap-3">
-                    <h2>Follow & Connect</h2>
-                    <p>Stay updated with your favorite authors, or connect directly to chat.</p>
-                </div>
-                <div>
-                    {/* <img src="/images/placeholder_img.png" width="200px"/> */}
-                </div>
-            </div>
-            <div className="overview-item flex flex-col justify-between gap-4 border-solid border-[0.5px] border-[#353535] bg-[#FFE48A]/30 p-6">
-                <div className="w-fit border-solid border-[0.5px] border-[#979797] p-5 rounded-[200px] bg-[#111]">
-                    <Film className="text-white"/>
-                </div>
-                <div className="flex flex-col gap-3">
-                    <h2>Chat Beyond Text</h2>
-                    <p>Share images, audio, and files in DMs or groups.</p>
-                </div>
-                <div>
-                    {/* <img src="/images/placeholder_img.png" width="200px"/> */}
+                    <h2>BLOGS</h2>
+                    <p>Find Like minded people with similar interests. See what people are up to and know what is trending, popping or what you need to know.</p>
                 </div>
             </div>
             

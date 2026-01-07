@@ -107,7 +107,7 @@ const base = () => {
     
     return (
         <div className="layout-shell">
-            <header className='w-full sticky top-0 flex justify-between items-start px-3 py-1 backdrop-blur-lg z-50'>
+            <header className='w-full sticky top-0 flex justify-between items-center px-3 py-1 backdrop-blur-lg z-50'>
                 
                 <a href='/' className='flex gap-2 items-center'>
                     <img src="/Images/DevRim_Logo_0.png" width="32"/>
@@ -115,20 +115,20 @@ const base = () => {
                 </a>
 
                 <nav className='hidden sm:flex relative items-center gap-[20px]'>
-                    <NavLink to="/dashboard" target="_self" className=""><p>Dashboard</p></NavLink>
-                    <NavLink to="/chats" target="_self" className=""><p>Chats</p></NavLink>
-                    <NavLink to="/chats" target="_self" className=""><p>About</p></NavLink>
-                    <NavLink to="/chats" target="_self" className=""><p>Help</p></NavLink>
+                    <NavLink to="/dashboard" target="_self" className="">Dashboard</NavLink>
+                    <NavLink to="/chats" target="_self" className="">Chats</NavLink>
+                    <NavLink to="/about" target="_self" className="">About</NavLink>
+                    <NavLink to="/chats" target="_self" className="">Help</NavLink>
                     {user ? 
                         (<img 
                             src={user?.picture} 
                             width={32}
                             onClick={() => {setMenu(!menu)}}
-                            className='rounded-3xl relative cursor-pointer hover:border-[3px] hover:border-solid hover:border-white ease-in-out duration-100'
+                            className='rounded-3xl relative cursor-pointer hover:border-[1px] hover:border-solid hover:border-[#000000] ease-in-out duration-100'
                             ></img>
                                 
                         ):
-                        (<button className="primary-btn" onClick={handleLogin}><span>LOGIN</span></button>)
+                        (<NavLink to="/login" className="primary-btn"><span>LOGIN</span></NavLink>)
                     }
                     {/* {session ? 
                         (<div
@@ -143,16 +143,16 @@ const base = () => {
                     } */}
                     
                     {menu && 
-                        <div className='absolute p-2 flex flex-col bg-[#111] border-solid border-[1px] border-[#353535] rounded-3xl shadow-md right-0 top-20 gap-3 p-2 w-[200px]' style={{ fontFamily: "'Space Grotesk', 'Arial Narrow', Arial, sans-serif" }}>
-                            <a className="" href={`/profile/${user?._id}`}>Profile</a>
-                            <a className="" href="/settings">Settings</a>
-                            <a className="">Help</a>
-                            <div className="" onClick={handleLogout}>Sign Out</div>
+                        <div className='absolute p-2 flex flex-col bg-[#EDEDE9] border-solid border-[1px] border-[#353535] right-0 top-20 gap-3 p-2 w-[200px]' style={{ fontFamily: "'Space Grotesk', 'Arial Narrow', Arial, sans-serif" }}>
+                            <a className="text-small" href={`/profile/${user?._id}`}>Profile</a>
+                            <a className="text-small" href="/settings">Settings</a>
+                            <a className="text-small">Help</a>
+                            <div className="text-small" onClick={handleLogout}>Sign Out</div>
                         </div>
                     }
 
                     {otherMenu && 
-                        <div className='absolute p-2 flex flex-col bg-[#111] border-solid border-[1px] border-[#353535] rounded-3xl shadow-md right-0 top-20 gap-3 p-2 w-[200px]' style={{ fontFamily: "'Space Grotesk', 'Arial Narrow', Arial, sans-serif" }}>
+                        <div className='absolute p-2 flex flex-col bg-[#EDEDE9] border-solid border-[1px] border-[#000000] rounded-3xl shadow-md right-0 top-20 gap-3 p-2 w-[200px]' style={{ fontFamily: "'Space Grotesk', 'Arial Narrow', Arial, sans-serif" }}>
                             <a className="" href={`/profile/${user?._id}`}>Profile</a>
                             <a className="" href="/settings">Settings</a>
                             <a className="">Help</a>

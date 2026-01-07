@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import type { List, User } from '~/types/types'
+import { X } from 'lucide-react';
 
 type CreateListModalProps = {
   setListModal : React.Dispatch<React.SetStateAction<boolean>>
@@ -50,26 +51,26 @@ const CreateListModal = ({ setListModal, listModal, profile, setLists}: CreateLi
 
   return (
     <div className='fixed z-50 flex h-[100vh] w-[100vw] justify-center items-center bg-black/60 backdrop-blur-sm' onClick={() => setListModal(!listModal)}>
-        <div className='w-[400px] bg-[#0f1926] border border-[#1f2735] rounded-lg flex flex-col gap-4 p-6 shadow-xl' onClick={(e) => e.stopPropagation()}>
+        <div className='w-[400px] bg-[#EDEDE9] border border-[#000000] flex flex-col gap-4 p-6 shadow-xl' onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between">
-              <h3 className="text-white font-semibold text-lg">Create Collection</h3>
+              <h3>Create Collection</h3>
               <button 
                 onClick={() => setListModal(!listModal)}
-                className="text-[#9aa4bd] hover:text-white transition-colors"
+                className="icon"
               >
-                ×
+                <X size={20}/>
               </button>
             </div>
             
             <div className="flex flex-col gap-3">
-              <label htmlFor="list" className="text-[#9aa4bd] text-sm">Collection Name</label>
+              <label htmlFor="list" className="form-label">Collection Name</label>
               <input 
                   name="list" 
                   id="list" 
                   value={listName ?? ""}
                   onChange={(event) => {setListName(event.target.value)}} 
                   placeholder='Enter collection name'
-                  className="w-full px-4 py-2 bg-[#121b2a] border border-[#1f2735] rounded-lg text-white placeholder-[#9aa4bd] focus:outline-none focus:border-[#31415f]"
+                  className="form-input bg-[#EDEDE9] placeholder-[#979797]"
               />
             </div>
             

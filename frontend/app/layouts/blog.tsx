@@ -139,7 +139,7 @@ const Blog = () => {
 
   return (
     <>      
-            <header className='w-full bg-[#13111C] border-solid border-b-[1px] border-[#353535] sticky top-0 flex justify-between items-center p-3 z-[2] mb-5'>
+            <header className='w-full bg-[#EDEDE9] border-solid border-b-[1px] border-[#000000] sticky top-0 flex justify-between items-center p-3 z-[2] mb-5'>
 
                 
                 <a href='/' className='flex gap-2 items-center'>
@@ -163,10 +163,10 @@ const Blog = () => {
                     
                     {
                     (searchResults.length !== 0 && searchInput) && 
-                    <div className='absolute top-[64px] w-[400px] h-fit flex flex-col gap-2 bg-[#111] rounded-[5px] border-solid border-[0.5px] border-[#353535] shadow-md p-3'>
+                    <div className='absolute top-[64px] w-[400px] h-fit flex flex-col gap-2 bg-[#EDEDE9] rounded-[5px] border-solid border-[0.5px] border-[#000000] shadow-md p-3'>
                         {searchResults.map((result, index) => (
                             <div 
-                                className="bg-[#111] rounded-[5px] border-solid border-[0.5px] border-[#353535] shadow-md p-1 flex cursor-pointer hover:bg-[#353535] duration-200 ease-in flex-col gap-2" 
+                                className="bg-[#EDEDE9] rounded-[5px] border-solid border-[0.5px] border-[#000000] shadow-md p-1 flex cursor-pointer hover:bg-[#D6D6CD] duration-200 ease-in flex-col gap-2" 
                                 key={index}
                                 onClick={() => {window.location.href = `/blog/${result._id}`}}
                             >
@@ -187,19 +187,19 @@ const Blog = () => {
                             src={user?.picture} 
                             width={48}
                             onClick={() => {setMenu(!menu)}}
-                            className='rounded-3xl relative cursor-pointer hover:border-[3px] hover:border-solid hover:border-white ease-in-out duration-100'
+                            className='rounded-3xl relative cursor-pointer hover:border-[3px] hover:border-solid hover:border-[#000000] ease-in-out duration-100'
                             ></img>
                                 
                         ):
-                        (<button className="primary-btn" onClick={handleLogin}><span>LOGIN</span></button>)
+                        (<NavLink to="/login" className="primary-btn"><span>LOGIN</span></NavLink>)
                     }
 
                     {menu && 
-                        <div className='absolute p-2 flex flex-col bg-[#111] border-solid border-[1px] border-[#353535] rounded-3xl shadow-md right-0 top-20 gap-3 p-2 w-[200px]'>
-                            <a className="hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer" href={`/profile/${user?._id}`}>Profile</a>
-                            <a className="hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer">Settings</a>
-                            <a className="hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer">Help</a>
-                            <div className="hover:bg-[#222] p-2 px-5 rounded-3xl cursor-pointer" onClick={handleLogout}>SignOut</div>
+                        <div className='absolute p-2 flex flex-col bg-[#EDEDE9] border-solid border-[1px] border-[#000000] rounded-3xl shadow-md right-0 top-20 gap-3 p-2 w-[200px]'>
+                            <a className="hover:bg-[#D6D6CD] p-2 px-5 rounded-3xl cursor-pointer" href={`/profile/${user?._id}`}>Profile</a>
+                            <a className="hover:bg-[#D6D6CD] p-2 px-5 rounded-3xl cursor-pointer">Settings</a>
+                            <a className="hover:bg-[#D6D6CD] p-2 px-5 rounded-3xl cursor-pointer">Help</a>
+                            <div className="hover:bg-[#D6D6CD] p-2 px-5 rounded-3xl cursor-pointer" onClick={handleLogout}>SignOut</div>
                         </div>
                     } 
                     
@@ -214,17 +214,17 @@ const Blog = () => {
                 <Outlet/>
             </main>
 
-            <footer className='bg-[#211F2D] text-[gray] flex flex-wrap flex-col sm:flex-row justify-around items-center px-[10px] py-[20px] bottom-0 mt-[20px]'>
+            <footer className='bg-[#EDEDE9] text-[#000000] flex flex-wrap flex-col sm:flex-row justify-around items-center px-[10px] py-[20px] bottom-0 mt-[20px] border-t border-[#000000]'>
                                        
-                <a href="emailto:ahmedmharfan@gmail.com" target="_blank" className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>Email Developer(s)</a>
-                <a href="https://github.com/Wertasile" target="_blank" className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>GitHub</a>
-                <a href="https://www.linkedin.com/in/ahmed-mohamed-haniffa-arfan-989267202/" target="_blank" className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>LinkedIn</a>
-                <a href="https://ahmedarfan.netlify.app" target="_blank" className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>Developer's Website</a>
+                <a href="emailto:ahmedmharfan@gmail.com" target="_blank" className='hover:text-[#5D64F4] hover:duration-[200ms] hover:ease-in-out'>Email Developer(s)</a>
+                <a href="https://github.com/Wertasile" target="_blank" className='hover:text-[#5D64F4] hover:duration-[200ms] hover:ease-in-out'>GitHub</a>
+                <a href="https://www.linkedin.com/in/ahmed-mohamed-haniffa-arfan-989267202/" target="_blank" className='hover:text-[#5D64F4] hover:duration-[200ms] hover:ease-in-out'>LinkedIn</a>
+                <a href="https://ahmedarfan.netlify.app" target="_blank" className='hover:text-[#5D64F4] hover:duration-[200ms] hover:ease-in-out'>Developer's Website</a>
                 
-                <a href="#" className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>Policies</a>
-                <a href="#" className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>Terms of Use</a>
-                <a href="#" className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>Code of Conduct</a>
-                <a href="#"className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>Privacy</a> 
+                <a href="#" className='hover:text-[#5D64F4] hover:duration-[200ms] hover:ease-in-out'>Policies</a>
+                <a href="#" className='hover:text-[#5D64F4] hover:duration-[200ms] hover:ease-in-out'>Terms of Use</a>
+                <a href="#" className='hover:text-[#5D64F4] hover:duration-[200ms] hover:ease-in-out'>Code of Conduct</a>
+                <a href="#"className='hover:text-[#5D64F4] hover:duration-[200ms] hover:ease-in-out'>Privacy</a> 
                 
             </footer>
     </>

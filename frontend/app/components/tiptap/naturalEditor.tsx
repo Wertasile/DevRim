@@ -11,6 +11,7 @@ import { ImageUploadNode } from '../tiptap-node/image-upload-node'
 import { handleImageUpload, MAX_FILE_SIZE } from '~/lib/tiptap-utils'
 import CodeBlock from '@tiptap/extension-code-block'
 import { useEffect } from 'react'
+import { TextSelection } from '@tiptap/pm/state'
 
 type NaturalEditorProps = {
   content: any | null;
@@ -47,7 +48,18 @@ const NaturalEditor = ({ content, handleChange, onTitleChange, onSummaryChange }
         }
       }),
       Placeholder.configure({
-        placeholder: "Start writing your story..."
+        placeholder: ({ node }) => {
+          // First line (heading) placeholder
+          if (node.type.name === 'heading') {
+            return 'Title';
+          }
+          // Second line (paragraph) placeholder
+          if (node.type.name === 'paragraph') {
+            return 'Tell your story...';
+          }
+          // Default placeholder
+          return '';
+        },
       }),
       ImageUploadNode.configure({
         accept: 'image/*',
@@ -74,7 +86,7 @@ const NaturalEditor = ({ content, handleChange, onTitleChange, onSummaryChange }
     immediatelyRender: false,
     editorProps: {
       attributes: {
-        class: "prose prose-invert max-w-none bg-transparent text-white min-h-[600px] px-8 py-12 focus:outline-none"
+        class: "prose max-w-none bg-transparent text-black min-h-[600px] px-8 py-12 focus:outline-none"
       },
       handleKeyDown: (view, event) => {
         const { state } = view;
@@ -89,7 +101,9 @@ const NaturalEditor = ({ content, handleChange, onTitleChange, onSummaryChange }
             event.preventDefault();
             // Move to the second node (content) or create it if it doesn't exist
             const secondNodePos = firstNode.nodeSize;
-            view.dispatch(state.tr.setSelection(state.doc.resolve(secondNodePos)));
+            const resolvedPos = state.doc.resolve(secondNodePos);
+            const selection = TextSelection.create(state.doc, resolvedPos.pos);
+            view.dispatch(state.tr.setSelection(selection));
             return true;
           }
         }
@@ -130,8 +144,8 @@ const NaturalEditor = ({ content, handleChange, onTitleChange, onSummaryChange }
   }, [editor, content]);
 
   return (
-    <div className="w-full bg-[#EDEDE9] border border-[#1f2735] rounded-lg overflow-hidden">
-      <div className="border-b border-[#1f2735] bg-[#EDEDE9] px-4 py-2">
+    <div className="w-full overflow-hidden">
+      <div className="border border-[#1f2735] bg-[#EDEDE9] px-4 py-2">
         <MenuBar editor={editor} />
       </div>
       <div className="prose-wrapper">
@@ -144,6 +158,7 @@ const NaturalEditor = ({ content, handleChange, onTitleChange, onSummaryChange }
             color: #000000;
             border-bottom: none;
             padding-bottom: 0;
+            text-align: center;
           }
           .prose h1:focus {
             outline: none;
@@ -159,6 +174,58 @@ const NaturalEditor = ({ content, handleChange, onTitleChange, onSummaryChange }
           }
           .prose-wrapper {
             max-width: 100%;
+          }
+          
+          /* Placeholder styles - Medium-like */
+          .prose h1.is-empty::before,
+          .tiptap h1.is-empty::before {
+            content: attr(data-placeholder);
+            float: left;
+            color: #9ca3af;
+            pointer-events: none;
+            height: 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            width: 100%;
+            display: block;
+            opacity: 0.6;
+          }
+          
+          .prose p.is-empty::before,
+          .tiptap p.is-empty::before {
+            content: attr(data-placeholder);
+            float: left;
+            color: #9ca3af;
+            pointer-events: none;
+            height: 0;
+            font-size: 1.125rem;
+            line-height: 1.75;
+            opacity: 0.6;
+          }
+          
+          .prose h1.is-empty:first-child::before,
+          .tiptap h1.is-empty:first-child::before {
+            display: block;
+            text-align: center;
+            width: 100%;
+          }
+          
+          /* Ensure placeholders are visible */
+          .prose .is-empty,
+          .tiptap .is-empty {
+            position: relative;
+          }
+          
+          /* Make sure empty nodes show placeholders */
+          .prose h1.is-empty:first-child,
+          .tiptap h1.is-empty:first-child {
+            min-height: 3rem;
+          }
+          
+          .prose p.is-empty,
+          .tiptap p.is-empty {
+            min-height: 1.5rem;
           }
         `}</style>
         <EditorContent editor={editor} />

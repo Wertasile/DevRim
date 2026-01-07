@@ -72,11 +72,11 @@ const AddGCUsers = ({setAddUsersModal}: AddGCUsersProps) => {
     <div className="fixed z-50 flex h-[100vh] w-[100vw] justify-center items-center bg-black/60 backdrop-blur-sm" onClick={() => {setAddUsersModal(false)}}>
         
       <div 
-        className="w-[400px] max-h-[600px] bg-[#EDEDE9] border border-[#1f2735] rounded-lg flex flex-col gap-4 p-6 shadow-xl" 
+        className="w-[400px] max-h-[600px] bg-[#EDEDE9] border border-[#000000] flex flex-col gap-4 p-6 shadow-xl" 
         onClick={(e) => {e.stopPropagation()}}
       >
         <div className="flex items-center justify-between">
-          <h3 className="">Add Users to Group</h3>
+          <h3>Add Users to Group</h3>
           <button 
             onClick={() => setAddUsersModal(false)}
             className="icon"
@@ -86,9 +86,9 @@ const AddGCUsers = ({setAddUsersModal}: AddGCUsersProps) => {
         </div>
         
         <div className="flex flex-col gap-3">
-          <label htmlFor="userSearch" className="text-[#9aa4bd] text-sm">Search Users</label>
+          <label htmlFor="userSearch" className="text-[#979797] text-sm">Search Users</label>
           <div className="relative">
-            {/* <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#9aa4bd] pointer-events-none z-10" /> */}
+            {/* <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#979797] pointer-events-none z-10" /> */}
             <input
               id="userSearch"
               name="userSearch"
@@ -98,39 +98,39 @@ const AddGCUsers = ({setAddUsersModal}: AddGCUsersProps) => {
                   setInput(e.target.value);
                   handleSearch(e.target.value);
               }}
-              className="w-full pl-10 pr-4 py-2 bg-[#121b2a] border border-[#1f2735] rounded-lg focus:outline-none focus:border-[#31415f] relative z-0"
+              className="w-full pl-10 pr-4 py-2 bg-[#EDEDE9] border border-[#000000] rounded-lg focus:outline-none focus:border-[#5D64F4] relative z-0"
             />
           </div>
         </div>
         
         {currentUsers && currentUsers.length > 0 && (
-          <div className='flex flex-wrap gap-2 p-3 bg-[#121b2a] rounded-lg border border-[#1f2735]'>
-            <div className="text-[#9aa4bd] text-xs mb-2 w-full">Current Members:</div>
+          <div className='flex flex-wrap gap-2 p-3 bg-[#EDEDE9] rounded-lg border border-[#000000]'>
+            <div className="text-[#979797] text-xs mb-2 w-full">Current Members:</div>
             {currentUsers.map((user) => (
-              <div key={user._id} className='flex items-center gap-2 bg-[#1f2735] px-3 py-1 rounded-lg text-sm text-white'>
+              <div key={user._id} className='flex items-center gap-2 bg-[#D6D6CD] px-3 py-1 rounded-lg text-sm text-black'>
                 {user.name}
-                <span className='font-bold cursor-pointer hover:text-red-400 transition-colors' onClick={() => removeUser(user)}> × </span>
+                <span className='font-bold cursor-pointer hover:text-red-600 transition-colors' onClick={() => removeUser(user)}> × </span>
               </div>
             ))}
           </div>
         )}
         
-        <div className="h-[250px] text-sm overflow-y-auto border border-[#1f2735] rounded-lg p-3 bg-[#121b2a]">
+        <div className="h-[250px] text-sm overflow-y-auto border border-[#000000] rounded-lg p-3 bg-[#EDEDE9]">
             {searchResults.length > 0 ? (
                 searchResults.map((user) => {
                   return (
                   <div
                       key={user._id}
-                      className="cursor-pointer p-3 hover:bg-[#1f2735] rounded-lg flex flex-row gap-3 items-center transition-colors mb-2"
+                      className="cursor-pointer p-3 hover:bg-[#D6D6CD] rounded-lg flex flex-row gap-3 items-center transition-colors mb-2"
                       onClick={() => addUser(user)}
                   >   
                           <img width={32} height={32} src={user.picture} className="rounded-full"/>
-                          <div className="text-white">{user.name}</div>
+                          <div className="text-black">{user.name}</div>
                   </div>
                 )
               })
             ) : (
-                <div className="text-[#9aa4bd] text-center py-4">No users found</div>
+                <div className="text-[#979797] text-center py-4">No users found</div>
             )}
         </div>
         

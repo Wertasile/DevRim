@@ -10,7 +10,8 @@ const postSchema = new Schema({
     user: {type: Schema.Types.ObjectId, ref: "user"},
     comments: [{type: Schema.Types.ObjectId, ref:"comment"}],
     likes: [{type: Schema.Types.ObjectId, ref:"user"}],
-    categories: [{type: String}]
+    categories: [{type: String}],
+    coverImage: {type: String, default: undefined} // Optional cover image URL
 })
 
 export default mongoose.model("post", postSchema);

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import type { Chat, User } from '~/types/types';
-import { Search } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 
 
 type FindUserModalProps = {
@@ -52,23 +52,23 @@ const FindUserModal = ({findUsers, setFindUsers, setFindUsersModal, setChat}: Fi
     <div className="fixed z-50 flex h-[100vh] w-[100vw] justify-center items-center bg-black/60 backdrop-blur-sm" onClick={() => {setFindUsersModal(false)}}>
         
       <div 
-        className="w-[400px] max-h-[500px] bg-[#0f1926] border border-[#1f2735] rounded-lg flex flex-col gap-4 p-6 shadow-xl" 
+        className="w-[400px] max-h-[500px] bg-[#EDEDE9] border border-[#000000] flex flex-col gap-4 p-6 shadow-xl" 
         onClick={(e) => {e.stopPropagation()}}
       >
         <div className="flex items-center justify-between">
-          <h3 className="text-white font-semibold text-lg">Find User</h3>
+          <h3>Find User</h3>
           <button 
             onClick={() => setFindUsersModal(false)}
-            className="text-[#9aa4bd] hover:text-white transition-colors"
+            className="icon"
           >
-            ×
+            <X size={20}/>
           </button>
         </div>
         
         <div className="flex flex-col gap-3">
-          <label htmlFor="userSearch" className="text-[#9aa4bd] text-sm">Search Users</label>
+          <label htmlFor="userSearch" className="form-label">Search Users</label>
           <div className="relative">
-            <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#9aa4bd] pointer-events-none z-10" />
+            <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#979797] pointer-events-none z-10" />
             <input
               id="userSearch"
               name="userSearch"
@@ -78,25 +78,25 @@ const FindUserModal = ({findUsers, setFindUsers, setFindUsersModal, setChat}: Fi
                   setInput(e.target.value);
                   handleSearch(e.target.value);
               }}
-              className="w-full pl-10 pr-4 py-2 bg-[#121b2a] border border-[#1f2735] rounded-lg text-white placeholder-[#9aa4bd] focus:outline-none focus:border-[#31415f] relative z-0"
+              className="form-input pl-10 bg-[#EDEDE9] placeholder-[#979797] relative z-0"
             />
           </div>
         </div>
         
-        <div className="h-[300px] text-sm overflow-y-auto border border-[#1f2735] rounded-lg p-3 bg-[#121b2a]">
+        <div className="h-[300px] text-sm overflow-y-auto border border-[#000000] rounded-lg p-3 bg-[#EDEDE9]">
             {findUsers.length > 0 ? (
                 findUsers.map((user) => (
                 <div
                     key={user._id}
-                    className="cursor-pointer p-3 hover:bg-[#1f2735] rounded-lg flex flex-row gap-3 items-center transition-colors mb-2"
+                    className="cursor-pointer p-3 hover:bg-[#D6D6CD] rounded-lg flex flex-row gap-3 items-center transition-colors mb-2"
                     onClick={() => {fetchChat(user._id)}}
                 >   
                         <img width={32} height={32} src={user.picture} className="rounded-full"/>
-                        <div className="text-white">{user.name}</div>
+                        <div className="text-black">{user.name}</div>
                 </div>
                 ))
             ) : (
-                <div className="text-[#9aa4bd] text-center py-4">No users found</div>
+                <div className="text-[#979797] text-center py-4">No users found</div>
             )}
         </div>
         

@@ -220,7 +220,7 @@ export default function BlogEdit({ params }: Route.ComponentProps) {
               <div className='w-10 h-10 rounded-lg bg-[#5D64F4] flex items-center justify-center'>
                 <FileText size={20} className='text-white' />
               </div>
-              <h1 className='text-white text-2xl font-bold'>Edit Post</h1>
+              <h1 className='text-black text-2xl font-bold'>Edit Post</h1>
             </div>
             <div className='flex items-center gap-3'>
               <button
@@ -228,7 +228,7 @@ export default function BlogEdit({ params }: Route.ComponentProps) {
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                   showSummaryInput 
                     ? 'bg-[#5D64F4] text-white' 
-                    : 'bg-[#121b2a] border border-[#1f2735] text-[#9aa4bd] hover:border-[#31415f]'
+                    : 'bg-[#EDEDE9] border border-[#000000] text-[#979797] hover:border-[#5D64F4]'
                 }`}
               >
                 {showSummaryInput ? 'Hide Summary' : 'Add Summary'}
@@ -244,16 +244,16 @@ export default function BlogEdit({ params }: Route.ComponentProps) {
           </div>
 
           {/* Community Selection - Required */}
-          <div className='bg-[#0f1926] border border-[#1f2735] rounded-lg p-4'>
-            <label htmlFor="community" className='text-white font-medium text-sm mb-2 block'>
-              Select Community <span className='text-red-400'>*</span>
+          <div className='bg-[#EDEDE9] border border-[#000000] rounded-lg p-4'>
+            <label htmlFor="community" className='text-black font-medium text-sm mb-2 block'>
+              Select Community <span className='text-red-600'>*</span>
             </label>
             <select
               id="community"
               value={selectedCommunity}
               onChange={(e) => setSelectedCommunity(e.target.value)}
               required
-              className='w-full px-4 py-3 bg-[#121b2a] border border-[#1f2735] rounded-lg text-white placeholder-[#9aa4bd] focus:outline-none focus:border-[#31415f] transition-colors'
+              className='w-full px-4 py-3 bg-[#EDEDE9] border border-[#000000] rounded-lg text-black placeholder-[#979797] focus:outline-none focus:border-[#5D64F4] transition-colors'
             >
               <option value="">Choose a community...</option>
               {communities.map((community) => (
@@ -263,15 +263,15 @@ export default function BlogEdit({ params }: Route.ComponentProps) {
               ))}
             </select>
             {!selectedCommunity && (
-              <p className='text-[#9aa4bd] text-xs mt-2'>You must select a community to publish your post</p>
+              <p className='text-[#979797] text-xs mt-2'>You must select a community to publish your post</p>
             )}
           </div>
 
           {/* Summary Input - Conditional */}
           {showSummaryInput && (
-            <div className='bg-[#0f1926] border border-[#1f2735] rounded-lg p-4'>
+            <div className='bg-[#EDEDE9] border border-[#000000] rounded-lg p-4'>
               <div className='flex items-center justify-between mb-2'>
-                <label htmlFor="summary" className='text-white font-medium text-sm'>
+                <label htmlFor="summary" className='text-black font-medium text-sm'>
                   Summary
                 </label>
                 <button
@@ -279,7 +279,7 @@ export default function BlogEdit({ params }: Route.ComponentProps) {
                     setShowSummaryInput(false);
                     setSummary('');
                   }}
-                  className='text-[#9aa4bd] hover:text-white transition-colors'
+                  className='text-[#979797] hover:text-black transition-colors'
                 >
                   <X size={16} />
                 </button>
@@ -292,9 +292,9 @@ export default function BlogEdit({ params }: Route.ComponentProps) {
                 onChange={(e) => setSummary(e.target.value)}
                 placeholder='Add a brief summary of your post (optional)'
                 maxLength={250}
-                className='w-full px-4 py-2 bg-[#121b2a] border border-[#1f2735] rounded-lg text-white placeholder-[#9aa4bd] focus:outline-none focus:border-[#31415f] transition-colors'
+                className='w-full px-4 py-2 bg-[#EDEDE9] border border-[#000000] rounded-lg text-black placeholder-[#979797] focus:outline-none focus:border-[#5D64F4] transition-colors'
               />
-              <p className='text-[#9aa4bd] text-xs mt-1'>{summary.length}/250</p>
+              <p className='text-[#979797] text-xs mt-1'>{summary.length}/250</p>
             </div>
           )}
 

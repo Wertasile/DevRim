@@ -18,14 +18,8 @@ type BlogPostProps = {
   releaseDate: string;
   content: object;
   visualIndex?: number;
+  coverImage?: string;
 }
-const fallbackImages = [
-  "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1526498460520-4c246339dccb?auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1512299286666-4b9c5985542e?auto=format&fit=crop&w=1200&q=80",
-];
 
 const BlogPostCard = ({
   id,
@@ -35,7 +29,8 @@ const BlogPostCard = ({
   postUser,
   comments,
   likes,
-  visualIndex = 0
+  visualIndex = 0,
+  coverImage
 }: BlogPostProps) => {
   const formattedDate = (() => {
     const parsed = new Date(releaseDate);
@@ -46,8 +41,6 @@ const BlogPostCard = ({
       year: "numeric",
     });
   })();
-
-  const coverImage = fallbackImages[visualIndex % fallbackImages.length];
 
   const {user} = useUser()
   const [liked, setLiked] = useState<boolean>(false)
@@ -154,11 +147,8 @@ const BlogPostCard = ({
 
   return (
     <div className="blog-card" onClick={handleNav}>
-      <div>
-        <img src={coverImage} alt={title} loading="lazy" height={166} width={250} className='object-fill min-h-[166px]' />
-      </div>
 
-      <div className='flex flex-col justify-between py-[10px] w-full'>
+      <div className='flex flex-col justify-between py-[10px] gap-[10px] w-full'>
         <div className='flex justify-between w-full'>
           <div className='flex gap-[10px] p-[5px]'>
             <img src={postUser.picture} className="rounded-full" width={48} height={48} />
@@ -181,21 +171,21 @@ const BlogPostCard = ({
                   <MoreVertical size={16} />
                 </button>
                 {showDeleteMenu && (
-                  <div className="absolute right-0 top-full mt-2 bg-[#0f1926] border border-[#1f2735] rounded-lg shadow-lg z-50 min-w-[120px]">
+                  <div className="absolute right-0 top-full mt-2 bg-[#EDEDE9] border border-[#000000] rounded-lg shadow-lg z-50 min-w-[120px]">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         window.location.href = `/edit/${id}`;
                       }}
-                      className="w-full px-4 py-2 text-left text-white hover:bg-[#121b2a] rounded-t-lg flex items-center gap-2 text-sm transition-colors"
+                      className="w-full px-4 py-2 text-left text-black hover:bg-[#D6D6CD] rounded-t-lg flex items-center gap-2 text-sm transition-colors"
                     >
                       Edit
                     </button>
-                    <div className="border-t border-[#1f2735]"></div>
+                    <div className="border-t border-[#000000]"></div>
                     <button
                       onClick={handleDelete}
                       disabled={isDeleting}
-                      className="w-full px-4 py-2 text-left text-red-400 hover:bg-[#121b2a] rounded-b-lg flex items-center gap-2 text-sm transition-colors disabled:opacity-50"
+                      className="w-full px-4 py-2 text-left text-red-600 hover:bg-[#D6D6CD] rounded-b-lg flex items-center gap-2 text-sm transition-colors disabled:opacity-50"
                     >
                       <Trash2 size={14} />
                       {isDeleting ? 'Deleting...' : 'Delete'}
@@ -208,25 +198,27 @@ const BlogPostCard = ({
         </div>
 
         <div>{title}</div>
-          <div className="flex gap-[10px]">
+          <div className="flex gap-[25px]">
 
             <button
-              className={`flex gap-[5px]${liked ? 'blog-card__stat--liked' : ''}`}
+              className={`flex gap-[5px] items-center justify-center${liked ? 'blog-card__stat--liked' : ''}`}
               onClick={handleLike}
               aria-label={liked ? 'Unlike post' : 'Like post'}
               title={liked ? 'Unlike' : 'Like'}
             >
               <ThumbsUp 
                 size={16} 
-                className={liked ? 'text-[#5D64F4] fill-[#5D64F4]' : ''}
+                className={liked ? 'fill-[#E95444]' : ''}
               />
-              <span className={liked ? 'text-[#5D64F4]' : ''}>{likeCount}</span>
+              <div className={liked ? 'text-[#E95444]' : ''}>{likeCount}</div>
             </button>
-            <div className="flex gap-[5px]">
-              <MessageCircle size={16} className="text-[#979797]"/>
-              <span>{comments.length}</span>
+
+            <div className="flex gap-[5px] items-center justify-center">
+              <MessageCircle size={16}/>
+              <div>{comments.length}</div>
             </div>
-            <div className="relative">
+
+            <div className="flex items-center justify-center">
               {(() => {
                 const isInCollection = usersLists?.some(list => 
                   list.blogs?.some(b => b._id === id)
@@ -247,18 +239,15 @@ const BlogPostCard = ({
                     >
                       <Bookmark 
                         size={16} 
-                        className={isInCollection ? 'text-[#5D64F4] fill-[#5D64F4]' : ''}
+                        className={isInCollection ? 'fill-[#E95444]' : ''}
                       />
                     </button>
-                    {isInCollection && collectionsWithPost.length > 0 && (
-                      <div className="absolute -bottom-0.5 -right-0.5 w-1.5 h-1.5 bg-[#5D64F4] rounded-full border border-white"></div>
-                    )}
                   </>
                 );
               })()}
 
               {listModal && (
-                <div className="absolute bottom-full right-0 mb-2 flex flex-col bg-[#EDEDE9] border border-[#1f2735] gap-3 p-4 w-[250px] text-center text-sm z-50 max-h-[400px] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                <div className="absolute bottom-full right-0 mb-2 flex flex-col bg-[#EDEDE9] border border-[#000000] gap-3 p-4 w-[250px] text-center text-sm z-50 max-h-[400px] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                   {(() => {
                     const collectionsWithPost = usersLists?.filter(list => 
                       list.blogs?.some(b => b._id === id)
@@ -268,15 +257,15 @@ const BlogPostCard = ({
                     return (
                       <>
                         {isInAnyCollection && (
-                          <div className="mb-2 pb-2 border-b border-[#1f2735]">
+                          <div className="mb-2 pb-2 border-b border-[#000000]">
                             <h4 className='text-[#5D64F4] text-xs font-semibold mb-1'>IN COLLECTIONS:</h4>
                             <div className="flex flex-col gap-1">
                               {collectionsWithPost.map((list) => (
                                 <div 
                                   key={list._id}
-                                  className="flex items-center justify-between p-2 bg-[#121b2a] rounded text-left"
+                                  className="flex items-center justify-between p-2 bg-[#D6D6CD] rounded text-left"
                                 >
-                                  <span className="text-white text-xs flex-1 truncate">{list.name}</span>
+                                  <span className="text-black text-xs flex-1 truncate">{list.name}</span>
                                   <button
                                     onClick={async (e) => {
                                       e.stopPropagation();
@@ -284,10 +273,10 @@ const BlogPostCard = ({
                                       const updatedLists = await getAllList(user?._id || null);
                                       setUsersLists(updatedLists);
                                     }}
-                                    className="ml-2 p-1 hover:bg-[#1f2735] rounded transition-colors"
+                                    className="ml-2 p-1 hover:bg-[#C6C6BD] rounded transition-colors"
                                     title="Remove from collection"
                                   >
-                                    <CircleXIcon size={14} className="text-red-400" />
+                                    <CircleXIcon size={14} className="text-red-600" />
                                   </button>
                                 </div>
                               ))}
@@ -328,7 +317,7 @@ const BlogPostCard = ({
                             );
                           })
                         ) : (
-                          <div className="text-[#9aa4bd] text-xs py-2">No collections yet</div>
+                          <div className="text-[#979797] text-xs py-2">No collections yet</div>
                         )}
                       </>
                     );
@@ -339,6 +328,12 @@ const BlogPostCard = ({
             
         </div>
       </div>
+
+      {coverImage && (
+        <div>
+          <img src={coverImage} alt={title} loading="lazy" width={350}/>
+        </div>
+      )}
     </div>
   )
 }

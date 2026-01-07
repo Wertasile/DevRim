@@ -99,12 +99,12 @@ const CommunityHub = () => {
         onSuccess={handleCommunityCreated}
       />
       
-      <div className='flex flex-row gap-6 px-6 py-8 mx-auto max-w-[1400px]'>
+      <div className='flex flex-row gap-6 px-6 py-8'>
         {/* Left Sidebar */}
         <Sidebar />
 
         {/* Central Content Area */}
-        <div className='flex-grow flex flex-col gap-6'>
+        <div className='flex-grow flex flex-col gap-6 max-w-[1600px] mx-auto'>
           {/* Search Bar and Create Button */}
           <div className='flex gap-3'>
             <div className='relative flex-1'>
@@ -127,7 +127,7 @@ const CommunityHub = () => {
           {/* Topic Filter */}
           <div className='flex flex-col gap-2'>
             <div className='flex items-center gap-2 flex-wrap'>
-              <span className='text-white text-sm font-medium'>Filter by Topic:</span>
+              <span className='text-black text-sm font-medium'>Filter by Topic:</span>
               {TOPICS.map((topic) => (
                 <TopicPill
                   key={topic.id}
@@ -141,7 +141,7 @@ const CommunityHub = () => {
               {selectedTopic && (
                 <button
                   onClick={() => setSelectedTopic(null)}
-                  className='px-3 py-1 rounded-lg text-sm bg-[#121b2a] border border-[#1f2735] text-[#9aa4bd] hover:border-[#31415f] flex items-center gap-1'
+                  className='px-3 py-1 rounded-lg text-sm bg-[#EDEDE9] border border-[#000000] text-[#979797] hover:border-[#5D64F4] flex items-center gap-1'
                 >
                   <X size={14} />
                   Clear Filter
@@ -151,7 +151,7 @@ const CommunityHub = () => {
           </div>
 
           {/* Community Cards */}
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+          <div className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6'>
             {filteredCommunities.map((community) => {
               return (
                 <CommunityCard community={community} />

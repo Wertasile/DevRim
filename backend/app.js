@@ -432,6 +432,41 @@ app.get("/s3/profile-picture-upload", async (req, res) => {
   }
 });
 
+// ----------------------------- GENERATING PRESIGNED URL FOR UPLOADING POST COVER IMAGE--------------------------------------------------------------------------------------------------
+app.get("/s3/post-cover-upload", async (req, res) => {
+  console.log("Post cover image upload request received:", req.query);
+  try {
+    
+    const { filename, contentType } = req.query;
+
+    if (!filename || !contentType) {
+      return res.status(400).json({ error: "Filename and contentType are required" });
+    }
+
+    const bucket = process.env.S3_BUCKET_FILE;
+    
+    if (!bucket) {
+      console.error("S3_BUCKET_FILE environment variable is not set");
+      return res.status(500).json({ error: "S3 bucket configuration is missing" });
+    }
+
+    const command = new PutObjectCommand({
+      Bucket: bucket,
+      Key: filename,
+      ContentType: contentType,
+    });
+
+    const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 }); // 5 min
+
+    const fileUrl = `https://${bucket}.s3.${process.env.AWS_REGION}.amazonaws.com/${filename}`;
+
+    res.json({ uploadUrl, fileUrl, key: filename });
+  } catch (err) {
+    console.error("Error generating presigned upload URL:", err);
+    res.status(500).json({ error: "Failed to generate presigned upload URL", details: err.message });
+  }
+});
+
 // ------------------------------------------ SOME DEFAULT STUFF ------------------------------------------------------------------------------------------------------------
 
 // catch 404 and forward to error handler

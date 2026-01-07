@@ -378,34 +378,34 @@ export default function BlogPost({ params }: Route.ComponentProps) {
       {/* ----------------------- MAIN CONTENT AREA ---------------------------------------------------------------------------------------------------- */}
       <div className='flex-grow flex flex-col gap-6'>
         {/* ----------------------- TITLE SECTION ---------------------------------------------------------------------------------------------------- */}
-        <div className='pb-6 border-b border-[#1f2735]'>
+        <div className='pb-6 border-b border-[#000000]'>
           <div className='flex items-start justify-between gap-4'>
             <h1>{blog.title}</h1>
             {isOwnPost && (
               <div className="relative">
                 <button
                   onClick={() => setShowDeleteMenu(!showDeleteMenu)}
-                  className="p-2 hover:bg-[#121b2a] rounded-lg transition-colors"
+                  className="p-2 hover:bg-[#D6D6CD] rounded-lg transition-colors"
                   aria-label="Post options"
                 >
                   <MoreVertical size={20} className="text-[#9aa4bd]" />
                 </button>
                 {showDeleteMenu && (
-                  <div className="absolute right-0 top-full mt-2 bg-[#0f1926] border border-[#1f2735] rounded-lg shadow-lg z-50 min-w-[120px]">
+                  <div className="absolute right-0 top-full mt-2 bg-[#EDEDE9] border border-[#000000] rounded-lg shadow-lg z-50 min-w-[120px]">
                     <button
                       onClick={() => {
                         setShowDeleteMenu(false);
                         window.location.href = `/edit/${blog?._id}`;
                       }}
-                      className="w-full px-4 py-2 text-left text-white hover:bg-[#121b2a] rounded-t-lg flex items-center gap-2 text-sm transition-colors"
+                      className="w-full px-4 py-2 text-left text-black hover:bg-[#D6D6CD] rounded-t-lg flex items-center gap-2 text-sm transition-colors"
                     >
                       Edit Post
                     </button>
-                    <div className="border-t border-[#1f2735]"></div>
+                    <div className="border-t border-[#000000]"></div>
                     <button
                       onClick={handleDelete}
                       disabled={isDeleting}
-                      className="w-full px-4 py-2 text-left text-red-400 hover:bg-[#121b2a] rounded-b-lg flex items-center gap-2 text-sm transition-colors disabled:opacity-50"
+                      className="w-full px-4 py-2 text-left text-red-600 hover:bg-[#D6D6CD] rounded-b-lg flex items-center gap-2 text-sm transition-colors disabled:opacity-50"
                     >
                       <Trash2 size={14} />
                       {isDeleting ? 'Deleting...' : 'Delete Post'}
@@ -417,9 +417,21 @@ export default function BlogPost({ params }: Route.ComponentProps) {
           </div>
         </div>
 
+        {/* ----------------------- COVER IMAGE SECTION ---------------------------------------------------------------------------------------------------- */}
+        {blog.coverImage && (
+          <div className='pb-6 border-b border-[#000000]'>
+            <img 
+              src={blog.coverImage} 
+              alt={blog.title}
+              className='w-full object-cover'
+              style={{ width: '500px', height: '250px', aspectRatio: '2/1' }}
+            />
+          </div>
+        )}
+
         {/* ----------------------- SUMMARY SECTION ---------------------------------------------------------------------------------------------------- */}
         {blog.summary && blog.summary.trim() && (
-          <div className='pb-6 border-b border-[#1f2735]'>
+          <div className='pb-6 border-b border-[#000000]'>
             <h3 className='leading-relaxed'>
               {blog.summary}
             </h3>
@@ -479,7 +491,7 @@ export default function BlogPost({ params }: Route.ComponentProps) {
         <div className='flex flex-col gap-3 items-center cursor-pointer group' onClick={handleNavProfile}>
           <img 
             src={blogUser?.picture} 
-            className='rounded-full border-2 border-[#353535] group-hover:border-[#5D64F4] transition-colors' 
+            className='rounded-full border-2 border-[#000000] group-hover:border-[#5D64F4] transition-colors' 
             width={56} 
             height={56}
             alt={blogUser?.name}
@@ -561,19 +573,19 @@ export default function BlogPost({ params }: Route.ComponentProps) {
                   className={`cursor-pointer hover:scale-110 transition-transform ${
                     isInCollection 
                       ? 'text-[#5D64F4] fill-[#5D64F4] hover:text-[#6d75fd] hover:fill-[#6d75fd]' 
-                      : 'hover:text-white'
+                      : 'hover:text-[#5D64F4]'
                   }`}
                   size={18}
                 />
                 {isInCollection && collectionsWithPost.length > 0 && (
-                  <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-[#5D64F4] rounded-full border-2 border-[#0a1118]"></div>
+                  <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-[#5D64F4] rounded-full border-2 border-[#EDEDE9]"></div>
                 )}
               </>
             );
           })()}
 
           {listModal && (
-            <div className="absolute bottom-0 right-full mr-4 flex flex-col bg-[#0f1926] border border-[#1f2735] rounded-lg shadow-xl gap-3 p-4 w-[250px] text-center text-sm z-50 max-h-[400px] overflow-y-auto">
+            <div className="absolute bottom-0 right-full mr-4 flex flex-col bg-[#EDEDE9] border border-[#000000] rounded-lg shadow-xl gap-3 p-4 w-[250px] text-center text-sm z-50 max-h-[400px] overflow-y-auto">
               {(() => {
                 const collectionsWithPost = usersLists?.filter(list => 
                   list.blogs?.some(b => b._id === blog._id)
@@ -583,32 +595,32 @@ export default function BlogPost({ params }: Route.ComponentProps) {
                 return (
                   <>
                     {isInAnyCollection && (
-                      <div className="mb-2 pb-2 border-b border-[#1f2735]">
+                      <div className="mb-2 pb-2 border-b border-[#000000]">
                         <h4 className='text-[#5D64F4] text-xs font-semibold mb-1'>IN COLLECTIONS:</h4>
                         <div className="flex flex-col gap-1">
                           {collectionsWithPost.map((list) => (
                             <div 
                               key={list._id}
-                              className="flex items-center justify-between p-2 bg-[#121b2a] rounded text-left"
+                              className="flex items-center justify-between p-2 bg-[#D6D6CD] rounded text-left"
                             >
-                              <span className="text-white text-xs flex-1 truncate">{list.name}</span>
+                              <span className="text-black text-xs flex-1 truncate">{list.name}</span>
                               <button
                                 onClick={async () => {
                                   await RemoveFromList(list._id, blog._id);
                                   const updatedLists = await getAllList(user?._id || null);
                                   setUsersLists(updatedLists);
                                 }}
-                                className="ml-2 p-1 hover:bg-[#1f2735] rounded transition-colors"
+                                className="ml-2 p-1 hover:bg-[#C6C6BD] rounded transition-colors"
                                 title="Remove from collection"
                               >
-                                <CircleXIcon size={14} className="text-red-400" />
+                                <CircleXIcon size={14} className="text-red-600" />
                               </button>
                             </div>
                           ))}
                         </div>
                       </div>
                     )}
-                    <h3 className='text-white mb-2 text-xs font-semibold'>
+                    <h3 className='text-black mb-2 text-xs font-semibold'>
                       {isInAnyCollection ? 'ADD TO MORE COLLECTIONS:' : 'ADD BLOG TO COLLECTION:'}
                     </h3>
                     {usersLists && usersLists.length > 0 ? (
@@ -802,7 +814,7 @@ export default function BlogPost({ params }: Route.ComponentProps) {
                     
                     {/* Replies - Accordion */}
                     {replies.length > 0 && isExpanded && (
-                      <div className='ml-11 flex flex-col gap-4 pl-4 border-l-2 border-[#1f2735]'>
+                      <div className='ml-11 flex flex-col gap-4 pl-4 border-l-2 border-[#000000]'>
                         {replies.map((reply) => (
                           <div key={reply._id} className='flex gap-3'>
                             <img 
@@ -814,12 +826,12 @@ export default function BlogPost({ params }: Route.ComponentProps) {
                             />
                             <div className='flex-grow'>
                               <div className='flex items-center gap-2 mb-1'>
-                                <span className='text-white font-medium text-sm'>{reply.user.name}</span>
-                                <span className='text-[#9aa4bd] text-xs'>
+                                <span className='text-black font-medium text-sm'>{reply.user.name}</span>
+                                <span className='text-[#979797] text-xs'>
                                   {new Date(reply.createdAt || Date.now()).toLocaleDateString()}
                                 </span>
                               </div>
-                              <p className='text-[#cdd5e9] text-sm mb-2'>{reply.comment}</p>
+                              <p className='text-[#000000] text-sm mb-2'>{reply.comment}</p>
                               <button 
                                 onClick={(e) => {
                                   e.stopPropagation();

@@ -100,6 +100,7 @@ export type Blog = {
   categories: string[] ;
   likes : User[];
   comments: Comment[];
+  coverImage?: string; // Optional cover image URL
   community?: {
     _id: string;
     title: string;
@@ -152,7 +153,6 @@ export type Community = {
     picture: string;
     members: User[];
     posts: Blog[];
-    topics: string[];
     createdAt: string;
     updatedAt: string;
 }

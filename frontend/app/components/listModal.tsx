@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import fetchList from '~/apiCalls/list/fetchList';
 import type { List, User } from '~/types/types'
-import { Edit, Trash2 } from 'lucide-react'
+import { Edit, Trash2, X } from 'lucide-react'
 import EditListModal from './EditListModal'
 import RemoveFromList from '~/apiCalls/list/removeFromList'
 
@@ -99,9 +99,9 @@ const ListModal = ({list, setViewListModal, setLists, profile, user}: ListModalP
   return (
     <>
       <div className='fixed z-50 flex h-[100vh] w-[100vw] justify-center items-center bg-black/60 backdrop-blur-sm' onClick={() => setViewListModal(false)}>
-          <div className='w-[500px] max-h-[600px] bg-[#0f1926] border border-[#1f2735] rounded-lg flex flex-col gap-4 p-6 shadow-xl' onClick={(e) => e.stopPropagation()}>
+          <div className='w-[500px] max-h-[600px] bg-[#EDEDE9] border border-[#000000] flex flex-col gap-4 p-6 shadow-xl' onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between">
-              <h3 className='text-white font-semibold text-lg'>{listData?.name}</h3>
+              <h3>{listData?.name}</h3>
               <div className="flex items-center gap-2">
                 {isOwnList && (
                   <>
@@ -109,26 +109,26 @@ const ListModal = ({list, setViewListModal, setLists, profile, user}: ListModalP
                       onClick={() => {
                         setEditListModal(true)
                       }}
-                      className='p-1.5 hover:bg-[#1f2735] rounded-lg transition-colors'
+                      className='p-1.5 hover:bg-[#D6D6CD] rounded-lg transition-colors'
                       title="Edit collection"
                     >
-                      <Edit size={16} className='text-[#9aa4bd] hover:text-white' />
+                      <Edit size={16} className='text-[#979797] hover:text-black' />
                     </button>
                     <button
                       onClick={handleDeleteList}
                       disabled={deletingListId === listData?._id}
-                      className='p-1.5 hover:bg-[#1f2735] rounded-lg transition-colors disabled:opacity-50'
+                      className='p-1.5 hover:bg-[#D6D6CD] rounded-lg transition-colors disabled:opacity-50'
                       title="Delete collection"
                     >
-                      <Trash2 size={16} className='text-red-400 hover:text-red-300' />
+                      <Trash2 size={16} className='text-red-600 hover:text-red-700' />
                     </button>
                   </>
                 )}
                 <button 
                   onClick={() => setViewListModal(false)}
-                  className="text-[#9aa4bd] hover:text-white transition-colors"
+                  className="icon"
                 >
-                  ×
+                  <X size={20}/>
                 </button>
               </div>
             </div>
@@ -138,15 +138,15 @@ const ListModal = ({list, setViewListModal, setLists, profile, user}: ListModalP
                 listData.blogs.map( (blog, index)  => (
                   <div 
                     key={blog._id || index} 
-                    className="group flex items-center justify-between p-3 hover:bg-[#1f2735] rounded-lg border border-[#1f2735] transition-colors" 
+                    className="group flex items-center justify-between p-3 hover:bg-[#D6D6CD] rounded-lg border border-[#000000] transition-colors" 
                   >
                     <div 
                       className="flex-1 cursor-pointer"
                       onClick={() => {window.location.href=`/blog/${blog._id}`}}
                     >
-                      <div className="text-white font-medium">{blog.title}</div>
+                      <div className="text-black font-medium">{blog.title}</div>
                       {blog.summary && (
-                        <div className="text-[#9aa4bd] text-sm mt-1 line-clamp-2">{blog.summary}</div>
+                        <div className="text-[#979797] text-sm mt-1 line-clamp-2">{blog.summary}</div>
                       )}
                     </div>
                     {isOwnList && (
@@ -156,16 +156,16 @@ const ListModal = ({list, setViewListModal, setLists, profile, user}: ListModalP
                           handleRemovePost(blog._id)
                         }}
                         disabled={removingPostId === blog._id}
-                        className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-[#2a3441] rounded transition-all disabled:opacity-50"
+                        className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-[#C6C6BD] rounded transition-all disabled:opacity-50"
                         title="Remove from collection"
                       >
-                        <Trash2 size={14} className='text-red-400 hover:text-red-300' />
+                        <Trash2 size={14} className='text-red-600 hover:text-red-700' />
                       </button>
                     )}
                   </div>
                 ))
               ) : (
-                <div className="text-[#9aa4bd] text-center py-8">No blogs in this collection</div>
+                <div className="text-[#979797] text-center py-8">No blogs in this collection</div>
               )}
             </div>
           </div>
