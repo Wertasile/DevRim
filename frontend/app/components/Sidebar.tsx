@@ -1,5 +1,5 @@
-import { Compass, Handshake, MessageSquare, Settings, Users } from 'lucide-react';
-import React from 'react';
+import { Compass, Handshake, MessageSquare, Settings, Users, Menu, X } from 'lucide-react';
+import React, { useState } from 'react';
 import { NavLink } from 'react-router';
 
 const items = [
@@ -11,25 +11,46 @@ const items = [
 ];
 
 const Sidebar = () => {
-  return (
-    <aside className="flex gap-[20px] flex-col bg-[#EDEDE9] p-[5px] border-[3px] border-solid border-[#000000] h-fit top-[100px] sticky" aria-label="Primary navigation">
+  const [isMinimized, setIsMinimized] = useState(true);
 
+  return (
+
+      <aside 
+        className={`flex gap-[20px] p-[25px] flex-col bg-[#EDEDE9] border-[3px] border-solid border-[#000000] transition-all min-w-fit duration-1000 h-fit top-[100px] sticky rounded-lg shadow-lg min-w-0`}
+        aria-label="Primary navigation"
+      >
+              {/* Hamburger Menu Button */}
+        <button
+          onClick={() => setIsMinimized(!isMinimized)}
+          className="p-2 bg-[#FEC72F] w-full border-2 border-[#000000] rounded-lg shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105"
+          aria-label={isMinimized ? 'Expand sidebar' : 'Minimize sidebar'}
+        >
+          {isMinimized ? <Menu size={20} /> : <X size={20}/>}
+        </button>
         {items.map((item, idx) => (
-          <div className='px-[25px] py-[10px]'>
           <NavLink
             key={idx}
             to={item.to}
             className={({ isActive }) =>
-              `blog-rail__item ${item.variant ?? ''} ${isActive ? 'is-active' : ''}`
+              `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+                isActive 
+                  ? 'bg-[#FEC72F] text-black font-semibold shadow-md' 
+                  : 'hover:bg-[#FEC72F]/30 text-black'
+              }`
             }
             aria-label={item.label}
+            onClick={() => {
+              // Close sidebar on mobile after clicking
+              if (window.innerWidth < 768) {
+                setIsMinimized(true);
+              }
+            }}
           >
             {item.icon}
+            {<div className={`text-small font-medium transition-all duration-300 ${isMinimized ? 'hidden' : 'block'}`}>{item.label}</div>}
           </NavLink>
-          </div>
         ))}
-
-    </aside>
+      </aside>
   );
 };
 

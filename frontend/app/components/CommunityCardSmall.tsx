@@ -15,7 +15,7 @@ const CommunityCardSmall = ({ community }: { community: Community }) => {
   return (
     <div
         key={community._id}
-        className='bg-[#EDEDE9] border border-[#1f2735] overflow-hidden cursor-pointer rounded-[5px] p-[5px] hover:border-[#31415f] transition-all group'
+        className='bg-[#EDEDE9] border border-[#000000] overflow-hidden cursor-pointer rounded-[5px] p-[5px] hover:border-[#E95444] hover:shadow-lg hover:translate-x-[5px] transition-all group'
         onClick={() => window.location.href = `/community/${community._id}`}
     >
         
@@ -30,7 +30,7 @@ const CommunityCardSmall = ({ community }: { community: Community }) => {
             />
             <div className='flex flex-col'>
             <div className='flex gap-[10px] items-center'>
-                <div className='text-small'>{community.title}</div>
+                <div className='text-small font-bold'>{community.title}</div>
                 {/* <div className='text-mini text-[#9aa4bd]'>{formatMemberCount(community.members?.length)} members</div> */}
             </div>  
 

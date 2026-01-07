@@ -8,7 +8,7 @@ const BlogPostCardSmall = ({blog} : {blog: Blog}) => {
   return (
     <div 
     key={blog._id} 
-    className='bg-[#E95444]/20 border-[1px] border-[#000000] overflow-hidden cursor-pointer hover:bg-[#E95444]/30 scale-95 hover:scale-100 transition-all'
+    className='bg-[#FEC72F]/50 border-[1px] border-[#000000] overflow-hidden cursor-pointer hover:bg-[#FEC72F]/70 scale-95 hover:scale-100 transition-all'
     onClick={() => window.location.href = `/blog/${blog._id}`}
     >
         {blog.coverImage && (

@@ -103,8 +103,8 @@ const CommunityHub = () => {
         {/* Left Sidebar */}
         <Sidebar />
 
-        {/* Central Content Area */}
-        <div className='flex-grow flex flex-col gap-6 max-w-[1600px] mx-auto'>
+                {/* Central Content Area */}
+                <div className='flex-grow flex flex-col gap-6 max-w-[1600px] mx-auto'>
           {/* Search Bar and Create Button */}
           <div className='flex gap-3'>
             <div className='relative flex-1'>
@@ -113,11 +113,12 @@ const CommunityHub = () => {
                 placeholder="Search for Communities"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                className="form-input hover:border-[#E95444] focus:border-[#E95444] transition-all duration-300"
               />
             </div>
             <button
               onClick={() => setIsCreateModalOpen(true)}
-              className="primary-btn flex gap-[10px] items-center"
+              className="primary-btn flex gap-[10px] items-center bg-gradient-to-r from-[#E95444] to-[#5D64F4] hover:from-[#5D64F4] hover:to-[#E95444] text-white transition-all duration-300 hover:scale-105 hover:shadow-lg"
             >
               <Plus size={20} />
               CREATE COMMUNITY
@@ -127,7 +128,7 @@ const CommunityHub = () => {
           {/* Topic Filter */}
           <div className='flex flex-col gap-2'>
             <div className='flex items-center gap-2 flex-wrap'>
-              <span className='text-black text-sm font-medium'>Filter by Topic:</span>
+              <span className='text-black text-sm font-medium bg-gradient-to-r from-[#5D64F4] via-[#E95444] to-[#5D64F4] bg-clip-text text-transparent'>Filter by Topic:</span>
               {TOPICS.map((topic) => (
                 <TopicPill
                   key={topic.id}
@@ -135,13 +136,13 @@ const CommunityHub = () => {
                   onClick={() => setSelectedTopic(selectedTopic === topic.name ? null : topic.name)}
                   size="medium"
                   variant={selectedTopic === topic.name ? 'selected' : 'unselected'}
-                  className={selectedTopic === topic.name ? 'font-semibold' : 'opacity-70 hover:opacity-100'}
+                  className={selectedTopic === topic.name ? 'font-semibold ring-2 ring-[#E95444] shadow-md' : 'opacity-70 hover:opacity-100 hover:ring-2 hover:ring-[#E95444]/50 transition-all duration-200'}
                 />
               ))}
               {selectedTopic && (
                 <button
                   onClick={() => setSelectedTopic(null)}
-                  className='px-3 py-1 rounded-lg text-sm bg-[#EDEDE9] border border-[#000000] text-[#979797] hover:border-[#5D64F4] flex items-center gap-1'
+                  className='px-3 py-1 rounded-lg text-sm bg-gradient-to-r from-[#EDEDE9] to-[#F5F5F1] border border-[#000000] text-[#979797] hover:border-[#E95444] hover:text-[#E95444] hover:bg-gradient-to-r hover:from-[#E95444]/10 hover:to-[#5D64F4]/10 flex items-center gap-1 transition-all duration-300 hover:scale-105'
                 >
                   <X size={14} />
                   Clear Filter
@@ -154,13 +155,13 @@ const CommunityHub = () => {
           <div className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6'>
             {filteredCommunities.map((community) => {
               return (
-                <CommunityCard community={community} />
+                <CommunityCard key={community._id} community={community} />
               );
             })}
           </div>
 
           {filteredCommunities.length === 0 && (
-            <div className='text-[#9aa4bd] text-center py-12'>
+            <div className='text-[#9aa4bd] text-center py-12 bg-gradient-to-br from-[#EDEDE9] to-[#F5F5F1] rounded-lg border border-[#000000] p-8'>
               No communities found matching your search.
             </div>
           )}

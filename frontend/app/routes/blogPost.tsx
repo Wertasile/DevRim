@@ -370,346 +370,297 @@ export default function BlogPost({ params }: Route.ComponentProps) {
   ])
 
   return (
-    <div id='blog-post' className='min-h-screen flex flex-row gap-6 px-6 py-8 mx-auto max-w-[1400px]'>
+    <div id='blog-post' className='min-h-screen flex flex-row gap-8 px-6 py-12 mx-auto max-w-[1200px]'>
 
       <Sidebar/>
       
 
       {/* ----------------------- MAIN CONTENT AREA ---------------------------------------------------------------------------------------------------- */}
-      <div className='flex-grow flex flex-col gap-6'>
+      <div className='flex-grow flex flex-col gap-8 max-w-[800px] mx-auto'>
         {/* ----------------------- TITLE SECTION ---------------------------------------------------------------------------------------------------- */}
-        <div className='pb-6 border-b border-[#000000]'>
-          <div className='flex items-start justify-between gap-4'>
-            <h1>{blog.title}</h1>
-            {isOwnPost && (
-              <div className="relative">
-                <button
-                  onClick={() => setShowDeleteMenu(!showDeleteMenu)}
-                  className="p-2 hover:bg-[#D6D6CD] rounded-lg transition-colors"
-                  aria-label="Post options"
-                >
-                  <MoreVertical size={20} className="text-[#9aa4bd]" />
-                </button>
-                {showDeleteMenu && (
-                  <div className="absolute right-0 top-full mt-2 bg-[#EDEDE9] border border-[#000000] rounded-lg shadow-lg z-50 min-w-[120px]">
-                    <button
-                      onClick={() => {
-                        setShowDeleteMenu(false);
-                        window.location.href = `/edit/${blog?._id}`;
-                      }}
-                      className="w-full px-4 py-2 text-left text-black hover:bg-[#D6D6CD] rounded-t-lg flex items-center gap-2 text-sm transition-colors"
-                    >
-                      Edit Post
-                    </button>
-                    <div className="border-t border-[#000000]"></div>
-                    <button
-                      onClick={handleDelete}
-                      disabled={isDeleting}
-                      className="w-full px-4 py-2 text-left text-red-600 hover:bg-[#D6D6CD] rounded-b-lg flex items-center gap-2 text-sm transition-colors disabled:opacity-50"
-                    >
-                      <Trash2 size={14} />
-                      {isDeleting ? 'Deleting...' : 'Delete Post'}
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
+        <div className='flex items-start justify-between gap-4'>
+          <h1 className='text-4xl font-bold leading-tight'>{blog.title}</h1>
+          {isOwnPost && (
+            <div className="relative">
+              <button
+                onClick={() => setShowDeleteMenu(!showDeleteMenu)}
+                className="p-2 hover:bg-[#D6D6CD] rounded-lg transition-colors"
+                aria-label="Post options"
+              >
+                <MoreVertical size={20} className="text-black/60" />
+              </button>
+              {showDeleteMenu && (
+                <div className="absolute right-0 top-full mt-2 bg-[#EDEDE9] border-2 border-[#000000] rounded-lg shadow-lg z-50 min-w-[120px]">
+                  <button
+                    onClick={() => {
+                      setShowDeleteMenu(false);
+                      window.location.href = `/edit/${blog?._id}`;
+                    }}
+                    className="w-full px-4 py-2 text-left text-black hover:bg-[#D6D6CD] rounded-t-lg flex items-center gap-2 text-sm transition-colors"
+                  >
+                    Edit Post
+                  </button>
+                  <div className="border-t border-[#000000]"></div>
+                  <button
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                    className="w-full px-4 py-2 text-left text-red-600 hover:bg-[#D6D6CD] rounded-b-lg flex items-center gap-2 text-sm transition-colors disabled:opacity-50"
+                  >
+                    <Trash2 size={14} />
+                    {isDeleting ? 'Deleting...' : 'Delete Post'}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Author and Date */}
+        <div className='flex items-center gap-3 text-sm text-black/70'>
+          <img 
+            src={blogUser?.picture} 
+            className='rounded-full border-2 border-[#000000]' 
+            width={40} 
+            height={40}
+            alt={blogUser?.name}
+          />
+          <div>
+            <div className='font-medium text-black'>{blogUser?.name}</div>
+            <div className='text-xs'>
+              {blog?.releaseDate ? new Date(blog.releaseDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : ''}
+            </div>
           </div>
         </div>
 
         {/* ----------------------- COVER IMAGE SECTION ---------------------------------------------------------------------------------------------------- */}
         {blog.coverImage && (
-          <div className='pb-6 border-b border-[#000000]'>
+          <div className='-mx-6'>
             <img 
               src={blog.coverImage} 
               alt={blog.title}
-              className='w-full object-cover'
-              style={{ width: '500px', height: '250px', aspectRatio: '2/1' }}
+              className='w-full object-cover rounded-lg'
+              style={{ maxHeight: '400px', objectFit: 'cover' }}
             />
           </div>
         )}
 
         {/* ----------------------- SUMMARY SECTION ---------------------------------------------------------------------------------------------------- */}
         {blog.summary && blog.summary.trim() && (
-          <div className='pb-6 border-b border-[#000000]'>
-            <h3 className='leading-relaxed'>
-              {blog.summary}
-            </h3>
+          <div className='text-xl text-black/80 leading-relaxed font-medium'>
+            {blog.summary}
           </div>
         )}
 
         {/* ----------------------- ACTUAL BLOG POST CONTENT ---------------------------------------------------------------------------------------------------- */}
-        <div className='pt-4 prose prose-invert '>
+        <div className='prose prose-lg max-w-none'>
           <div 
-            className='leading-relaxed'
+            className='text-black leading-relaxed text-lg'
+            style={{ lineHeight: '1.8' }}
             dangerouslySetInnerHTML={{ __html: html }} 
           />
-        </div>
-        <div className='flex gap-5 border-y-[1px] border-solid border-[#979797] p-6'>
-          <div>
-            <img onClick={handleNavProfile} src={blogUser?.picture} className='rounded-3xl cursor-pointer' width={64}/>
-          </div>
-          <div className='flex flex-col flex-grow'>
-            <div className='cursor-pointer' onClick={handleNavProfile}>{blogUser?.name}</div>
-            <div>About user</div>
-          </div>
-          {user?._id !== blogUser?._id && 
-            <div className='gap-2 flex h-fit'>
-              <button 
-                className='primary-btn' 
-                onClick={handleFollow}
-              >
-                  {user?.following && blogUser?._id && user.following.some((f: User | string) => {
-                    const id = typeof f === 'string' ? f : f._id;
-                    return id === blogUser._id;
-                  }) ? (<span>UNFOLLOW</span>) : (<span>FOLLOW</span>)}
-                </button>
-              <button 
-                className='primary-btn'
-                onClick={handleConnect}
-              >
-                {connected ? (
-                  <span>DISCONNECT</span>
-                ) : user?.requestsReceived && blogUser?._id && user.requestsReceived.includes(blogUser._id) ? (
-                  <span>ACCEPT</span>
-                ) : user?.requestsSent && blogUser?._id && user.requestsSent.includes(blogUser._id) ? (
-                  <span>PENDING</span>
-                ) : (
-                  <span>CONNECT</span>
-                )}
-              </button>
-            </div>
-          }
         </div>
 
         
       </div>
       
       {/* ----------------------- INTERACTION BUTTONS - STICKY RIGHT BAR ---------------------------------------------------------------------------------------------------- */}   
-      <div className='sticky top-24 self-start flex flex-col gap-6 items-center px-2 py-1 h-fit'>
-        {/* Username Section */}
-        <div className='flex flex-col gap-3 items-center cursor-pointer group' onClick={handleNavProfile}>
-          <img 
-            src={blogUser?.picture} 
-            className='rounded-full border-2 border-[#000000] group-hover:border-[#5D64F4] transition-colors' 
-            width={56} 
-            height={56}
-            alt={blogUser?.name}
-          />
-          <div className='text-xs text-center max-w-[100px]'>
-            <div>{blogUser?.name}</div>
-          </div>
-        </div>
+      <div className='sticky top-24 self-start flex flex-col gap-4 items-center px-2 py-4 h-fit'>
+        {/* Like Button */}
+        <button 
+          onClick={handleLike}
+          className='flex flex-col items-center gap-1 p-2 hover:bg-[#EDEDE9] rounded-lg transition-colors'
+          title="Like"
+        >
+          <ThumbsUp size={20} className={like ? 'fill-black text-black' : 'text-black/60'}/>
+          <span className='text-xs text-black'>{noLikes}</span>
+        </button>
 
-        {/* Date */}
-        <div className='text-xs text-[#979797] text-center'>
-          {blog?.releaseDate ? blog.releaseDate.split("T")[0] : ''}
-        </div>
-
-        {/* Edit and Delete Buttons - Only show if user owns the post */}
-        {isOwnPost && (
-          <div className='flex flex-col gap-2'>
-              <button
-                onClick={() => window.location.href = `/edit/${blog?._id}`}
-                className='icon'
-                title="Edit post"
-              >
-                <Edit size={14} />
-                
-              </button>
-              <button
-                onClick={handleDelete}
-                disabled={isDeleting}
-                className='icon'
-                title="Delete post"
-              >
-                <Trash2 size={14} />
-                
-              </button>
-            </div>
-
-        )}
-
-          {like ? (
-            <div className='icon relative'>
-              <ThumbsUp size={18} onClick={handleLike}/>
-              <b className='absolute -top-2.5 -right-2.5 bg-red-800 text-white rounded-full px-2 py-1 text-xs'>{noLikes}</b>
-            </div>
-          ) : (
-            <div className='icon relative'>
-              <ThumbsUp size={18} onClick={handleLike}/>
-              <b className='absolute -top-2.5 -right-2.5 bg-red-800 text-white rounded-full px-2 py-1 text-xs'>{noLikes}</b>
-            </div>
-          )}
+        {/* Comments Button */}
+        <button 
+          onClick={() => {
+            (!commentsOpen) ? (openCommentsPanel()) : (closeCommentsPanel())
+          }}
+          className='flex flex-col items-center gap-1 p-2 hover:bg-[#EDEDE9] rounded-lg transition-colors'
+          title="Comments"
+        >
+          <MessageSquare size={20} className='text-black/60'/>
+          <span className='text-xs text-black'>{comments.length}</span>
+        </button>
         
-        <div className='icon relative'>
-          <Share2 size={18}/>
-        </div>
-
-        <div className='icon relative'
-            onClick={() => {
-              (!commentsOpen) ? (openCommentsPanel()) : (closeCommentsPanel())
-            }}
-            title="Toggle comments"
-          >
-            <MessageSquare size={18}/>
-            <b className='absolute -top-2.5 -right-2.5 bg-red-800 text-white rounded-full px-2 py-1 text-xs'>{comments.length}</b>
-          
-        </div>
-        
-        <div className="icon relative">
+        {/* Bookmark Button */}
+        <div className="relative">
           {(() => {
             const isInCollection = usersLists?.some(list => 
               list.blogs?.some(b => b._id === blog._id)
             );
-            const collectionsWithPost = usersLists?.filter(list => 
-              list.blogs?.some(b => b._id === blog._id)
-            ) || [];
             
             return (
               <>
-                <Bookmark 
+                <button
                   onClick={() => setListModal(!listModal)} 
-                  className={`cursor-pointer hover:scale-110 transition-transform ${
-                    isInCollection 
-                      ? 'text-[#5D64F4] fill-[#5D64F4] hover:text-[#6d75fd] hover:fill-[#6d75fd]' 
-                      : 'hover:text-[#5D64F4]'
-                  }`}
-                  size={18}
-                />
-                {isInCollection && collectionsWithPost.length > 0 && (
-                  <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-[#5D64F4] rounded-full border-2 border-[#EDEDE9]"></div>
+                  className='flex flex-col items-center gap-1 p-2 hover:bg-[#EDEDE9] rounded-lg transition-colors'
+                  title="Save"
+                >
+                  <Bookmark 
+                    className={isInCollection ? 'fill-black text-black' : 'text-black/60'}
+                    size={20}
+                  />
+                </button>
+                {listModal && (
+                  <div className="absolute bottom-0 right-full mr-4 flex flex-col bg-[#EDEDE9] border-2 border-[#000000] rounded-lg shadow-xl gap-3 p-4 w-[250px] text-center text-sm z-50 max-h-[400px] overflow-y-auto">
+                    {(() => {
+                      const collectionsWithPost = usersLists?.filter(list => 
+                        list.blogs?.some(b => b._id === blog._id)
+                      ) || [];
+                      const isInAnyCollection = collectionsWithPost.length > 0;
+                      
+                      return (
+                        <>
+                          {isInAnyCollection && (
+                            <div className="mb-2 pb-2 border-b border-[#000000]">
+                              <h4 className='text-black text-xs font-semibold mb-1'>IN COLLECTIONS:</h4>
+                              <div className="flex flex-col gap-1">
+                                {collectionsWithPost.map((list) => (
+                                  <div 
+                                    key={list._id}
+                                    className="flex items-center justify-between p-2 bg-[#D6D6CD] rounded text-left"
+                                  >
+                                    <span className="text-black text-xs flex-1 truncate">{list.name}</span>
+                                    <button
+                                      onClick={async () => {
+                                        await RemoveFromList(list._id, blog._id);
+                                        const updatedLists = await getAllList(user?._id || null);
+                                        setUsersLists(updatedLists);
+                                      }}
+                                      className="ml-2 p-1 hover:bg-[#C6C6BD] rounded transition-colors"
+                                      title="Remove from collection"
+                                    >
+                                      <CircleXIcon size={14} className="text-red-600" />
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          <h3 className='text-black mb-2 text-xs font-semibold'>
+                            {isInAnyCollection ? 'ADD TO MORE COLLECTIONS:' : 'ADD BLOG TO COLLECTION:'}
+                          </h3>
+                          {usersLists && usersLists.length > 0 ? (
+                            usersLists.map((list, index) => {
+                              const isInThisCollection = list.blogs?.some(b => b._id === blog._id);
+                              if (isInThisCollection) return null;
+                              
+                              return (
+                                <div 
+                                  key={list._id ?? index}
+                                  className='flex gap-2 justify-between items-center'
+                                >
+                                  <div 
+                                    className="primary-btn hover:none w-full text-left px-3 py-2"
+                                    onClick={() => {}}
+                                  >
+                                    {list.name}
+                                  </div>
+                                  <div 
+                                    className='primary-btn h-fit px-2 py-2'
+                                    onClick={async () => {
+                                      await AddToList(list._id, blog._id);
+                                      const updatedLists = await getAllList(user?._id || null);
+                                      setUsersLists(updatedLists);
+                                    }}
+                                  >
+                                    <CirclePlusIcon size={16}/>
+                                  </div>
+                                </div>
+                              );
+                            })
+                          ) : (
+                            <div className="text-black/60 text-xs py-2">No collections yet</div>
+                          )}
+                        </>
+                      );
+                    })()}
+                  </div>
                 )}
               </>
             );
           })()}
-
-          {listModal && (
-            <div className="absolute bottom-0 right-full mr-4 flex flex-col bg-[#EDEDE9] border border-[#000000] rounded-lg shadow-xl gap-3 p-4 w-[250px] text-center text-sm z-50 max-h-[400px] overflow-y-auto">
-              {(() => {
-                const collectionsWithPost = usersLists?.filter(list => 
-                  list.blogs?.some(b => b._id === blog._id)
-                ) || [];
-                const isInAnyCollection = collectionsWithPost.length > 0;
-                
-                return (
-                  <>
-                    {isInAnyCollection && (
-                      <div className="mb-2 pb-2 border-b border-[#000000]">
-                        <h4 className='text-[#5D64F4] text-xs font-semibold mb-1'>IN COLLECTIONS:</h4>
-                        <div className="flex flex-col gap-1">
-                          {collectionsWithPost.map((list) => (
-                            <div 
-                              key={list._id}
-                              className="flex items-center justify-between p-2 bg-[#D6D6CD] rounded text-left"
-                            >
-                              <span className="text-black text-xs flex-1 truncate">{list.name}</span>
-                              <button
-                                onClick={async () => {
-                                  await RemoveFromList(list._id, blog._id);
-                                  const updatedLists = await getAllList(user?._id || null);
-                                  setUsersLists(updatedLists);
-                                }}
-                                className="ml-2 p-1 hover:bg-[#C6C6BD] rounded transition-colors"
-                                title="Remove from collection"
-                              >
-                                <CircleXIcon size={14} className="text-red-600" />
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    <h3 className='text-black mb-2 text-xs font-semibold'>
-                      {isInAnyCollection ? 'ADD TO MORE COLLECTIONS:' : 'ADD BLOG TO COLLECTION:'}
-                    </h3>
-                    {usersLists && usersLists.length > 0 ? (
-                      usersLists.map((list, index) => {
-                        const isInThisCollection = list.blogs?.some(b => b._id === blog._id);
-                        if (isInThisCollection) return null; // Skip collections already shown above
-                        
-                        return (
-                          <div 
-                            key={list._id ?? index}
-                            className='flex gap-2 justify-between items-center'
-                          >
-                            <div 
-                              className="primary-btn hover:none w-full text-left px-3 py-2"
-                              onClick={() => {}}
-                            >
-                              {list.name}
-                            </div>
-                            <div 
-                              className='primary-btn h-fit px-2 py-2'
-                              onClick={async () => {
-                                await AddToList(list._id, blog._id);
-                                const updatedLists = await getAllList(user?._id || null);
-                                setUsersLists(updatedLists);
-                              }}
-                            >
-                              <CirclePlusIcon size={16}/>
-                            </div>
-                          </div>
-                        );
-                      })
-                    ) : (
-                      <div className="text-[#9aa4bd] text-xs py-2">No collections yet</div>
-                    )}
-                  </>
-                );
-              })()}
-            </div>
-          )}
         </div>
+
+        {/* Share Button */}
+        <button 
+          className='flex flex-col items-center gap-1 p-2 hover:bg-[#EDEDE9] rounded-lg transition-colors'
+          title="Share"
+        >
+          <Share2 size={20} className='text-black/60'/>
+        </button>
+
+        {/* Edit and Delete Buttons - Only show if user owns the post */}
+        {isOwnPost && (
+          <div className='flex flex-col gap-2 pt-4 border-t border-black/20'>
+            <button
+              onClick={() => window.location.href = `/edit/${blog?._id}`}
+              className='p-2 hover:bg-[#EDEDE9] rounded-lg transition-colors'
+              title="Edit post"
+            >
+              <Edit size={18} className='text-black/60'/>
+            </button>
+            <button
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className='p-2 hover:bg-[#EDEDE9] rounded-lg transition-colors disabled:opacity-50'
+              title="Delete post"
+            >
+              <Trash2 size={18} className='text-black/60'/>
+            </button>
+          </div>
+        )}
       </div>
       {/* ----------------------- COMMENTS PANEL - RIGHT SIDE ---------------------------------------------------------------------------------------------------- */}
       <div 
         ref={commentsPanel}
-        className='fixed top-24 right-0 self-start w-[380px] h-[calc(100vh-120px)] bg-[#EDEDE9] border border-[#000000] flex flex-col overflow-hidden z-50'
+        className='fixed top-0 right-0 self-start w-[400px] h-screen bg-[#EDEDE9] border-l-2 border-[#000000] flex flex-col overflow-hidden z-50 shadow-2xl'
         style={{transform: "translateX(100%)"}}
       >
-        <div className='flex items-center justify-between p-4 border-b border-[#1f2735]'>
-          <h3>
-            COMMENTS ({comments.filter(c => {
+        <div className='flex items-center justify-between p-6 border-b-2 border-[#000000] bg-white'>
+          <h3 className='text-black font-semibold'>
+            Comments ({comments.filter(c => {
               const replyToId = typeof c.replyTo === 'string' ? c.replyTo : c.replyTo?._id;
               return !replyToId;
             }).length})
           </h3>
           <button 
             onClick={closeCommentsPanel}
-            className='text-[#9aa4bd] hover:text-black transition-colors'
+            className='p-2 hover:bg-[#EDEDE9] rounded-lg transition-colors'
           >
-            <X size={20} />
+            <X size={20} className='text-black' />
           </button>
         </div>
           
-          <div className='flex flex-col gap-4 overflow-y-auto p-4'>
+          <div className='flex flex-col gap-6 overflow-y-auto p-6 bg-white'>
             {/* Add Comment Form */}
-            <div>
-
-              
+            <div className='flex flex-col gap-3'>
               {replyingTo && (
-                <div className='mb-2 p-2 bg-[#EDEDE9] rounded border border-[#000000] text-sm'>
-                  <div className='flex items-center justify-between'>
-                    <span className='text-[#9aa4bd]'>Replying to <span className='text-black'>{replyingTo.user.name}</span></span>
+                <div className='p-3 bg-[#EDEDE9] rounded-lg border-2 border-[#000000]'>
+                  <div className='flex items-center justify-between mb-1'>
+                    <span className='text-sm text-black/70'>Replying to <span className='font-medium text-black'>{replyingTo.user.name}</span></span>
                     <button 
                       onClick={() => {
                         setReplyingTo(null)
                         setReplyText("")
                       }}
-                      className='text-[#9aa4bd] hover:text-black'
+                      className='p-1 hover:bg-[#D6D6CD] rounded transition-colors'
                     >
-                      <X size={14} />
+                      <X size={14} className='text-black' />
                     </button>
                   </div>
-                  <p className='text-[#9aa4bd] text-xs mt-1 truncate'>{replyingTo.comment}</p>
+                  <p className='text-sm text-black/60 truncate'>{replyingTo.comment}</p>
                 </div>
               )}
-
               
               <div className='flex gap-2'>
                 <input 
-                  className=''
+                  className='form-input flex-1'
                   placeholder={replyingTo ? 'Write a reply...' : 'What are your thoughts?'}
                   value={replyingTo ? replyText : (comment ?? "")}
                   onChange={(e) => replyingTo ? setReplyText(e.target.value) : setComment(e.target.value)}
@@ -725,7 +676,7 @@ export default function BlogPost({ params }: Route.ComponentProps) {
                   }}
                 />
                 <button 
-                  className='icon'
+                  className='icon bg-[#4DD499] hover:bg-[#3BC088] text-black transition-all duration-200'
                   onClick={() => {
                     if (replyingTo) {
                       addReply(replyingTo._id, replyText)
@@ -754,32 +705,32 @@ export default function BlogPost({ params }: Route.ComponentProps) {
                 const isExpanded = expandedReplies.has(comment._id);
                 
                 return (
-                  <div key={comment._id} className={`flex flex-col gap-3 ${index > 0 ? 'pt-6 border-t border-[#000000]' : ''}`}>
+                  <div key={comment._id} className={`flex flex-col gap-4 ${index > 0 ? 'pt-6 border-t border-black/20' : ''}`}>
                     <div className='flex gap-3'>
                       <img 
                         src={comment.user.picture} 
-                        className="flex-shrink-0 w-8 h-8 rounded-full object-cover" 
-                        width={32} 
-                        height={32}
+                        className="flex-shrink-0 w-10 h-10 rounded-full object-cover border-2 border-[#000000]" 
+                        width={40} 
+                        height={40}
                         alt={comment.user.name}
                       />
                       <div className='flex-grow'>
-                        <div className='flex items-center gap-2 mb-1'>
-                          <div>{comment.user.name}</div>
-                          <div className='text-mini'>
+                        <div className='flex items-center gap-2 mb-2'>
+                          <div className='font-medium text-black'>{comment.user.name}</div>
+                          <div className='text-xs text-black/60'>
                             {comment.createdAt ? new Date(comment.createdAt).toLocaleDateString() : ''}
                           </div>
                         </div>
-                        <p>{comment.comment}</p>
-                        <div className='flex items-center gap-3'>
+                        <p className='text-black leading-relaxed mb-3'>{comment.comment}</p>
+                        <div className='flex items-center gap-4'>
                           <button 
                             onClick={(e) => {
                               e.stopPropagation();
                               setReplyingTo(comment);
                             }}
-                            className='text-mini flex gap-[5px] items-center cursor-pointer hover:bg-white/50 rounded-[5px] p-[5px]'
+                            className='text-xs text-black/70 hover:text-black font-medium transition-colors'
                           >
-                            REPLY
+                            Reply
                           </button>
                           {replies.length > 0 && (
                             <button
@@ -793,17 +744,17 @@ export default function BlogPost({ params }: Route.ComponentProps) {
                                 }
                                 setExpandedReplies(newExpanded);
                               }}
-                              className='text-mini flex gap-[5px] items-center cursor-pointer hover:bg-white/50 rounded-[5px] p-[5px]'
+                              className='text-xs text-black/70 hover:text-black font-medium transition-colors flex items-center gap-1'
                             >
                               {isExpanded ? (
                                 <>
                                   <ChevronUp size={12} />
-                                  HIDE {replies.length} {replies.length === 1 ? 'REPLY' : 'REPLIES'}
+                                  Hide {replies.length} {replies.length === 1 ? 'reply' : 'replies'}
                                 </>
                               ) : (
                                 <>
                                   <ChevronDown size={12} />
-                                  VIEW {replies.length} {replies.length === 1 ? 'REPLY' : 'REPLIES'}
+                                  View {replies.length} {replies.length === 1 ? 'reply' : 'replies'}
                                 </>
                               )}
                             </button>
@@ -814,12 +765,12 @@ export default function BlogPost({ params }: Route.ComponentProps) {
                     
                     {/* Replies - Accordion */}
                     {replies.length > 0 && isExpanded && (
-                      <div className='ml-11 flex flex-col gap-4 pl-4 border-l-2 border-[#000000]'>
+                      <div className='ml-13 flex flex-col gap-4 pl-6 border-l-2 border-black/20'>
                         {replies.map((reply) => (
                           <div key={reply._id} className='flex gap-3'>
                             <img 
                               src={reply.user.picture} 
-                              className="flex-shrink-0 w-8 h-8 rounded-full object-cover" 
+                              className="flex-shrink-0 w-8 h-8 rounded-full object-cover border-2 border-[#000000]" 
                               width={32} 
                               height={32}
                               alt={reply.user.name}
@@ -827,19 +778,19 @@ export default function BlogPost({ params }: Route.ComponentProps) {
                             <div className='flex-grow'>
                               <div className='flex items-center gap-2 mb-1'>
                                 <span className='text-black font-medium text-sm'>{reply.user.name}</span>
-                                <span className='text-[#979797] text-xs'>
+                                <span className='text-black/60 text-xs'>
                                   {new Date(reply.createdAt || Date.now()).toLocaleDateString()}
                                 </span>
                               </div>
-                              <p className='text-[#000000] text-sm mb-2'>{reply.comment}</p>
+                              <p className='text-black text-sm mb-2 leading-relaxed'>{reply.comment}</p>
                               <button 
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   setReplyingTo(reply);
                                 }}
-                                className='text-[#9aa4bd] hover:text-[#5D64F4] text-[10px] uppercase tracking-wide transition-colors font-medium'
+                                className='text-xs text-black/70 hover:text-black font-medium transition-colors'
                               >
-                                REPLY
+                                Reply
                               </button>
                             </div>
                           </div>
@@ -850,7 +801,7 @@ export default function BlogPost({ params }: Route.ComponentProps) {
                 )
               })}
               {comments.length === 0 && (
-                <div className='text-center text-[#9aa4bd] py-8'>
+                <div className='text-center text-black/60 py-12'>
                   No comments yet. Be the first to comment!
                 </div>
               )}

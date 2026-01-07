@@ -98,17 +98,20 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, messageId, isOwnMessage 
   // Transparent background to blend with message bubble
   const playerBgColor = 'bg-transparent';
   
+  // Button colors - darker for better contrast on light backgrounds
   const buttonColor = isOwnMessage
-    ? 'bg-black/50 hover:bg-black/70'
-    : 'bg-white/50 hover:bg-white/70';
+    ? 'bg-black/20 hover:bg-black/30 text-black'
+    : 'bg-black/10 hover:bg-black/20 text-black';
   
+  // Progress bar background - subtle for both
   const progressBgColor = isOwnMessage
-    ? 'bg-black/30'
-    : 'bg-white/20';
+    ? 'bg-black/20'
+    : 'bg-black/15';
   
+  // Progress fill - darker for visibility
   const progressFillColor = isOwnMessage
-    ? 'bg-black'
-    : 'bg-white/80';
+    ? 'bg-[#4DD499]'
+    : 'bg-black';
 
   return (
     <div className={`flex items-center gap-3 p-3 rounded-lg ${playerBgColor} min-w-[250px] max-w-[300px]`}>
@@ -122,11 +125,11 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, messageId, isOwnMessage 
         title={isPlaying ? 'Pause' : 'Play'}
       >
         {isLoading ? (
-          <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin"></div>
+          <div className={`w-4 h-4 border-2 ${isOwnMessage ? 'border-[#4DD499]/30 border-t-[#4DD499]' : 'border-black/30 border-t-black'} rounded-full animate-spin`}></div>
         ) : isPlaying ? (
-          <Pause size={16}/>
+          <Pause size={16} className="text-black"/>
         ) : (
-          <Play size={16}/>
+          <Play size={16} className="text-black"/>
         )}
       </button>
 
@@ -162,9 +165,9 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, messageId, isOwnMessage 
         title={isMuted ? 'Unmute' : 'Mute'}
       >
         {isMuted ? (
-          <VolumeX size={14}/>
+          <VolumeX size={14} className="text-black"/>
         ) : (
-          <Volume2 size={14}/>
+          <Volume2 size={14} className="text-black"/>
         )}
       </button>
     </div>

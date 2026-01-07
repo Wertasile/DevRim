@@ -1,4 +1,4 @@
-import { getSummary, getHistory, getRecommendation, getTrending } from "../controllers/userAnalyticsController.js";
+import { getSummary, getHistory, getRecommendation, getTrending, getPostViews } from "../controllers/userAnalyticsController.js";
 import authenticateUser from "../functions/auth.js";
 
 import express from 'express';
@@ -9,5 +9,6 @@ router.get('/summary', authenticateUser, getSummary)
 router.get('/history', authenticateUser, getHistory)
 router.get('/recommendations', authenticateUser, getRecommendation)
 router.get('/trending', authenticateUser, getTrending);
+router.post('/post-views', authenticateUser, getPostViews);
 
 export default router;

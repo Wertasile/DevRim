@@ -395,17 +395,19 @@ const Settings = () => {
 
         {/* Main Content */}
         <div className="flex-grow flex flex-col gap-6 max-w-[1200px] mx-auto">
+
+
           {/* Header */}
             <h1>SETTINGS</h1>
 
           {/* Success/Error Messages */}
           {successMessage && (
-            <div className="p-4 bg-green-900/30 border border-green-700 rounded-lg text-green-300">
+            <div className="p-4 bg-gradient-to-r from-green-900/30 to-green-800/30 border-2 border-green-700 rounded-lg text-green-300 shadow-lg hover:shadow-xl transition-all duration-300">
               {successMessage}
             </div>
           )}
           {errorMessage && (
-            <div className="p-4 bg-red-900/30 border border-red-700 rounded-lg text-red-300">
+            <div className="p-4 bg-gradient-to-r from-red-900/30 to-red-800/30 border-2 border-red-700 rounded-lg text-red-300 shadow-lg hover:shadow-xl transition-all duration-300">
               {errorMessage}
             </div>
           )}
@@ -413,7 +415,7 @@ const Settings = () => {
           {/* Image Cropper Modal */}
           {showCropper && imageToCrop && (
             <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
-              <div className="bg-[#EDEDE9] border border-[#000000] p-6 max-w-2xl w-full">
+              <div className="bg-gradient-to-br from-[#EDEDE9] via-[#F5F5F1] to-[#EDEDE9] border-2 border-[#000000] p-6 max-w-2xl w-full rounded-lg shadow-2xl">
                 <ImageCropper
                   image={imageToCrop}
                   onCropDone={handleCropDone}
@@ -435,11 +437,11 @@ const Settings = () => {
                   
                   {/* Preview */}
                   {previewUrl && (
-                    <div className="relative w-fit">
+                    <div className="relative w-fit group">
                       <img
                         src={previewUrl}
                         alt="Profile preview"
-                        className="w-32 h-32 rounded-full object-cover"
+                        className="w-32 h-32 rounded-full object-cover border-4 border-transparent group-hover:border-[#FEC72F] transition-all duration-300 group-hover:ring-4 group-hover:ring-[#FEC72F]/30 group-hover:shadow-lg"
                         onError={(e) => {
                           e.currentTarget.style.display = 'none';
                         }}
@@ -447,10 +449,10 @@ const Settings = () => {
                       <button
                         type="button"
                         onClick={handleRemovePicture}
-                        className="absolute -top-2 -right-2 bg-red-600 hover:bg-red-700 rounded-full p-1.5 transition-colors"
+                        className="absolute -top-2 -right-2 bg-gradient-to-br from-red-600 to-red-700 hover:from-red-700 hover:to-red-600 rounded-full p-1.5 transition-all duration-300 hover:scale-110 hover:shadow-lg border-2 border-black"
                         title="Remove picture"
                       >
-                        <X size={14} className="text-black" />
+                        <X size={14} className="text-white" />
                       </button>
                     </div>
                   )}
@@ -465,7 +467,7 @@ const Settings = () => {
                       />
                     ) : null}
                     {!showCropper && (
-                      <p className="text-[#979797] text-mini">
+                      <p className="text-[#979797] text-mini hover:text-[#FEC72F] transition-colors duration-200">
                         SUPPORTED FORMATS: JPG, PNG, GIF. MAX SIZE: 5MB
                       </p>
                     )}
@@ -474,7 +476,7 @@ const Settings = () => {
               </div>
 
               <div className="flex flex-col gap-2">
-                  <label htmlFor="byline" className="form-label flex items-center gap-2">
+                  <label htmlFor="byline" className="form-label flex items-center gap-2 hover:text-[#FEC72F] transition-colors duration-200">
                     BYLINE
                   </label>
                   <input
@@ -485,14 +487,14 @@ const Settings = () => {
                     onChange={handleInputChange}
                     placeholder="e.g., Software Engineer at Company"
                     maxLength={100}
-                    className="form-input"
+                    className="form-input hover:border-[#FEC72F] focus:border-[#FEC72F] transition-all duration-300"
                   />
                   <div className="text-[#979797] text-mini">{formData.byline.length}/100 characters</div>
                 </div>
 
                 {/* About */}
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="about" className="form-label flex items-center gap-2">
+                  <label htmlFor="about" className="form-label flex items-center gap-2 hover:text-[#FEC72F] transition-colors duration-200">
                     ABOUT
                   </label>
                   <textarea
@@ -503,7 +505,7 @@ const Settings = () => {
                     placeholder="Tell us about yourself..."
                     rows={6}
                     maxLength={500}
-                    className="form-input"
+                    className="form-input hover:border-[#FEC72F] focus:border-[#FEC72F] transition-all duration-300"
                   />
                   <div className="text-[#979797] text-mini">{formData.about.length}/500 characters</div>
                 </div>
@@ -511,7 +513,7 @@ const Settings = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
                 {/* Email (Read-only) */}
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="email" className="form-label flex items-center gap-2">
+                  <label htmlFor="email" className="form-label flex items-center gap-2 hover:text-[#FEC72F] transition-colors duration-200">
                     EMAIL ADDRESS
                   </label>
                   <input
@@ -525,7 +527,7 @@ const Settings = () => {
 
                 {/* Full Name */}
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="name" className="form-label flex items-center gap-2">
+                  <label htmlFor="name" className="form-label flex items-center gap-2 hover:text-[#FEC72F] transition-colors duration-200">
                     FULL NAME
                   </label>
                   <input
@@ -535,13 +537,13 @@ const Settings = () => {
                     value={formData.name}
                     onChange={handleInputChange}
                     placeholder="Enter your full name"
-                    className="form-input max-w-[400px]"
+                    className="form-input max-w-[400px] hover:border-[#FEC72F] focus:border-[#FEC72F] transition-all duration-300"
                   />
                 </div>
 
                 {/* Given Name */}
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="given_name" className="form-label flex items-center gap-2">
+                  <label htmlFor="given_name" className="form-label flex items-center gap-2 hover:text-[#FEC72F] transition-colors duration-200">
                     FIRST NAME
                   </label>
                   <input
@@ -551,13 +553,13 @@ const Settings = () => {
                     value={formData.given_name}
                     onChange={handleInputChange}
                     placeholder="Enter your first name"
-                    className="form-input max-w-[400px]"
+                    className="form-input max-w-[400px] hover:border-[#FEC72F] focus:border-[#FEC72F] transition-all duration-300"
                   />
                 </div>
 
                 {/* Family Name */}
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="family_name" className="form-label flex items-center gap-2">
+                  <label htmlFor="family_name" className="form-label flex items-center gap-2 hover:text-[#FEC72F] transition-colors duration-200">
                     LAST NAME
                   </label>
                   <input
@@ -567,7 +569,7 @@ const Settings = () => {
                     value={formData.family_name}
                     onChange={handleInputChange}
                     placeholder="Enter your last name"
-                    className="form-input max-w-[400px]"
+                    className="form-input max-w-[400px] hover:border-[#FEC72F] focus:border-[#FEC72F] transition-all duration-300"
                     maxLength={50}
                   />
                 </div>
@@ -579,12 +581,13 @@ const Settings = () => {
               <button
                 type="submit"
                 disabled={isSaving}
-                className={`primary-btn ${isSaving ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`primary-btn bg-gradient-to-r from-[#FEC72F] to-[#5D64F4] hover:from-[#5D64F4] hover:to-[#FEC72F] transition-all duration-300 ${isSaving ? 'opacity-50 cursor-not-allowed hover:scale-100' : ''}`}
               >
-                <span>{isSaving ? 'SAVING...' : 'SAVE'}</span>
+                  {isSaving ? 'SAVING...' : 'SAVE'}
               </button>
             </div>
           </form>
+
         </div>
       </div>
     </div>

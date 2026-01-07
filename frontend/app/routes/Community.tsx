@@ -81,10 +81,10 @@ export default function Community({ params }: Route.ComponentProps) {
   const getCommunityIcon = (title: string) => {
     const lowerTitle = title.toLowerCase();
     if (lowerTitle.includes('tech')) {
-      return <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+      return <div className="w-12 h-12 rounded-full bg-[#E95444] flex items-center justify-center border-2 border-[#000000]">
         <div className="grid grid-cols-3 gap-1">
           {Array.from({ length: 9 }).map((_, i) => (
-            <div key={i} className="w-1.5 h-1.5 bg-white rounded-full" />
+            <div key={i} className="w-1.5 h-1.5 bg-black rounded-full" />
           ))}
         </div>
       </div>;
@@ -149,16 +149,16 @@ export default function Community({ params }: Route.ComponentProps) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <h3>LOADING COMMUNITY</h3>
+      <div className="min-h-screen flex items-center justify-center bg-[#EDEDE9]">
+        <h3 className="text-black">LOADING COMMUNITY</h3>
       </div>
     );
   }
 
   if (!community) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <h3>COMMUNITY NOT FOUND</h3>
+      <div className="min-h-screen flex items-center justify-center bg-[#EDEDE9]">
+        <h3 className="text-black">COMMUNITY NOT FOUND</h3>
       </div>
     );
   }
@@ -173,10 +173,10 @@ export default function Community({ params }: Route.ComponentProps) {
         <div className="flex-grow flex flex-col gap-6">
           {/* Community Header */}
           <div className='flex justify-between items-center'>
-            <div className="flex items-center gap-4 items-center">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-full bg-[#E95444] flex items-center justify-center flex-shrink-0 border-2 border-[#000000]">
                 {community.picture ? (
-                <img src={community.picture} alt={community.title.toUpperCase()} className="w-full h-full border-2 border-[#000000] object-cover" />
+                <img src={community.picture} alt={community.title.toUpperCase()} className="w-full h-full rounded-full border-2 border-[#000000] object-cover" />
                 ) : (
                 getCommunityIcon(community.title)
                 )}
@@ -185,29 +185,28 @@ export default function Community({ params }: Route.ComponentProps) {
             </div>
             {user?.communities?.includes(community._id) ? (
               <div className='flex gap-[10px]'>
-              <button className='primary-btn' onClick={() => leaveCommunity(community._id)}>LEAVE</button>
-              <button className='icon' onClick={() => window.location.href = `/blog/new?communityId=${community._id}`}><PlusIcon size={20} /></button>
+              <button className='primary-btn bg-[#E95444] hover:bg-[#d84333] text-black transition-all duration-200' onClick={() => leaveCommunity(community._id)}>LEAVE</button>
+              <button className='icon bg-[#FEC72F] hover:bg-[#E95444] text-black transition-all duration-200 hover:scale-110 hover:shadow-lg' onClick={() => window.location.href = `/blog/new?communityId=${community._id}`}><PlusIcon size={20} /></button>
               </div>
             ) : (
               <div className='flex gap-[10px]'>
-              <button className='primary-btn' onClick={() => joinCommunity(community._id)}>JOIN</button>
-
+              <button className='primary-btn bg-[#E95444] hover:bg-[#d84333] text-black transition-all duration-200' onClick={() => joinCommunity(community._id)}>JOIN</button>
               </div>
             )}
           </div>
 
 
           {/* Search Bar */}
-          <div className="flex gap-[10px] ">
+          <div className="flex gap-[10px]">
             <input
               type="text"
               placeholder={`Search in ${community.title}`}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-fit py-3 bg-[#EDEDE9] border border-[2px] focus:outline-none focus:border-[#31415f] transition-colors"
+              className="flex-1 py-3 px-4 bg-[#D6D6CD] border-2 border-[#000000] rounded-lg focus:outline-none focus:border-[#E95444] transition-all duration-200 text-black placeholder:text-[#979797]"
             />
-            <button className='icon'><FilterIcon size={20} /></button>
-            <button className='icon'><SortDescIcon size={20} /></button>
+            <button className='icon bg-[#FEC72F] hover:bg-[#E95444] text-black transition-all duration-200 hover:scale-110 hover:shadow-lg'><FilterIcon size={20} /></button>
+            <button className='icon bg-[#FEC72F] hover:bg-[#E95444] text-black transition-all duration-200 hover:scale-110 hover:shadow-lg'><SortDescIcon size={20} /></button>
           </div>
 
           {/* Posts Feed */}
@@ -218,7 +217,6 @@ export default function Community({ params }: Route.ComponentProps) {
                   key={post._id}
                   id={post._id}
                   title={post.title}
-                  coverImage={post.coverImage}
                   releaseDate={post.releaseDate}
                   summary={post.summary || ''}
                   postUser={post.user}
@@ -229,7 +227,7 @@ export default function Community({ params }: Route.ComponentProps) {
                 />
               ))
             ) : (
-              <div className="text-center">
+              <div className="text-center text-[#979797] py-8">
                 {searchQuery ? 'No posts found matching your search.' : 'No posts yet in this community.'}
               </div>
             )}
@@ -243,23 +241,23 @@ export default function Community({ params }: Route.ComponentProps) {
 
 
             {/* Current Community Details */}
-            <div className="bg-[#EDEDE9] border-[3px] border-[#000000] mb-6 p-[5px]">
+            <div className="bg-[#EDEDE9] border-[3px] border-[#000000] rounded-lg p-4 shadow-lg hover:shadow-xl transition-all duration-300 mb-6">
               <div className="flex items-center gap-3 mb-3">
                 {community.picture ? (
-                  <img src={community.picture} alt={community.title} className="w-10 h-10 rounded-full object-cover" />
+                  <img src={community.picture} alt={community.title} className="w-10 h-10 rounded-full object-cover border-2 border-[#000000]" />
                 ) : (
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-full bg-[#E95444] flex items-center justify-center border-2 border-[#000000]">
                     {getCommunityIcon(community.title)}
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <h3>{community.title}</h3>
-                  <p className="text-[#9aa4bd] text-xs">
+                  <h3 className="text-black">{community.title}</h3>
+                  <p className="text-[#979797] text-xs">
                     {formatMemberCount(community.members?.length || 0)} members
                   </p>
                 </div>
               </div>
-              <div className="text-small leading-relaxed mb-3">
+              <div className="text-small leading-relaxed mb-3 text-black">
                 {community.description || 'A community for like-minded people'}
               </div>
               {/* Topics */}
@@ -277,24 +275,24 @@ export default function Community({ params }: Route.ComponentProps) {
                   </div>
                 </div>
               )}
-              <div className="text-small">
+              <div className="text-small text-black">
                 <p>Creator: @{community.creator?.name || 'Unknown'}</p>
-                <p className="flex items-center gap-1">
+                <p className="flex items-center gap-1 text-[#979797]">
                   <Calendar size={12} />
                   Date Created: {formatDate(community.createdAt)}
                 </p>
               </div>
             </div>
 
-            {/* Rules Section */}
+            {/* Announcements Section */}
             {community.rules && community.rules.length > 0 && (
-              <div className="bg-[#EDEDE9] border-[3px] border-[#000000] mb-6 p-[5px]">
-                <h3>ANNOUNCEMENTS</h3>
-                <ul className="list-disc list-inside space-y-2 text-small">
+              <div className="bg-[#EDEDE9] border-[3px] border-[#000000] rounded-lg p-4 shadow-lg hover:shadow-xl transition-all duration-300 mb-6">
+                <h3 className="text-black mb-3">ANNOUNCEMENTS</h3>
+                <ul className="list-disc list-inside space-y-2 text-small text-black">
                   {(community.announcements && community.announcements.length > 0) ? (community.announcements?.map((announcement: any, index: number) => (
                     <li key={index}>{announcement.title}</li>
                   ))) : (
-                    <li>No announcements yet</li>
+                    <li className="text-[#979797]">No announcements yet</li>
                   )}
                 </ul>
               </div>
@@ -302,8 +300,8 @@ export default function Community({ params }: Route.ComponentProps) {
 
             {/* Your Posts Section */}
             {user && userPosts.length > 0 && (
-              <div className="bg-[#EDEDE9] border-[3px] border-[#000000] mb-6 p-[5px]">
-                <h3>YOUR POSTS</h3>
+              <div className="bg-[#EDEDE9] border-[3px] border-[#000000] rounded-lg p-4 shadow-lg hover:shadow-xl transition-all duration-300 mb-6">
+                <h3 className="text-black mb-3">YOUR POSTS</h3>
                 <div className="flex flex-col gap-2">
                   {userPosts.map((post: Blog) => {
                     const postUserId = typeof post.user === 'string' ? post.user : post.user._id;
@@ -312,26 +310,26 @@ export default function Community({ params }: Route.ComponentProps) {
                     if (!isOwnPost) return null;
                     
                     return (
-                      <BlogPostSmall blog={post} />
+                      <BlogPostSmall key={post._id} blog={post} />
                     );
                   })}
                 </div>
               </div>
             )}
 
-            {/* Other Communities */}
+            {/* Pinned Posts */}
             {otherCommunities.length > 0 && (
-              <div className='bg-[#EDEDE9] border-[3px] border-[#000000] mb-6 p-[5px]'>
-                <h3>PINNED POSTS</h3>
+              <div className='bg-[#EDEDE9] border-[3px] border-[#000000] rounded-lg p-4 shadow-lg hover:shadow-xl transition-all duration-300 mb-6'>
+                <h3 className="text-black mb-3">PINNED POSTS</h3>
                 <div className='flex flex-col gap-[10px]'>
-                  {user && pinnedPosts.map((b: any) => (
-                      <BlogPostSmall blog={b.blog} />
-                  ))}
-
-                  {!pinnedPosts.length && (
-                      <div>Pinned posts appear here once available.</div>
+                  {user && pinnedPosts.length > 0 ? (
+                    pinnedPosts.map((b: any) => (
+                      <BlogPostSmall key={b.blog?._id} blog={b.blog} />
+                    ))
+                  ) : (
+                    <div className="text-[#979797] italic">Pinned posts appear here once available.</div>
                   )}
-              </div>
+                </div>
               </div>
             )}
         </aside>

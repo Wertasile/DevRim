@@ -17,6 +17,7 @@ import Sidebar from '~/components/Sidebar';
 import BlogPostSmall from '~/components/blogPostSmall';
 import getUserCommunities from '~/apiCalls/Community/getUserCommunities';
 import CommunityIcon from '~/components/communityIcon';
+import CommunityCardSmall from '~/components/CommunityCardSmall';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -30,6 +31,7 @@ export default function BlogHome() {
     const [searchResults, setSearchResults] = useState<Blog[]>([]);
     const [section, setSection] = useState<"For You" | "Featured" | "Search Results" | "Latest">("For You");
     const [userCommunities, setUserCommunities] = useState<Community[]>([]);
+    const [trendingCommunities, setTrendingCommunities] = useState<Community[]>([]);
     
     const location = useLocation();
     useEffect(() => {
@@ -87,6 +89,36 @@ export default function BlogHome() {
         setTrending(data);
     }
 
+    const getTrendingCommunities = async () => {
+        try {
+            const response = await fetch(`${API_URL}/communities/`, {
+                method: "get",
+                credentials: 'include'
+            })
+            const data: Community[] = await response.json()
+            
+            // Sort communities by member count and post count to determine trending
+            const sorted = data.sort((a, b) => {
+                const aMembers = a.members?.length || 0;
+                const bMembers = b.members?.length || 0;
+                const aPosts = a.posts?.length || 0;
+                const bPosts = b.posts?.length || 0;
+                
+                // Calculate a score: members * 2 + posts (members weighted more)
+                const aScore = aMembers * 2 + aPosts;
+                const bScore = bMembers * 2 + bPosts;
+                
+                return bScore - aScore;
+            });
+            
+            // Limit to top 5
+            setTrendingCommunities(sorted.slice(0, 5));
+        } catch (err) {
+            console.error("Failed to fetch trending communities:", err);
+            setTrendingCommunities([]);
+        }
+    }
+
     useEffect(() => {
         console.log("user context value:", user);
         if (!user) return;
@@ -94,9 +126,10 @@ export default function BlogHome() {
         getBlogs();
         getTrending();
         getRecommendations();
+        getTrendingCommunities();
     }, [user]);
 
-    const trendingPosts = trending?.[0]?.posts ?? [];
+    const trendingPosts = (trending?.[0]?.posts ?? []).slice(0, 5);
 
     const renderSection = () => {
         if (section === "For You") {
@@ -112,7 +145,6 @@ export default function BlogHome() {
                     comments={b.comments}
                     likes={b.likes}
                     visualIndex={idx}
-                    coverImage={b.coverImage}
                 />
             ));
         }
@@ -130,7 +162,6 @@ export default function BlogHome() {
                     comments={b.comments}
                     likes={b.likes}
                     visualIndex={idx}
-                    coverImage={b.coverImage}
                 />
             ));
         }
@@ -147,7 +178,6 @@ export default function BlogHome() {
                 comments={b.comments}
                 likes={b.likes}
                 visualIndex={idx}
-                coverImage={b.coverImage}
             />
         ));
     };
@@ -187,31 +217,41 @@ export default function BlogHome() {
 
                 <section className="flex flex-col flex-grow gap-[10px]">
 
-                    <div className='flex justify-between items-center'>
+                <div className='flex justify-between items-center'>
                         <h1>DASHBOARD</h1>
                         <div className='flex gap-[10px]'>
-                            <button className='icon' onClick={() => window.location.href = '/blog/new'}>
+                            <button 
+                                className='icon bg-[#FEC72F] hover:bg-[#FEC72F] transition-all duration-300 hover:scale-110 hover:shadow-lg' 
+                                onClick={() => window.location.href = '/blog/new'}
+                            >
                                 <Plus size={16} />
                             </button>
                         </div>
                     </div>
 
                     {userCommunities.length > 0 && (
-                    <div className='flex gap-[25px] overflow-x-auto'>
+                    <div className='flex gap-[25px] p-[25px] overflow-x-auto pb-2'>
                         {userCommunities.map((community) => (
                             <CommunityIcon key={community._id} title={community.title} img={community.picture} />
                             ))}
                         </div>
                     )}
 
-                    <div className="w-fit flex ">
+                    <div className="flex flex-row gap-4 border-[1px] w-fit border-black bg-[#EDEDE9] rounded-lg overflow-hidden shadow-md">
                         {(["For You", "Search Results", "Latest"] as const).map((label,index) => (
                             <button
                                 key={label}
                                 onClick={() => setSection(label)}
-                                className={`tab ${section === label ? "bg-[#E95444]" : "bg-[#FFFFFF]"}`}
+                                className={`cursor-pointer px-4 py-2 transition-all duration-300 relative ${
+                                    section === label 
+                                        ? "bg-[#FEC72F] text-black font-semibold shadow-lg transform scale-105" 
+                                        : "hover:bg-[#FEC72F]/30 hover:font-medium"
+                                }`}
                             >
                                 {label}
+                                {section === label && (
+                                    <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#FEC72F]"></div>
+                                )}
                             </button>
                         ))}
  
@@ -223,28 +263,29 @@ export default function BlogHome() {
                 </section>
 
                 <aside className="flex gap-[20px] flex-col">
-                    <div className="w-[400px] flex border-[3px] bg-[#EDEDE9] border-solid border-[#000000] p-[10px] flex-col gap-[10px]">
+                    <div className="w-[400px] flex border-[3px] bg-[#EDEDE9] border-solid border-[#000000] p-[10px] flex-col gap-[10px] rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
                         <h3>TRENDING POSTS</h3>
                         <div className='flex flex-col gap-[10px]'>
-                            {user && trendingPosts.map((b: any) => (
-                                <BlogPostSmall blog={b.blog} />
-                            ))}
-
-                            {!trendingPosts.length && (
-                                <div>Trending posts appear here once available.</div>
+                            {user && trendingPosts.length > 0 ? (
+                                trendingPosts.map((b: any) => (
+                                    <BlogPostSmall key={b.blog?._id} blog={b.blog} />
+                                ))
+                            ) : (
+                                <div className="text-gray-500 italic">Trending posts appear here once available.</div>
                             )}
                         </div>
                     </div>
 
-                    <div className="w-[400px] bg-[#EDEDE9] flex border-[3px] border-solid border-[#000000] flex-col gap-[10px]">
+                    <div className="w-[400px] bg-[#EDEDE9] flex border-[3px] border-solid border-[#000000] flex-col gap-[10px] p-[10px] rounded-lg shadow-lg">
                         <h3>TRENDING COMMUNITIES</h3>
-                        <div>
-                            {user.communities.map((chip, idx) => (
-                                <div key={idx}>
-                                    {chip.icon}
-                                    <span>{chip.label}</span>
-                                </div>
-                            ))}
+                        <div className='flex flex-col gap-[10px]'>
+                            {trendingCommunities.length > 0 ? (
+                                trendingCommunities.map((community) => (
+                                    <CommunityCardSmall key={community._id} community={community} />
+                                ))
+                            ) : (
+                                <div className="text-gray-500 italic">Trending communities appear here once available.</div>
+                            )}
                         </div>
                     </div>
                 </aside>

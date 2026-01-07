@@ -132,4 +132,51 @@ const getTrending = async ( req,res ) => {
 
 }
 
-export { getSummary, getHistory, getRecommendation, getTrending };
+// POST /analytics/post-views
+// Get view counts for specific posts
+const getPostViews = async (req, res) => {
+  try {
+    const { postIds } = req.body;
+    
+    if (!postIds || !Array.isArray(postIds) || postIds.length === 0) {
+      return res.status(400).json({ success: false, message: "postIds array is required" });
+    }
+
+    // Aggregate views for each post
+    const viewsAggregate = await Log.aggregate([
+      {
+        $match: {
+          event: "view_blog",
+          "metadata.blog": { $in: postIds.map(id => typeof id === 'string' ? id : id.toString()) }
+        }
+      },
+      {
+        $group: {
+          _id: "$metadata.blog",
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    // Convert to object with postId as key and count as value
+    const viewsByPost = {};
+    viewsAggregate.forEach(item => {
+      viewsByPost[item._id.toString()] = item.count;
+    });
+
+    // Ensure all requested posts are in the response (even if 0 views)
+    postIds.forEach(postId => {
+      const idStr = typeof postId === 'string' ? postId : postId.toString();
+      if (!(idStr in viewsByPost)) {
+        viewsByPost[idStr] = 0;
+      }
+    });
+
+    res.status(200).json(viewsByPost);
+  } catch (error) {
+    console.error("getPostViews error:", error);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+export { getSummary, getHistory, getRecommendation, getTrending, getPostViews };
