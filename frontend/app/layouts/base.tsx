@@ -115,10 +115,10 @@ const base = () => {
                 </a>
 
                 <nav className='hidden sm:flex relative items-center gap-[20px]'>
-                    <NavLink to="/dashboard" target="_self" className="">Dashboard</NavLink>
-                    <NavLink to="/chats" target="_self" className="">Chats</NavLink>
-                    <NavLink to="/about" target="_self" className="">About</NavLink>
-                    <NavLink to="/chats" target="_self" className="">Help</NavLink>
+                    <NavLink to="/dashboard" target="_self" className=""><div className="text-small">Dashboard</div></NavLink>
+                    <NavLink to="/chats" target="_self" className=""><div className="text-small">Chats</div></NavLink>
+                    <NavLink to="/about" target="_self" className=""><div className="text-small">About</div></NavLink>
+                    <NavLink to="/chats" target="_self" className=""><div className="text-small">Help</div></NavLink>
                     {user ? 
                         (<img 
                             src={user?.picture} 
