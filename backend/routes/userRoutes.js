@@ -3,6 +3,7 @@ import {
     loginUser,
     fetchUser,
     createUser,
+    signUp,
     likeBlog,
     unlikeBlog,
     allUsers,
@@ -23,8 +24,9 @@ const router = express.Router();
 router.get('/', authenticateUser, allUsers)
 router.get('/logout', authenticateUser, logoutUser);
 router.post('/login', loginUser);
+router.post('/signup', signUp); // New signup endpoint
 router.get('/:userid', fetchUser,);
-router.post('/', createUser);
+router.post('/', createUser); // Keep for backward compatibility
 router.put('/like/:blogId', authenticateUser, likeBlog)
 router.delete('/like/:blogId', authenticateUser, unlikeBlog)
 router.put('/follow/:userId', authenticateUser, follow)

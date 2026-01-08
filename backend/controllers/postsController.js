@@ -200,14 +200,27 @@ const deletePost = async(req, res) => {
         }
         
         // Check if user is the owner
-        if (post.user.toString() !== currentUser.toString()) {
-            return res.status(403).json({ error: "You can only delete your own posts" });
+        const isOwner = post.user.toString() === currentUser.toString();
+        
+        // If not owner, check if user is creator or moderator of the community
+        let canDelete = isOwner;
+        if (!isOwner) {
+            const communityData = await community.findOne({ posts: postId }).exec();
+            if (communityData) {
+                const isCreator = communityData.creator.toString() === currentUser.toString();
+                const isModerator = communityData.moderators?.some(mod => mod.toString() === currentUser.toString());
+                canDelete = isCreator || isModerator;
+            }
+        }
+        
+        if (!canDelete) {
+            return res.status(403).json({ error: "You can only delete your own posts or must be a moderator/creator" });
         }
         
         // Remove post from community's posts array if it exists in a community
         await community.updateMany(
             { posts: postId },
-            { $pull: { posts: postId } }
+            { $pull: { posts: postId, pinnedPosts: postId } }
         );
         
         // Remove post from all lists that contain it
@@ -230,4 +243,90 @@ const deletePost = async(req, res) => {
     }   
 }
 
-export { fetchPosts, fetchUserPosts, getPost, updatePost, createPost, deletePost };
+const pinPost = async(req, res) => {
+    try {
+        const postId = req.params.id
+        const currentUser = req.user._id
+        
+        // Find the post
+        const post = await Post.findById(postId);
+        if (!post) {
+            return res.status(404).json({ error: "Post not found" });
+        }
+        
+        // Find the community this post belongs to
+        const communityData = await community.findOne({ posts: postId }).exec();
+        if (!communityData) {
+            return res.status(404).json({ error: "Post does not belong to any community" });
+        }
+        
+        // Check if user is creator or moderator
+        const isCreator = communityData.creator.toString() === currentUser.toString();
+        const isModerator = communityData.moderators?.some(mod => mod.toString() === currentUser.toString());
+        
+        if (!isCreator && !isModerator) {
+            return res.status(403).json({ error: "Only creator or moderators can pin posts" });
+        }
+        
+        // Check if already pinned
+        const isPinned = communityData.pinnedPosts?.some(pinnedId => pinnedId.toString() === postId);
+        if (isPinned) {
+            return res.status(400).json({ error: "Post is already pinned" });
+        }
+        
+        // Add to pinned posts
+        await community.findByIdAndUpdate(
+            communityData._id,
+            { $push: { pinnedPosts: postId } },
+            { new: true }
+        ).exec();
+        
+        res.status(200).json({ message: "Post pinned successfully" });
+    } 
+    catch(e){
+        console.log(e);
+        res.status(500).json({ error: "Failed to pin post" });
+    }   
+}
+
+const unpinPost = async(req, res) => {
+    try {
+        const postId = req.params.id
+        const currentUser = req.user._id
+        
+        // Find the post
+        const post = await Post.findById(postId);
+        if (!post) {
+            return res.status(404).json({ error: "Post not found" });
+        }
+        
+        // Find the community this post belongs to
+        const communityData = await community.findOne({ posts: postId }).exec();
+        if (!communityData) {
+            return res.status(404).json({ error: "Post does not belong to any community" });
+        }
+        
+        // Check if user is creator or moderator
+        const isCreator = communityData.creator.toString() === currentUser.toString();
+        const isModerator = communityData.moderators?.some(mod => mod.toString() === currentUser.toString());
+        
+        if (!isCreator && !isModerator) {
+            return res.status(403).json({ error: "Only creator or moderators can unpin posts" });
+        }
+        
+        // Remove from pinned posts
+        await community.findByIdAndUpdate(
+            communityData._id,
+            { $pull: { pinnedPosts: postId } },
+            { new: true }
+        ).exec();
+        
+        res.status(200).json({ message: "Post unpinned successfully" });
+    } 
+    catch(e){
+        console.log(e);
+        res.status(500).json({ error: "Failed to unpin post" });
+    }   
+}
+
+export { fetchPosts, fetchUserPosts, getPost, updatePost, createPost, deletePost, pinPost, unpinPost };

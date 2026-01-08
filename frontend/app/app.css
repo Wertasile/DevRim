@@ -169,6 +169,21 @@ p{
   padding: 5px 10px;
   font-family: 'DM Sans','Arial Narrow', Arial, sans-serif;
   text-align: center;
+  border-radius: 5px;
+  min-width: 150px;
+  box-shadow: 0 2px 0 2px #000000;
+  width: fit-content;
+  cursor: pointer;
+}
+
+.secondary-btn {
+  background-color: #242423;
+  border: 1px solid #000000;
+  padding: 5px 10px;
+  font-family: 'DM Sans','Arial Narrow', Arial, sans-serif;
+  text-align: center;
+  color: #ffffff;
+  border-radius: 5px;
   min-width: 150px;
   box-shadow: 0 2px 0 2px #000000;
   width: fit-content;
@@ -181,6 +196,7 @@ p{
   border: 1px solid #000000;
   width: 40px;
   cursor: pointer;
+  border-radius: 5px;
   box-shadow: 0 2px 0 2px #000000;
   display: flex;
   align-items: center;
@@ -572,9 +588,8 @@ form{
   transition: all 0.3s ease;
 }
 
-.icon:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 0 4px #000000;
+.primary-btn:hover,.icon:hover {
+  transform: translateY(2px);
 }
 
 .blog-card__media{

@@ -56,6 +56,7 @@ const getCommunity = async(req, res) => {
         const data = await community.findById(communityId)
             .populate("creator")
             .populate("members")
+            .populate("moderators", "name picture _id")
             .populate({
                 path: "posts",
                 populate: {
@@ -63,6 +64,21 @@ const getCommunity = async(req, res) => {
                     select: "name picture _id"
                 },
                 options: { sort: { releaseDate: -1 } }
+            })
+            .populate({
+                path: "pinnedPosts",
+                populate: {
+                    path: "user",
+                    select: "name picture _id"
+                }
+            })
+            .populate({
+                path: "announcements",
+                populate: {
+                    path: "createdBy",
+                    select: "name picture _id"
+                },
+                options: { sort: { createdAt: -1 } }
             })
             .exec()
         if (!data) {

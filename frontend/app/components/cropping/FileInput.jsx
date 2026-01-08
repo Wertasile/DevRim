@@ -45,7 +45,13 @@ const FileInput = ({onImageSelected, type, onError}) => {
         
         <input type='file' accept='image/*' ref={inputRef} onChange={handleOnChange} style={{display:"none"}}/>
 
-        <button type="button" className='primary-btn' onClick={onChooseImg} >Upload {type}</button>
+        <button 
+          type="button" 
+          className='primary-btn bg-[#E95444]' 
+          onClick={onChooseImg}
+        >
+          UPLOAD {type.toUpperCase()}
+        </button>
     </div>
   )
 }

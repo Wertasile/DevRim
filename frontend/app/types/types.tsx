@@ -143,6 +143,16 @@ export type Trending = {
     updatedAt: string;
 }
 
+export type Announcement = {
+    _id: string;
+    title: string;
+    content: string;
+    community: string;
+    createdBy: User;
+    createdAt: string;
+    updatedAt: string;
+}
+
 export type Community = {
     _id: string;
     title: string;
@@ -153,6 +163,9 @@ export type Community = {
     picture: string;
     members: User[];
     posts: Blog[];
+    pinnedPosts?: Blog[];
+    announcements?: Announcement[];
+    topics?: string[];
     createdAt: string;
     updatedAt: string;
 }

@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { authClient } from "../../lib/auth-client";
 import { useGoogleLogin } from '@react-oauth/google';
 import { useUser } from '../../context/userContext';
 
@@ -77,32 +76,39 @@ const SignInTab = () => {
       setError("");
   
       try {
-        const { data, error } = await authClient.signIn.email({
-          email,
-          password,
-          rememberMe: false
-        }, {
-            onSuccess: () => {
-              // Redirect to dashboard on successful sign-in
-              window.location.href = "/dashboard";
-            },
-            onError: (ctx) => {
-              const errorMsg = ctx.error.message || "Invalid email or password. Please try again.";
-              setError(errorMsg);
-              setIsSubmitting(false);
-            }
+        console.log("Attempting to sign in with email:", email);
+        const response = await fetch(`${API_URL}/users/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({ email, password }),
         });
-  
-        if (error) {
-          console.error(error);
-          setError(error.message || "Invalid email or password. Please try again.");
+
+        console.log("Response status:", response.status);
+        const data = await response.json();
+        console.log("Response data:", data);
+
+        if (!response.ok) {
+          const errorMsg = data.error || data.message || "Invalid email or password. Please try again.";
+          console.error("Sign in failed:", errorMsg);
+          setError(errorMsg);
           setIsSubmitting(false);
-        } else if (data) {
-          // If successful and onSuccess didn't fire, redirect manually
-          window.location.href = "/dashboard";
+          return;
         }
+
+        // Update user context
+        if (data.user) {
+          console.log("User signed in successfully:", data.user);
+          setUser(data.user);
+        }
+
+        // Redirect to dashboard
+        window.location.href = "/dashboard";
       } catch (err: any) {
-        console.error(err);
+        console.error("Sign in error:", err);
+        console.error("Error details:", err.message, err.stack);
         setError(err.message || "Something went wrong. Please try again.");
         setIsSubmitting(false);
       }

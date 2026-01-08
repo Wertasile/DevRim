@@ -145,6 +145,8 @@ export default function BlogHome() {
                     comments={b.comments}
                     likes={b.likes}
                     visualIndex={idx}
+                    coverImage={b.coverImage}
+                    community={b.community}
                 />
             ));
         }
@@ -162,6 +164,8 @@ export default function BlogHome() {
                     comments={b.comments}
                     likes={b.likes}
                     visualIndex={idx}
+                    coverImage={b.coverImage}
+                    community={b.community}
                 />
             ));
         }
@@ -178,6 +182,8 @@ export default function BlogHome() {
                 comments={b.comments}
                 likes={b.likes}
                 visualIndex={idx}
+                coverImage={b.coverImage}
+                community={b.community}
             />
         ));
     };

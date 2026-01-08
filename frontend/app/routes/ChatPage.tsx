@@ -799,7 +799,8 @@ const ChatPage = () => {
 
         {/* Chat List */}
         <div className="flex flex-col gap-[20px] p-[10px] overflow-y-auto">
-          {chats?.map((chatx, index) => {
+          {chats && chats.length > 0 ? (
+            chats.map((chatx, index) => {
             const otherUser = chatx.chatName === "sender" 
               ? chatx.users.find((u) => u._id !== user?._id)
               : null;
@@ -845,7 +846,13 @@ const ChatPage = () => {
                 </div>
               </div>
             );
-          })}
+          })
+          ) : (
+            <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+              <div className="text-black/60 text-lg mb-2">No chats yet</div>
+              <div className="text-black/40 text-sm">Start chatting with your connections.</div>
+            </div>
+          )}
         </div>
       </div>
       }

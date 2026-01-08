@@ -29,6 +29,7 @@ import logsRouter from "./routes/logRoutes.js";
 import analyticsRouter from "./routes/userAnalyticsRoutes.js";
 import statusRouter from "./routes/statusRoutes.js";
 import communitiesRouter from "./routes/communityRoutes.js";
+import announcementsRouter from "./routes/announcementRoutes.js";
 
 dotenv.config();
 
@@ -207,12 +208,29 @@ app.use("/logs", logsRouter);
 app.use("/analytics", analyticsRouter);
 app.use("/status", statusRouter);
 app.use("/communities", communitiesRouter);
+app.use("/announcements", announcementsRouter);
 
 //google authentication
 app.post("/auth/google", connectToGoogle)
 app.get("/me", authenticateUser, getPersonalData)
 app.post("/logout", LogoutFromGoogle) 
-app.all("/api/auth/*", toNodeHandler(auth));
+
+// Better-auth routes with error handling
+app.all("/api/auth/*", async (req, res, next) => {
+  try {
+    await toNodeHandler(auth)(req, res);
+  } catch (error) {
+    console.error("Better-auth error:", error);
+    console.error("Error stack:", error.stack);
+    if (!res.headersSent) {
+      res.status(500).json({ 
+        error: "Authentication error", 
+        message: error.message,
+        details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      });
+    }
+  }
+});
 //app.post("/auth/google/refresh-token", refreshTokenGoogle)
 
 // --------------------------- ARCJET STUFF ---------------------------------------------------------------------------------------------------------------------------------

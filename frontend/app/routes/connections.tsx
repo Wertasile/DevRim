@@ -487,7 +487,7 @@ const Connections = () => {
 
   return (
     <div className='min-h-screen'>
-      <div className='flex flex-row gap-6 px-6 py-8 mx-auto max-w-[1400px]'>
+      <div className='flex flex-row gap-6 px-6 py-8'>
         {/* Left Sidebar */}
         <Sidebar/>
 

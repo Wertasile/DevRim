@@ -282,94 +282,136 @@ const BlogAdd = ({ params }: Route.ComponentProps) => {
   
   return (
     <div className='min-h-screen'>
-      <div className='flex flex-row gap-6 px-6 py-8 mx-auto max-w-[1400px]'>
+      <div className='flex flex-row gap-6 p-[5px] mx-auto max-w-[1400px]'>
 
         {/* Main Content */}
         <div className='flex-grow flex flex-col gap-6'>
-          {/* Header */}
-          <div className='flex items-center justify-between'>
-            <div className='flex items-center gap-3'>
-              <div>
-                <label htmlFor="community" className='text-black font-medium text-sm mb-2 block hidden'>
-                  Select Community <span className='text-red-400'>*</span>
+          {/* Header Section */}
+          <div className='flex flex-col gap-[10px] p-[10px] w-full'>
+            
+            {/* Top Actions Bar */}
+            <div className='flex flex-wrap items-end justify-between gap-4 mb-6 pb-6 border-b-2 border-black/20'>
+              {/* Community Selection */}
+              <div className='flex-1 min-w-[250px]'>
+                <label htmlFor="community" className='form-label mb-2 block'>
+                  COMMUNITY <span className='text-[#E95444]'>*</span>
                 </label>
                 <select
                   id="community"
                   value={selectedCommunity}
                   onChange={(e) => setSelectedCommunity(e.target.value)}
                   required
-                  className='w-fit py-3 bg-[#EDEDE9] border border-[2px] focus:outline-none focus:border-[#31415f] transition-colors'
+                  className='form-input w-full hover:border-[#E95444] focus:border-[#E95444] transition-all duration-200'
                 >
-                  <option value="">CHOOSE A COMMUNITY</option>
+                  <option value="">Choose a community...</option>
                   {communities.map((community) => (
                     <option key={community._id} value={community._id}>
                       {community.title}
                     </option>
                   ))}
                 </select>
-                {/* {!selectedCommunity && (
-                  <p className='text-[#9aa4bd] text-xs mt-2'>You must select a community to publish your post</p>
-                )} */}
               </div>
-              <button
-                onClick={() => setShowSummaryInput(!showSummaryInput)}
-                className={`${
-                  showSummaryInput 
-                    ? 'primary-btn' 
-                    : 'primary-btn'
-                }`}
-              >
-                {showSummaryInput ? 'Hide Summary' : 'Add Summary'}
-              </button>
-              <button
-                onClick={savePost}
-                disabled={isSubmitting || !selectedCommunity || !title.trim()}
-                className='primary-btn'
-              >
-                {isSubmitting ? 'Publishing...' : 'Publish'}
-              </button>
+
+              {/* Action Buttons */}
+              <div className='flex gap-3'>
+                <button
+                  onClick={() => setShowSummaryInput(!showSummaryInput)}
+                  className={`primary-btn flex duration-200 ${
+                    showSummaryInput 
+                      ? 'bg-[#E95444] hover:bg-[#D84335]' 
+                      : 'bg-white text-black hover:bg-[#EDEDE9]'
+                  }`}
+                >
+                  {showSummaryInput ? 'HIDE SUMMARY' : 'ADD SUMMARY'}
+                </button>
+                <button
+                  onClick={savePost}
+                  disabled={isSubmitting || !selectedCommunity || !title.trim()}
+                  className='primary-btn bg-[#E95444] hover:bg-[#D84335] border-2 border-[#000000] rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#E95444] shadow-md hover:shadow-lg'
+                >
+                  {isSubmitting ? 'PUBLISHING...' : 'PUBLISH POST'}
+                </button>
+              </div>
+            </div>
+
+            {/* Summary Input - Conditional */}
+            {showSummaryInput && (
+              <div className='mb-4'>
+                <div className='flex items-center justify-between mb-2'>
+                  <label htmlFor="summary" className='form-label'>
+                    SUMMARY
+                  </label>
+                  <button
+                    onClick={() => {
+                      setShowSummaryInput(false);
+                      setSummary('');
+                    }}
+                    className='p-1 hover:bg-[#EDEDE9] rounded transition-colors'
+                    title="Close summary"
+                  >
+                    <X size={16} className='text-black' />
+                  </button>
+                </div>
+                <input
+                  type='text'
+                  id='summary'
+                  name="summary"
+                  value={summary}
+                  onChange={(e) => setSummary(e.target.value)}
+                  placeholder='Add a brief summary of your post (optional)'
+                  maxLength={250}
+                  className="form-input hover:border-[#E95444] focus:border-[#E95444] transition-all duration-200"
+                />
+                <p className='text-black/60 text-xs mt-1'>{summary.length}/250 characters</p>
+              </div>
+            )}
+
+            {/* Cover Image Section */}
+            <div className='flex flex-col gap-3'>
+              <div className='flex items-center justify-between'>
+                <label className='form-label'>COVER IMAGE (OPTIONAL)</label>
+                {!coverImage && !showCoverCropper && (
+                  <FileInput 
+                    onImageSelected={handleCoverImageSelected} 
+                    onError={(error: string) => alert(error)}
+                    type="Cover Image"
+                  />
+                )}
+              </div>
+              {coverImage && (
+                <div className='relative w-full border-2 border-[#000000] rounded-lg overflow-hidden'>
+                  <img
+                    src={coverImage}
+                    alt="Cover preview"
+                    className='w-full h-auto'
+                    style={{ aspectRatio: '2/1', maxHeight: '400px', objectFit:'cover' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleRemoveCoverImage}
+                    className="absolute top-3 right-3 bg-[#E95444] hover:bg-[#D84335] text-white rounded-full p-2 transition-all duration-200 shadow-lg border-2 border-[#000000]"
+                    title="Remove cover image"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Community Selection - Required */}
-
-
-          {/* Summary Input - Conditional */}
-          {showSummaryInput && (
-            <div>
-              <div className='flex items-center justify-between mb-2'>
-                <label htmlFor="summary" className='form-label'>
-                  SUMMARY
-                </label>
-                <button
-                  onClick={() => {
-                    setShowSummaryInput(false);
-                    setSummary('');
-                  }}
-                  className='text-[#979797] hover:text-black transition-colors'
-                >
-                  <X size={16} />
-                </button>
-              </div>
-              <input
-                type='text'
-                id='summary'
-                name="summary"
-                value={summary}
-                onChange={(e) => setSummary(e.target.value)}
-                placeholder='Add a brief summary of your post (optional)'
-                maxLength={250}
-                className="form-input"
-              />
-              <p className='text-[#9aa4bd] text-xs mt-1'>{summary.length}/250</p>
-            </div>
-          )}
-
           {/* Cover Image Cropper Modal */}
           {showCoverCropper && imageToCrop && (
-            <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
-              <div className="bg-[#EDEDE9] border border-[#000000] p-6 max-w-4xl w-full">
-                <h2 className="text-xl mb-4 text-black">Crop Cover Image (2:1 Aspect Ratio)</h2>
+            <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+              <div className="bg-white border-2 border-[#000000] p-6 max-w-4xl w-full rounded-lg shadow-2xl">
+                <div className='flex items-center justify-between mb-4'>
+                  <h2 className="text-xl font-semibold text-black">Crop Cover Image (2:1 Aspect Ratio)</h2>
+                  <button
+                    onClick={handleCoverCropCancel}
+                    className='p-2 hover:bg-[#EDEDE9] rounded-lg transition-colors'
+                  >
+                    <X size={20} className='text-black' />
+                  </button>
+                </div>
                 <ImageCropper
                   image={imageToCrop}
                   onCropDone={handleCoverCropDone}
@@ -380,40 +422,8 @@ const BlogAdd = ({ params }: Route.ComponentProps) => {
             </div>
           )}
 
-          {/* Cover Image Section */}
-          <div className='flex flex-col gap-2'>
-            <div className='flex items-center justify-between'>
-              <label className=''>COVER IMAGE (OPTIONAL)</label>
-              {!coverImage && !showCoverCropper && (
-                <FileInput 
-                  onImageSelected={handleCoverImageSelected} 
-                  onError={(error: string) => alert(error)}
-                  type="Cover Image"
-                />
-              )}
-            </div>
-            {coverImage && (
-              <div className='relative w-full'>
-                <img
-                  src={coverImage}
-                  alt="Cover preview"
-                  className='w-full h-auto'
-                  style={{ aspectRatio: '2/1', maxHeight: '400px', objectFit:'contain' }}
-                />
-                <button
-                  type="button"
-                  onClick={handleRemoveCoverImage}
-                  className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 rounded-full p-1.5 transition-colors"
-                  title="Remove cover image"
-                >
-                  <X size={14} className="text-black" />
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Editor */}
-          <div className='flex-grow'>
+          {/* Editor Section */}
+          <div className='bg-white border-2 border-[#000000] rounded-lg p-6 shadow-md flex-grow'>
             <NaturalEditor 
               content={post} 
               handleChange={handleChange}
@@ -421,9 +431,9 @@ const BlogAdd = ({ params }: Route.ComponentProps) => {
               onSummaryChange={handleSummaryChange}
             />
           </div>
-          </div>
         </div>
       </div>
+    </div>
   )
 }
 

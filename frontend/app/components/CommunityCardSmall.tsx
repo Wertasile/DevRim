@@ -1,6 +1,7 @@
 import React from 'react'
 import type { Community } from '~/types/types'
 import TopicPill from './TopicPill'
+import { Users } from 'lucide-react'
 
 const CommunityCardSmall = ({ community }: { community: Community }) => {
     // const formatMemberCount = (count: number) => {
@@ -23,11 +24,17 @@ const CommunityCardSmall = ({ community }: { community: Community }) => {
         {/* Card Content */}
         <div className='flex flex-col gap-3'>
         <div className='flex items-start gap-[10px]'>
-            <img 
-                src={community.picture} 
-                alt={community.title}
-                className='w-[64px] h-[64px] object-cover'
-            />
+            {community.picture ? (
+              <img 
+                  src={community.picture} 
+                  alt={community.title}
+                  className='w-[64px] h-[64px] rounded-full object-cover border-2 border-[#000000]'
+              />
+            ) : (
+              <div className='w-[64px] h-[64px] rounded-full bg-[#E95444] flex items-center justify-center border-2 border-[#000000] flex-shrink-0'>
+                <Users size={24} className="text-black" />
+              </div>
+            )}
             <div className='flex flex-col'>
             <div className='flex gap-[10px] items-center'>
                 <div className='text-small font-bold'>{community.title}</div>

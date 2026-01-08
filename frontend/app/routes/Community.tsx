@@ -9,6 +9,7 @@ import BlogPostSmall from '~/components/blogPostSmall';
 import leaveCommunity from '~/apiCalls/Community/leaveCommunity';
 import joinCommunity from '~/apiCalls/Community/joinCommunity';
 import TopicPill from '~/components/TopicPill';
+import EditCommunityModal from '~/components/EditCommunityModal';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -20,6 +21,7 @@ export default function Community({ params }: Route.ComponentProps) {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [deletingPostId, setDeletingPostId] = useState<string | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchCommunity = async () => {
@@ -98,12 +100,43 @@ export default function Community({ params }: Route.ComponentProps) {
     return <Users size={24} className="text-black" />;
   };
 
-  const filteredPosts = community?.posts?.filter((post: Blog) => {
+  // Check if user is creator or moderator
+  const isCreatorOrModerator = community && user && (
+    (typeof community.creator === 'string' ? community.creator : community.creator._id) === user._id ||
+    (community.moderators || []).some((mod: any) => 
+      (typeof mod === 'string' ? mod : mod._id) === user._id
+    )
+  );
+
+  // Separate pinned posts from regular posts
+  const pinnedPostIds = community?.pinnedPosts?.map((p: Blog) => 
+    typeof p === 'string' ? p : p._id
+  ) || [];
+  
+  const regularPosts = community?.posts?.filter((post: Blog) => {
+    const postId = typeof post === 'string' ? post : post._id;
+    return !pinnedPostIds.includes(postId);
+  }) || [];
+
+  const filteredPosts = regularPosts.filter((post: Blog) => {
     if (!searchQuery.trim()) return true;
     const query = searchQuery.toLowerCase();
+    const postTitle = typeof post === 'string' ? '' : post.title;
+    const postSummary = typeof post === 'string' ? '' : (post.summary || '');
     return (
-      post.title.toLowerCase().includes(query) ||
-      (post.summary && post.summary.toLowerCase().includes(query))
+      postTitle.toLowerCase().includes(query) ||
+      postSummary.toLowerCase().includes(query)
+    );
+  }) || [];
+
+  const filteredPinnedPosts = (community?.pinnedPosts || []).filter((post: Blog) => {
+    if (!searchQuery.trim()) return true;
+    const query = searchQuery.toLowerCase();
+    const postTitle = typeof post === 'string' ? '' : post.title;
+    const postSummary = typeof post === 'string' ? '' : (post.summary || '');
+    return (
+      postTitle.toLowerCase().includes(query) ||
+      postSummary.toLowerCase().includes(query)
     );
   }) || [];
 
@@ -165,7 +198,27 @@ export default function Community({ params }: Route.ComponentProps) {
 
   return (
     <div className="min-h-screen">
-      <div className="flex flex-row gap-6 px-6 py-8 mx-auto max-w-[1400px]">
+
+              {/* Edit Community Modal */}
+      <EditCommunityModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSuccess={async () => {
+          // Refresh community data
+          const response = await fetch(`${API_URL}/communities/${params.id}`, {
+            method: 'get',
+            credentials: 'include',
+          });
+          if (response.ok) {
+            const data = await response.json();
+            setCommunity(data);
+          }
+          setIsEditModalOpen(false);
+        }}
+        community={community}
+      />
+
+      <div className="flex flex-row gap-6 px-6 py-8 mx-auto">
         {/* Left Sidebar */}
         <Sidebar />
 
@@ -185,8 +238,17 @@ export default function Community({ params }: Route.ComponentProps) {
             </div>
             {user?.communities?.includes(community._id) ? (
               <div className='flex gap-[10px]'>
+              {isCreatorOrModerator && (
+                <button 
+                  className='icon bg-[#E95444]' 
+                  onClick={() => setIsEditModalOpen(true)}
+                  title="Edit Community"
+                >
+                  <Edit size={20} />
+                </button>
+              )}
               <button className='primary-btn bg-[#E95444] hover:bg-[#d84333] text-black transition-all duration-200' onClick={() => leaveCommunity(community._id)}>LEAVE</button>
-              <button className='icon bg-[#FEC72F] hover:bg-[#E95444] text-black transition-all duration-200 hover:scale-110 hover:shadow-lg' onClick={() => window.location.href = `/blog/new?communityId=${community._id}`}><PlusIcon size={20} /></button>
+              <button className='icon bg-[#E95444]' onClick={() => window.location.href = `/blog/new?communityId=${community._id}`}><PlusIcon size={20} /></button>
               </div>
             ) : (
               <div className='flex gap-[10px]'>
@@ -205,9 +267,38 @@ export default function Community({ params }: Route.ComponentProps) {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="flex-1 py-3 px-4 bg-[#D6D6CD] border-2 border-[#000000] rounded-lg focus:outline-none focus:border-[#E95444] transition-all duration-200 text-black placeholder:text-[#979797]"
             />
-            <button className='icon bg-[#FEC72F] hover:bg-[#E95444] text-black transition-all duration-200 hover:scale-110 hover:shadow-lg'><FilterIcon size={20} /></button>
-            <button className='icon bg-[#FEC72F] hover:bg-[#E95444] text-black transition-all duration-200 hover:scale-110 hover:shadow-lg'><SortDescIcon size={20} /></button>
+            <button className='icon bg-[#E95444]'><FilterIcon size={20} /></button>
+            <button className='icon bg-[#E95444]'><SortDescIcon size={20} /></button>
           </div>
+
+          {/* Pinned Posts */}
+          {filteredPinnedPosts.length > 0 && (
+            <div className="flex flex-col gap-4">
+              <h3 className="text-black font-semibold flex items-center gap-2">
+                📌 PINNED POSTS
+              </h3>
+              <div className="flex flex-col gap-6">
+                {filteredPinnedPosts.map((post: Blog, index: number) => (
+                  <BlogPostCard
+                    key={post._id}
+                    id={post._id}
+                    title={post.title}
+                    releaseDate={post.releaseDate}
+                    summary={post.summary || ''}
+                    postUser={post.user}
+                    comments={post.comments || []}
+                    likes={post.likes || []}
+                    content={post.content}
+                    visualIndex={index}
+                    coverImage={post.coverImage}
+                    community={post.community || (community ? { _id: community._id, title: community.title } : undefined)}
+                    isModerator={isCreatorOrModerator || false}
+                    communityId={community._id}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Posts Feed */}
           <div className="flex flex-col gap-6">
@@ -224,6 +315,10 @@ export default function Community({ params }: Route.ComponentProps) {
                   likes={post.likes || []}
                   content={post.content}
                   visualIndex={index}
+                  coverImage={post.coverImage}
+                  community={post.community || (community ? { _id: community._id, title: community.title } : undefined)}
+                  isModerator={isCreatorOrModerator || false}
+                  communityId={community._id}
                 />
               ))
             ) : (
@@ -284,17 +379,37 @@ export default function Community({ params }: Route.ComponentProps) {
               </div>
             </div>
 
-            {/* Announcements Section */}
+            {/* Rules Section */}
             {community.rules && community.rules.length > 0 && (
               <div className="bg-[#EDEDE9] border-[3px] border-[#000000] rounded-lg p-4 shadow-lg hover:shadow-xl transition-all duration-300 mb-6">
-                <h3 className="text-black mb-3">ANNOUNCEMENTS</h3>
-                <ul className="list-disc list-inside space-y-2 text-small text-black">
-                  {(community.announcements && community.announcements.length > 0) ? (community.announcements?.map((announcement: any, index: number) => (
-                    <li key={index}>{announcement.title}</li>
-                  ))) : (
-                    <li className="text-[#979797]">No announcements yet</li>
-                  )}
+                <h3 className="text-black mb-3 font-semibold">RULES</h3>
+                <ul className="list-decimal list-inside space-y-2 text-small text-black">
+                  {community.rules.map((rule: string, index: number) => (
+                    <li key={index} className="text-black/90">{rule}</li>
+                  ))}
                 </ul>
+              </div>
+            )}
+
+            {/* Announcements Section */}
+            {community.announcements && community.announcements.length > 0 && (
+              <div className="bg-[#EDEDE9] border-[3px] border-[#000000] rounded-lg p-4 shadow-lg hover:shadow-xl transition-all duration-300 mb-6">
+                <h3 className="text-black mb-3 font-semibold">ANNOUNCEMENTS</h3>
+                <div className="flex flex-col gap-3">
+                  {community.announcements.map((announcement: any) => {
+                    const announcementData = typeof announcement === 'object' ? announcement : null;
+                    if (!announcementData) return null;
+                    return (
+                      <div key={announcementData._id} className="p-3 bg-[#D6D6CD] border border-[#000000] rounded-lg">
+                        <h4 className="font-semibold text-black mb-1">{announcementData.title}</h4>
+                        <p className="text-small text-black mb-2">{announcementData.content}</p>
+                        <p className="text-mini text-[#979797]">
+                          By {typeof announcementData.createdBy === 'object' ? announcementData.createdBy.name : 'Unknown'} • {new Date(announcementData.createdAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
 
@@ -317,18 +432,21 @@ export default function Community({ params }: Route.ComponentProps) {
               </div>
             )}
 
-            {/* Pinned Posts */}
+            {/* Other Communities */}
             {otherCommunities.length > 0 && (
               <div className='bg-[#EDEDE9] border-[3px] border-[#000000] rounded-lg p-4 shadow-lg hover:shadow-xl transition-all duration-300 mb-6'>
-                <h3 className="text-black mb-3">PINNED POSTS</h3>
+                <h3 className="text-black mb-3">OTHER COMMUNITIES</h3>
                 <div className='flex flex-col gap-[10px]'>
-                  {user && pinnedPosts.length > 0 ? (
-                    pinnedPosts.map((b: any) => (
-                      <BlogPostSmall key={b.blog?._id} blog={b.blog} />
-                    ))
-                  ) : (
-                    <div className="text-[#979797] italic">Pinned posts appear here once available.</div>
-                  )}
+                  {otherCommunities.map((comm: Community) => (
+                    <div 
+                      key={comm._id}
+                      className="p-3 bg-[#D6D6CD] border border-[#000000] rounded-lg cursor-pointer hover:bg-[#C6C6BD] transition-colors"
+                      onClick={() => window.location.href = `/community/${comm._id}`}
+                    >
+                      <h4 className="font-semibold text-black">{comm.title}</h4>
+                      <p className="text-mini text-[#979797]">{comm.members?.length || 0} members</p>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
@@ -337,4 +455,5 @@ export default function Community({ params }: Route.ComponentProps) {
     </div>
   );
 };
+
 

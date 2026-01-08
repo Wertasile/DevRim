@@ -1,4 +1,4 @@
-import { Bookmark, CalendarDays, MessageCircle, Share2, ThumbsUp, Trash2, MoreVertical, CirclePlusIcon, CircleXIcon } from 'lucide-react';
+import { Bookmark, CalendarDays, MessageCircle, Share2, ThumbsUp, Trash2, MoreVertical, CirclePlusIcon, CircleXIcon, Pin, PinOff } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { useUser } from '~/context/userContext';
 import type { Comment, User, List } from '~/types/types';
@@ -19,6 +19,12 @@ type BlogPostProps = {
   content: object;
   visualIndex?: number;
   coverImage?: string;
+  community?: {
+    _id: string;
+    title: string;
+  };
+  isModerator?: boolean;
+  communityId?: string;
 }
 
 const BlogPostCard = ({
@@ -30,7 +36,10 @@ const BlogPostCard = ({
   comments,
   likes,
   visualIndex = 0,
-  coverImage
+  coverImage,
+  community,
+  isModerator = false,
+  communityId
 }: BlogPostProps) => {
   const formattedDate = (() => {
     const parsed = new Date(releaseDate);
@@ -49,6 +58,9 @@ const BlogPostCard = ({
   const [isDeleting, setIsDeleting] = useState<boolean>(false)
   const [usersLists, setUsersLists] = useState<List[]>([])
   const [listModal, setListModal] = useState<boolean>(false)
+  const [postCommunity, setPostCommunity] = useState<{ _id: string; title: string } | null>(community || null)
+  const [isPinned, setIsPinned] = useState<boolean>(false)
+  const [isPinning, setIsPinning] = useState<boolean>(false)
 
   // Check if user has liked this blog
   useEffect(() => {
@@ -71,6 +83,36 @@ const BlogPostCard = ({
       })();
     }
   }, [user, id]);
+
+  // Fetch community info if not provided
+  useEffect(() => {
+    if (!postCommunity && id) {
+      (async () => {
+        try {
+          // Fetch all communities and find which one contains this post
+          const communitiesResponse = await fetch(`${API_URL}/communities`, {
+            method: 'get',
+            credentials: 'include',
+          });
+          
+          if (communitiesResponse.ok) {
+            const communities = await communitiesResponse.json();
+            const postCommunity = communities.find((comm: any) => 
+              comm.posts && comm.posts.some((p: any) => 
+                (typeof p === 'string' ? p : p._id) === id
+              )
+            );
+            
+            if (postCommunity) {
+              setPostCommunity({ _id: postCommunity._id, title: postCommunity.title });
+            }
+          }
+        } catch (error) {
+          console.error('Failed to fetch community info:', error);
+        }
+      })();
+    }
+  }, [id, postCommunity]);
 
   const handleLike = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -126,7 +168,37 @@ const BlogPostCard = ({
     }
   };
 
+  const handlePin = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!communityId) return;
+
+    setIsPinning(true);
+    try {
+      const endpoint = isPinned ? 'unpin' : 'pin';
+      const res = await fetch(`${API_URL}/posts/${id}/${endpoint}`, {
+        method: 'post',
+        credentials: 'include'
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({ error: `Failed to ${endpoint} post` }));
+        throw new Error(errorData.error || `Failed to ${endpoint} post`);
+      }
+
+      setIsPinned(!isPinned);
+      // Refresh the page to update pinned posts display
+      window.location.reload();
+    } catch (error) {
+      console.error(`Error ${isPinned ? 'unpinning' : 'pinning'} post:`, error);
+      alert(error instanceof Error ? error.message : `Failed to ${isPinned ? 'unpin' : 'pin'} post. Please try again.`);
+    } finally {
+      setIsPinning(false);
+      setShowDeleteMenu(false);
+    }
+  };
+
   const isOwnPost = user?._id === postUser._id;
+  const canModerate = isOwnPost || isModerator;
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -145,10 +217,29 @@ const BlogPostCard = ({
     }
   }, [showDeleteMenu, listModal]);
 
+  const handleCommunityClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (postCommunity?._id) {
+      window.location.href = `/community/${postCommunity._id}`;
+    }
+  };
+
   return (
     <div className="blog-card" onClick={handleNav}>
 
       <div className='flex flex-col justify-between py-[10px] gap-[10px] w-full'>
+        {/* Community Pill */}
+        {postCommunity && (
+          <div className='mb-2'>
+            <button
+              onClick={handleCommunityClick}
+              className='px-3 py-1 bg-[#E95444]/50 hover:bg-[#D84335] font-semibold rounded-[5px] border-2 border-[#E95444] transition-all duration-200 hover:shadow-md'
+            >
+              {postCommunity.title}
+            </button>
+          </div>
+        )}
+        
         <div className='flex justify-between w-full'>
           <div className='flex gap-[10px] p-[5px]'>
             <img src={postUser.picture} className="rounded-full" width={48} height={48} />
@@ -158,7 +249,7 @@ const BlogPostCard = ({
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {isOwnPost && (
+            {canModerate && (
               <div className="relative">
                 <button
                   className=""
@@ -171,17 +262,34 @@ const BlogPostCard = ({
                   <MoreVertical size={16} />
                 </button>
                 {showDeleteMenu && (
-                  <div className="absolute right-0 top-full mt-2 bg-[#EDEDE9] border border-[#000000] rounded-lg shadow-lg z-50 min-w-[120px]">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        window.location.href = `/edit/${id}`;
-                      }}
-                      className="w-full px-4 py-2 text-left text-black hover:bg-[#D6D6CD] rounded-t-lg flex items-center gap-2 text-sm transition-colors"
-                    >
-                      Edit
-                    </button>
-                    <div className="border-t border-[#000000]"></div>
+                  <div className="absolute right-0 top-full mt-2 bg-[#EDEDE9] border border-[#000000] rounded-lg shadow-lg z-50 min-w-[150px]">
+                    {isOwnPost && (
+                      <>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            window.location.href = `/edit/${id}`;
+                          }}
+                          className="w-full px-4 py-2 text-left text-black hover:bg-[#D6D6CD] rounded-t-lg flex items-center gap-2 text-sm transition-colors"
+                        >
+                          Edit
+                        </button>
+                        <div className="border-t border-[#000000]"></div>
+                      </>
+                    )}
+                    {isModerator && communityId && (
+                      <>
+                        <button
+                          onClick={handlePin}
+                          disabled={isPinning}
+                          className="w-full px-4 py-2 text-left text-black hover:bg-[#D6D6CD] flex items-center gap-2 text-sm transition-colors disabled:opacity-50"
+                        >
+                          {isPinned ? <PinOff size={14} /> : <Pin size={14} />}
+                          {isPinning ? (isPinned ? 'Unpinning...' : 'Pinning...') : (isPinned ? 'Unpin' : 'Pin')}
+                        </button>
+                        <div className="border-t border-[#000000]"></div>
+                      </>
+                    )}
                     <button
                       onClick={handleDelete}
                       disabled={isDeleting}

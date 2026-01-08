@@ -3,11 +3,16 @@ import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { sendEmail } from "./sendEmail.js";
 
-const db = mongoose.connection.db;
-const client = mongoose.connection.getClient();
+// Ensure mongoose connection is ready
+if (mongoose.connection.readyState === 0) {
+  console.warn("Warning: Mongoose connection not established when better-auth is initialized");
+}
 
 export const auth = betterAuth({
-  database: mongodbAdapter(mongoose.connection),
+  database: mongodbAdapter(mongoose.connection, {
+    // Use the existing user collection
+    collectionName: "users"
+  }),
   user: {
     modelName: "user",
     fields: {
@@ -42,20 +47,20 @@ export const auth = betterAuth({
       about: {
         type: "string",
         required: false,
-        defaultValue: []
+        defaultValue: ""
       },
       requestsSent: {
-        type: "string",
+        type: "array",
         required: false,
         defaultValue: []
       },
       requestsReceived: {
-        type: "string",
+        type: "array",
         required: false,
         defaultValue: []
       },
       connections: {
-        type: "string",
+        type: "array",
         required: false,
         defaultValue: []
       },   
@@ -90,11 +95,16 @@ export const auth = betterAuth({
     autoSignInAfterVerification: true,
     sendOnSignUp: true,
     sendVerificationEmail: async ({user, url}) => {
-      await sendEmail({
-        email: user.email,
-        subject: "Verify Email",
-        text: `Click the link to verify your email: ${url}`
-      })
+      try {
+        await sendEmail({
+          email: user.email,
+          subject: "Verify Email",
+          text: `Click the link to verify your email: ${url}`
+        });
+      } catch (error) {
+        console.error("Error sending verification email:", error);
+        // Don't throw - allow user creation even if email fails
+      }
     }
   }
 });

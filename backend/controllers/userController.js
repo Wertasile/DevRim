@@ -24,60 +24,190 @@ const fetchUser = async (req, res) => {
     }
 }
 
-const createUser = async (req, res) => {
+const signUp = async (req, res) => {
     try {
-        const { email, password, username } = req.body
-        bcrypt.hash(password, saltRounds, async function(err, hash) {
-            const data = await User.create({
-            email: email,
-            username: username,
-            timestamp: Date.now(),
-            password: hash,
-            status: "",
-            bio: "",
-            posts : []
-            })
+        console.log("Sign up request received:", { email: req.body.email, name: req.body.name });
+        const { email, password, name } = req.body;
 
-            res.redirect("http://localhost:5500/frontend/Pages/Home");
+        // Validate input
+        if (!email || !password || !name) {
+            console.log("Validation failed: missing fields");
+            return res.status(400).json({ 
+                error: "Email, password, and name are required",
+                details: { email: !!email, password: !!password, name: !!name }
+            });
+        }
+
+        // Check if user already exists
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            console.log("User already exists with email:", email);
+            return res.status(409).json({ error: "User with this email already exists" });
+        }
+
+        // Validate password length
+        if (password.length < 8) {
+            console.log("Password too short");
+            return res.status(400).json({ error: "Password must be at least 8 characters long" });
+        }
+
+        // Hash password
+        console.log("Hashing password...");
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+        console.log("Password hashed successfully");
+
+        // Create user
+        console.log("Creating user...");
+        const newUser = await User.create({
+            email,
+            password: hashedPassword,
+            name,
+            emailVerified: false,
+            liked: [],
+            lists: [],
+            following: [],
+            followers: [],
+            connections: [],
+            requestsSent: [],
+            requestsReceived: [],
+            communities: [],
+            status: "offline"
         });
-        
-        
+        console.log("User created successfully:", newUser._id);
+
+        // Check if JWT_SECRET exists
+        if (!process.env.JWT_SECRET) {
+            console.error("JWT_SECRET is not set in environment variables!");
+            return res.status(500).json({ error: "Server configuration error" });
+        }
+
+        // Create JWT token (same as Google login)
+        const jwtToken = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, {
+            expiresIn: '7d',
+        });
+
+        const isProduction = process.env.NODE_ENV === "production";
+
+        // Set cookie
+        res.cookie("token", jwtToken, {
+            secure: isProduction,
+            httpOnly: true,
+            sameSite: isProduction ? "none" : "lax",
+            maxAge: 7 * 24 * 60 * 60 * 1000
+        });
+
+        // Return user data (without password)
+        const userData = {
+            _id: newUser._id,
+            email: newUser.email,
+            name: newUser.name,
+            emailVerified: newUser.emailVerified,
+            picture: newUser.picture || "",
+            byline: newUser.byline || "",
+            about: newUser.about || "",
+        };
+
+        console.log("Sign up successful, returning user data");
+        res.status(201).json({ success: true, user: userData });
     } catch (error) {
-        console.log(error)
+        console.error("Sign up error:", error);
+        console.error("Error stack:", error.stack);
+        console.error("Error code:", error.code);
+        console.error("Error message:", error.message);
+        
+        if (error.code === 11000) { // MongoDB duplicate key error
+            return res.status(409).json({ error: "User with this email already exists" });
+        }
+        
+        res.status(500).json({ 
+            error: "Failed to create user account",
+            message: error.message,
+            details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
     }
 }
 
+const createUser = signUp; // Keep for backward compatibility
+
 const loginUser = async (req, res) => {
     try {
-        const {email, password} = req.body
-        const data = await User.findOne({email: email}).exec()
-        
-        if (!data){
-            return res.status(401).send("User cannot be found. Produce new email")
-        }
-        const hashed_pass = data.password
-        // bcrypt.compare(password, hash, function(err, result) {
-        //     if (result===true){
-        //         res.redirect("http://localhost:5500/frontend/Pages/Home");
-        //     } else{
-        //         res.status(404).send('Sorry, we cannot find that!')
-        //     }
-        // });
-        const valid = await bcrypt.compare(password, hashed_pass);
+        console.log("Login request received:", { email: req.body.email });
+        const { email, password } = req.body;
 
-        if (!valid){
-            return res.status(401).send('Invalid Username or Password');
+        if (!email || !password) {
+            console.log("Validation failed: missing email or password");
+            return res.status(400).json({ error: "Email and password are required" });
         }
 
-        const accessToken = jwt.sign({ id: data._id }, process.env.SECRET_KEY, { expiresIn: '15m' });
-        const refreshToken = jwt.sign({ id: data._id }, process.env.SECRET_KEY, { expiresIn: '7d'});
+        // Find user by email
+        console.log("Searching for user with email:", email);
+        const user = await User.findOne({ email }).exec();
 
-        res.cookie('refreshToken', refreshToken, { httpOnly: true, secure:false,sameSite: 'Lax', maxAge: 7 * 24 * 60 * 60 * 1000})
+        if (!user) {
+            console.log("User not found with email:", email);
+            return res.status(401).json({ error: "Invalid email or password" });
+        }
 
-        res.json({accessToken, id:data._id})
-        
+        // Check if user has a password (Google users might not have one)
+        if (!user.password) {
+            console.log("User found but has no password (likely Google user):", email);
+            return res.status(401).json({ 
+                error: "This email is registered with Google. Please use Google Sign In." 
+            });
+        }
+
+        // Verify password
+        console.log("Verifying password...");
+        const valid = await bcrypt.compare(password, user.password);
+
+        if (!valid) {
+            console.log("Password verification failed for email:", email);
+            return res.status(401).json({ error: "Invalid email or password" });
+        }
+
+        // Check if JWT_SECRET exists
+        if (!process.env.JWT_SECRET) {
+            console.error("JWT_SECRET is not set in environment variables!");
+            return res.status(500).json({ error: "Server configuration error" });
+        }
+
+        // Create JWT token (same as Google login)
+        const jwtToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+            expiresIn: '7d',
+        });
+
+        const isProduction = process.env.NODE_ENV === "production";
+
+        // Set cookie (same as Google login)
+        res.cookie("token", jwtToken, {
+            secure: isProduction,
+            httpOnly: true,
+            sameSite: isProduction ? "none" : "lax",
+            maxAge: 7 * 24 * 60 * 60 * 1000
+        });
+
+        // Return user data (without password)
+        const userData = {
+            _id: user._id,
+            email: user.email,
+            name: user.name,
+            emailVerified: user.emailVerified,
+            picture: user.picture || "",
+            byline: user.byline || "",
+            about: user.about || "",
+        };
+
+        console.log("Login successful for user:", user._id);
+        res.json({ success: true, user: userData });
     } catch (error) {
-        console.log(error)
+        console.error("Login error:", error);
+        console.error("Error stack:", error.stack);
+        console.error("Error message:", error.message);
+        res.status(500).json({ 
+            error: "Failed to login",
+            message: error.message,
+            details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
     }
 }
 
@@ -333,6 +463,7 @@ const updateUser = async (req, res) => {
 export { 
     fetchUser,
     createUser,
+    signUp,
     loginUser,
     logoutUser,
     deleteUser,

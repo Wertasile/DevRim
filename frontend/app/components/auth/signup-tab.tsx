@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { authClient } from "../../lib/auth-client";
 import { useGoogleLogin } from '@react-oauth/google';
 import { useUser } from '../../context/userContext';
 
@@ -92,33 +91,39 @@ const SignUpTab = () => {
     setIsSubmitting(true);
 
     try {
-      const { data, error } = await authClient.signUp.email(
-        {
-          email,
-          password,
-          name,
+      console.log("Attempting to sign up with email:", email, "name:", name);
+      const response = await fetch(`${API_URL}/users/signup`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        {
-          onSuccess: () => {
-            // Show success message about email verification
-            alert("Account created successfully! Please check your email to verify your account.");
-            window.location.href = "/login";
-          },
-          onError: (ctx) => {
-            const errorMsg = ctx.error.message || "Something went wrong. Please try again.";
-            setError(errorMsg);
-            setIsSubmitting(false);
-          }
-        }
-      );
+        credentials: 'include',
+        body: JSON.stringify({ email, password, name }),
+      });
 
-      if (error) {
-        console.error(error);
-        setError(error.message || "Something went wrong. Please try again.");
+      console.log("Response status:", response.status);
+      const data = await response.json();
+      console.log("Response data:", data);
+
+      if (!response.ok) {
+        const errorMsg = data.error || data.message || "Something went wrong. Please try again.";
+        console.error("Sign up failed:", errorMsg, "Full response:", data);
+        setError(errorMsg);
         setIsSubmitting(false);
+        return;
       }
+
+      // Update user context
+      if (data.user) {
+        console.log("User signed up successfully:", data.user);
+        setUser(data.user);
+      }
+
+      // Redirect to dashboard
+      window.location.href = "/dashboard";
     } catch (err: any) {
-      console.error(err);
+      console.error("Sign up error:", err);
+      console.error("Error details:", err.message, err.stack);
       setError(err.message || "Something went wrong. Please try again.");
       setIsSubmitting(false);
     }

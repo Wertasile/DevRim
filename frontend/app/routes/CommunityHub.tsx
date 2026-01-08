@@ -9,6 +9,7 @@ import leaveCommunity from '~/apiCalls/Community/leaveCommunity';
 import { TOPICS } from '~/constants/topics';
 import TopicPill from '~/components/TopicPill';
 import CommunityCard from '~/components/communityCard';
+import CommunityCardSmall from '~/components/CommunityCardSmall';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -41,20 +42,13 @@ const CommunityHub = () => {
   const fetchUserCommunities = async () => {
     if (user?._id) {
       try {
-        // Try to fetch user's communities - if endpoint doesn't exist, filter from all communities
-        const response = await fetch(`${API_URL}/communities`, {
+        const response = await fetch(`${API_URL}/communities/user/${user._id}`, {
           method: 'get',
           credentials: 'include',
         });
         if (response.ok) {
-          const allCommunities = await response.json();
-          // Filter communities where user is a member
-          const userComms = allCommunities.filter((comm: Community) => 
-            comm.members?.some((member: any) => 
-              (typeof member === 'string' ? member : member._id) === user._id
-            )
-          );
-          setUserCommunities(userComms);
+          const data = await response.json();
+          setUserCommunities(data);
         }
       } catch (error) {
         console.error('Failed to fetch user communities:', error);
@@ -103,8 +97,8 @@ const CommunityHub = () => {
         {/* Left Sidebar */}
         <Sidebar />
 
-                {/* Central Content Area */}
-                <div className='flex-grow flex flex-col gap-6 max-w-[1600px] mx-auto'>
+          {/* Central Content Area */}
+          <div className='flex-grow flex flex-col gap-6'>
           {/* Search Bar and Create Button */}
           <div className='flex gap-3'>
             <div className='relative flex-1'>
@@ -118,7 +112,7 @@ const CommunityHub = () => {
             </div>
             <button
               onClick={() => setIsCreateModalOpen(true)}
-              className="primary-btn flex gap-[10px] items-center bg-gradient-to-r from-[#E95444] to-[#5D64F4] hover:from-[#5D64F4] hover:to-[#E95444] text-white transition-all duration-300 hover:scale-105 hover:shadow-lg"
+              className="primary-btn flex gap-[10px] items-center bg-[#E95444]"
             >
               <Plus size={20} />
               CREATE COMMUNITY
@@ -152,7 +146,7 @@ const CommunityHub = () => {
           </div>
 
           {/* Community Cards */}
-          <div className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6'>
+          <div className='grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-6'>
             {filteredCommunities.map((community) => {
               return (
                 <CommunityCard key={community._id} community={community} />
@@ -166,6 +160,50 @@ const CommunityHub = () => {
             </div>
           )}
         </div>
+
+        {/* Right Sidebar */}
+        <aside className="w-80 flex-shrink-0 flex flex-col gap-6">
+          {/* Your Communities Section */}
+          {user && userCommunities.length > 0 && (
+            <div className='bg-[#EDEDE9] border-[3px] border-[#000000] rounded-lg p-4 shadow-lg hover:shadow-xl transition-all duration-300'>
+              <h3 className="text-black mb-3 font-semibold flex items-center gap-2">
+                <Users size={18} />
+                YOUR COMMUNITIES
+              </h3>
+              <div className='flex flex-col gap-[10px]'>
+                {userCommunities.map((community) => (
+                  <CommunityCardSmall key={community._id} community={community} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Empty State */}
+          {user && userCommunities.length === 0 && (
+            <div className='bg-[#EDEDE9] border-[3px] border-[#000000] rounded-lg p-4 shadow-lg'>
+              <h3 className="text-black mb-3 font-semibold flex items-center gap-2">
+                <Users size={18} />
+                YOUR COMMUNITIES
+              </h3>
+              <div className='text-[#979797] text-sm text-center py-4'>
+                You haven't joined any communities yet.
+              </div>
+            </div>
+          )}
+
+          {/* Not Logged In */}
+          {!user && (
+            <div className='bg-[#EDEDE9] border-[3px] border-[#000000] rounded-lg p-4 shadow-lg'>
+              <h3 className="text-black mb-3 font-semibold flex items-center gap-2">
+                <Users size={18} />
+                YOUR COMMUNITIES
+              </h3>
+              <div className='text-[#979797] text-sm text-center py-4'>
+                Please log in to see your communities.
+              </div>
+            </div>
+          )}
+        </aside>
       </div>
     </div>
   );
