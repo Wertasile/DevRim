@@ -5,8 +5,9 @@ import fetchUser from '~/apiCalls/fetchUser';
 import accept from '~/apiCalls/user/accept';
 import decline from '~/apiCalls/user/decline';
 import disconnect from '~/apiCalls/user/disconnect';
-import { UserXIcon, X, ChevronLeft, ChevronRight, Eye, Heart, MessageCircle, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
+import { UserXIcon, X, ChevronLeft, ChevronRight, Eye, Heart, MessageCircle, ExternalLink, ChevronDown, ChevronUp, FileText } from 'lucide-react';
 import Sidebar from '~/components/Sidebar';
+import { Skeleton, ConnectionCardSkeleton, StatsCardSkeleton, PostStatSkeleton, RequestCardSkeleton, CommentCardSkeleton } from '~/components/SkeletonLoader';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -61,43 +62,74 @@ const Connections = () => {
   
   // Active section tracking
   const [activeSection, setActiveSection] = useState<string>('');
+  
+  // Loading states
+  const [isLoadingConnections, setIsLoadingConnections] = useState<boolean>(true);
+  const [isLoadingRequests, setIsLoadingRequests] = useState<boolean>(true);
+  const [isLoadingStats, setIsLoadingStats] = useState<boolean>(true);
+  const [isLoadingComments, setIsLoadingComments] = useState<boolean>(true);
 
   const fetchConnections = async () => {
-    if (user?.connections) {
-      const fetchedUsers: User[] = [];
-      for (const connection of user.connections) {
-        const userData = await fetchUser(connection);
-        fetchedUsers.push(userData);
+    setIsLoadingConnections(true);
+    try {
+      if (user?.connections) {
+        const fetchedUsers: User[] = [];
+        for (const connection of user.connections) {
+          const userData = await fetchUser(connection);
+          fetchedUsers.push(userData);
+        }
+        setConnectionUsers(fetchedUsers);
       }
-      setConnectionUsers(fetchedUsers);
+    } catch (error) {
+      console.error('Failed to fetch connections:', error);
+    } finally {
+      setIsLoadingConnections(false);
     }
   };
 
   const fetchRequestsSent = async () => {
-    if (user?.requestsSent) {
-      const fetchedUsers: User[] = [];
-      for (const request of user.requestsSent) {
-        const userData = await fetchUser(request);
-        fetchedUsers.push(userData);
+    try {
+      if (user?.requestsSent) {
+        const fetchedUsers: User[] = [];
+        for (const request of user.requestsSent) {
+          const userData = await fetchUser(request);
+          fetchedUsers.push(userData);
+        }
+        setRequestSentUsers(fetchedUsers);
       }
-      setRequestSentUsers(fetchedUsers);
+    } catch (error) {
+      console.error('Failed to fetch requests sent:', error);
     }
   };
 
   const fetchRequestsReceived = async () => {
-    if (user?.requestsReceived) {
-      const fetchedUsers: User[] = [];
-      for (const request of user.requestsReceived) {
-        const userData = await fetchUser(request);
-        fetchedUsers.push(userData);
+    try {
+      if (user?.requestsReceived) {
+        const fetchedUsers: User[] = [];
+        for (const request of user.requestsReceived) {
+          const userData = await fetchUser(request);
+          fetchedUsers.push(userData);
+        }
+        setRequestReceivedUsers(fetchedUsers);
       }
-      setRequestReceivedUsers(fetchedUsers);
+    } catch (error) {
+      console.error('Failed to fetch requests received:', error);
+    }
+  };
+
+  const fetchAllRequests = async () => {
+    setIsLoadingRequests(true);
+    try {
+      await Promise.all([fetchRequestsSent(), fetchRequestsReceived()]);
+    } finally {
+      setIsLoadingRequests(false);
     }
   };
 
   // Fetch user posts and calculate statistics
   const fetchUserPosts = async () => {
     if (!user?._id) return;
+    setIsLoadingStats(true);
     
     try {
       const response = await fetch(`${API_URL}/posts/${user._id}`, {
@@ -211,6 +243,8 @@ const Connections = () => {
       }
     } catch (error) {
       console.error('Failed to fetch user posts:', error);
+    } finally {
+      setIsLoadingStats(false);
     }
   };
 
@@ -324,7 +358,7 @@ const Connections = () => {
   // Fetch user comments
   const fetchUserComments = async () => {
     if (!user?._id) return;
-    
+    setIsLoadingComments(true);
     try {
       // Fetch all posts
       const postsResponse = await fetch(`${API_URL}/posts/`, {
@@ -386,6 +420,8 @@ const Connections = () => {
       setUserComments(commentsWithPosts);
     } catch (error) {
       console.error('Failed to fetch user comments:', error);
+    } finally {
+      setIsLoadingComments(false);
     }
   };
   
@@ -410,8 +446,7 @@ const Connections = () => {
   useEffect(() => {
     if (user) {
       fetchConnections();
-      fetchRequestsSent();
-      fetchRequestsReceived();
+      fetchAllRequests();
       fetchUserPosts();
       fetchUserComments();
     }
@@ -494,33 +529,73 @@ const Connections = () => {
         {/* Main Content Area */}
         <div className='flex-grow flex flex-col gap-8'>
 
-          {/* Stats Section - Only show if user has posts */}
-          {stats.totalPosts > 0 && (
-            <div id="stats" className='flex flex-col gap-6 scroll-mt-8'>
+          {/* Stats Section */}
+          {isLoadingStats ? (
+            <div id="stats" className='flex flex-col gap-6 scroll-mt-8' role="status" aria-live="polite" aria-label="Loading statistics">
               <div className='bg-[#EDEDE9] border-2 border-[#000000] rounded-lg p-6'>
-                <h2 className='text-2xl font-semibold mb-4'>YOUR STATISTICS</h2>
+                <Skeleton width={200} height={32} className="mb-4" />
                 <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
-                  <div className='flex flex-col items-center p-4 bg-white border-2 border-[#000000] rounded-lg'>
-                    <Eye size={24} className='text-[#4DD499] mb-2' />
-                    <div className='text-2xl font-bold'>{stats.totalViews}</div>
-                    <div className='text-sm text-black/70'>Total Views</div>
-                  </div>
-                  <div className='flex flex-col items-center p-4 bg-white border-2 border-[#000000] rounded-lg'>
-                    <Heart size={24} className='text-[#E95444] mb-2' />
-                    <div className='text-2xl font-bold'>{stats.totalLikes}</div>
-                    <div className='text-sm text-black/70'>Total Likes</div>
-                  </div>
-                  <div className='flex flex-col items-center p-4 bg-white border-2 border-[#000000] rounded-lg'>
-                    <MessageCircle size={24} className='text-[#5D64F4] mb-2' />
-                    <div className='text-2xl font-bold'>{stats.totalComments}</div>
-                    <div className='text-sm text-black/70'>Total Comments</div>
-                  </div>
-                  <div className='flex flex-col items-center p-4 bg-white border-2 border-[#000000] rounded-lg'>
-                    <div className='text-2xl font-bold mb-2'>{stats.totalPosts}</div>
-                    <div className='text-sm text-black/70'>Total Posts</div>
-                  </div>
+                  {[...Array(4)].map((_, i) => (
+                    <StatsCardSkeleton key={`stat-${i}`} />
+                  ))}
                 </div>
               </div>
+              <div className='bg-[#EDEDE9] border-2 border-[#000000] rounded-lg p-6'>
+                <Skeleton width={200} height={32} className="mb-4" />
+                <div className='flex flex-col gap-4'>
+                  {[...Array(3)].map((_, i) => (
+                    <PostStatSkeleton key={`post-stat-${i}`} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : stats.totalPosts > 0 && (
+            <div id="stats" className='flex flex-col gap-6 scroll-mt-8'>
+               <div className='bg-[#EDEDE9] border-[2px] border-[#000000] rounded-lg p-6'>
+                 <h2>YOUR STATISTICS</h2>
+                 <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
+                   <div className='relative flex flex-col items-center p-4 bg-gradient-to-br from-[#4DD499]/10 via-[#4DD499]/5 to-white border-2 border-[#000000] rounded-lg overflow-hidden'>
+                     <Eye 
+                       size={100}
+                       className='absolute -right-[30px] top-1/2 -translate-y-1/2 text-[#4DD499]/15' 
+                       style={{ filter: 'blur(3px)' }}
+                       aria-hidden="true"
+                     />
+                     <div className='text-2xl font-bold relative z-10'>{stats.totalViews}</div>
+                     <div className='text-small relative z-10'>VIEWS</div>
+                   </div>
+                   <div className='relative flex flex-col items-center p-4 bg-gradient-to-br from-[#E95444]/10 via-[#E95444]/5 to-white border-2 border-[#000000] rounded-lg overflow-hidden'>
+                     <Heart 
+                       size={100}
+                       className='absolute -right-[30px] top-1/2 -translate-y-1/2 text-[#E95444]/15' 
+                       style={{ filter: 'blur(3px)' }}
+                       aria-hidden="true"
+                     />
+                     <div className='text-2xl font-bold relative z-10'>{stats.totalLikes}</div>
+                     <div className='text-small relative z-10'>LIKES</div>
+                   </div>
+                   <div className='relative flex flex-col items-center p-4 bg-gradient-to-br from-[#5D64F4]/10 via-[#5D64F4]/5 to-white border-2 border-[#000000] rounded-lg overflow-hidden'>
+                     <MessageCircle 
+                       size={100}
+                       className='absolute -right-[30px] top-1/2 -translate-y-1/2 text-[#5D64F4]/15' 
+                       style={{ filter: 'blur(3px)' }}
+                       aria-hidden="true"
+                     />
+                     <div className='text-2xl font-bold relative z-10'>{stats.totalComments}</div>
+                     <div className='text-small relative z-10'>COMMENTS</div>
+                   </div>
+                   <div className='relative flex flex-col items-center p-4 bg-gradient-to-br from-[#FEC72F]/10 via-[#FEC72F]/5 to-white border-2 border-[#000000] rounded-lg overflow-hidden'>
+                     <FileText 
+                       size={100}
+                       className='absolute -right-[30px] top-1/2 -translate-y-1/2 text-[#FEC72F]/15' 
+                       style={{ filter: 'blur(3px)' }}
+                       aria-hidden="true"
+                     />
+                     <div className='text-2xl font-bold relative z-10'>{stats.totalPosts}</div>
+                     <div className='text-small relative z-10'>POSTS</div>
+                   </div>
+                 </div>
+               </div>
 
               {/* Individual Post Statistics */}
               <div className='bg-[#EDEDE9] border-2 border-[#000000] rounded-lg p-6'>
@@ -613,9 +688,15 @@ const Connections = () => {
 
             {/* Connections List */}
             <div>
-              <h2 className='text-2xl font-semibold mb-4'>MY CONNECTIONS ({connectionUsers.length})</h2>
+              <h2 className='text-2xl font-semibold mb-4'>
+                MY CONNECTIONS ({isLoadingConnections ? '...' : connectionUsers.length})
+              </h2>
             <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
-              {getPaginatedConnections().length > 0 ? (
+              {isLoadingConnections ? (
+                [...Array(8)].map((_, i) => (
+                  <ConnectionCardSkeleton key={`connection-skeleton-${i}`} />
+                ))
+              ) : getPaginatedConnections().length > 0 ? (
                 getPaginatedConnections().map((connection) => (
                   <div 
                     key={connection._id}
@@ -679,9 +760,15 @@ const Connections = () => {
             <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
             {/* Requests Received */}
             <div>
-              <h2 className='text-2xl font-semibold mb-4'>REQUESTS RECEIVED ({requestReceivedUsers.length})</h2>
+              <h2 className='text-2xl font-semibold mb-4'>
+                REQUESTS RECEIVED ({isLoadingRequests ? '...' : requestReceivedUsers.length})
+              </h2>
               <div className='flex flex-col gap-3'>
-                {getPaginatedRequestsReceived().length > 0 ? (
+                {isLoadingRequests ? (
+                  [...Array(3)].map((_, i) => (
+                    <RequestCardSkeleton key={`request-received-skeleton-${i}`} />
+                  ))
+                ) : getPaginatedRequestsReceived().length > 0 ? (
                   getPaginatedRequestsReceived().map((requestUser) => (
                     <div 
                       key={requestUser._id}
@@ -747,9 +834,15 @@ const Connections = () => {
 
             {/* Requests Sent */}
             <div>
-              <h2 className='text-2xl font-semibold mb-4'>REQUESTS SENT ({requestSentUsers.length})</h2>
+              <h2 className='text-2xl font-semibold mb-4'>
+                REQUESTS SENT ({isLoadingRequests ? '...' : requestSentUsers.length})
+              </h2>
               <div className='flex flex-col gap-3'>
-                {getPaginatedRequestsSent().length > 0 ? (
+                {isLoadingRequests ? (
+                  [...Array(3)].map((_, i) => (
+                    <RequestCardSkeleton key={`request-sent-skeleton-${i}`} />
+                  ))
+                ) : getPaginatedRequestsSent().length > 0 ? (
                   getPaginatedRequestsSent().map((requestUser) => (
                     <div 
                       key={requestUser._id}
@@ -804,9 +897,15 @@ const Connections = () => {
           
           {/* User Comments Section */}
           <div id="comments" className='scroll-mt-8'>
-            <h2 className='text-2xl font-semibold mb-4'>MY COMMENTS ({userComments.length})</h2>
+            <h2 className='text-2xl font-semibold mb-4'>
+              MY COMMENTS ({isLoadingComments ? '...' : userComments.length})
+            </h2>
             <div className='flex flex-col gap-4'>
-              {getPaginatedComments().length > 0 ? (
+              {isLoadingComments ? (
+                [...Array(3)].map((_, i) => (
+                  <CommentCardSkeleton key={`comment-skeleton-${i}`} />
+                ))
+              ) : getPaginatedComments().length > 0 ? (
                 getPaginatedComments().map(({ comment, post, replies }) => {
                   const isExpanded = expandedCommentThreads.has(comment._id);
                   const commentUser = typeof comment.user === 'string' ? null : comment.user;

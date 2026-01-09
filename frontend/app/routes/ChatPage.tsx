@@ -28,6 +28,7 @@ import React, { useEffect, useRef, useState } from "react";
 import ChatMenu from "~/components/chatComponents/ChatMenu";
 import { useChat, useNotification, useUser } from "~/context/userContext";
 import type { Chat, Message, User } from "~/types/types";
+import WelcomeScreen from "~/components/WelcomeScreen";
 import io from "socket.io-client" // io is a function to call an individual socket
 import { socket } from "../components/socket";
 import Sidebar from "../components/Sidebar"
@@ -700,31 +701,24 @@ const ChatPage = () => {
     }, timerLength)
   };
 
-  // Redirect or show login page if not logged in
-  if (!user) {
+  // Show loading skeleton while checking authentication
+  const { isLoading: userLoading } = useUser();
+  
+  if (userLoading) {
     return (
-    <div className="flex flex-col gap-[10px] items-center justify-center min-h-screen bg-[#D6D6CD] text-center p-6">
-        <h1>Welcome to DevRim</h1>
-        <p>
-        Please <span className="text-[#5D64F4] font-semibold">log in</span> or <span className="text-[#5D64F4] font-semibold">sign up</span> to explore personalized blog recommendations and trending posts.
-        </p>
-        <div className="flex gap-4">
-        <a
-            href="/login"
-            className="primary-btn"
-        >
-            Log In
-        </a>
-        <a
-            href="/register"
-            className="secondary-btn"
-        >
-            Sign Up
-        </a>
+      <div className="flex items-center justify-center min-h-screen bg-[#EDEDE9]">
+        <div className="text-center">
+          <div className="skeleton w-16 h-16 rounded-full mx-auto mb-4"></div>
+          <div className="skeleton w-48 h-6 rounded mx-auto"></div>
         </div>
-    </div>
-    )
-}
+      </div>
+    );
+  }
+  
+  // Redirect or show login page if not logged in (only after loading is complete)
+  if (!user) {
+    return <WelcomeScreen message="Please log in or sign up to access your chats and messages." />
+  }
 
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

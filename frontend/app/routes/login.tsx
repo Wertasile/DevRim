@@ -18,11 +18,11 @@ const login = () => {
                 </div>
 
                 {/* Auth Card */}
-                <div className="bg-white rounded-2xl shadow-2xl border-2 border-black overflow-hidden">
+                <div className="bg-white shadow-2xl border-[3px] border-black overflow-hidden">
                     {/* Tab Switcher */}
-                    <div className='bg-[#262626] flex gap-0 border-b-2 border-black'>
+                    <div className='bg-[#262626] flex gap-0 border-b-[3px] border-black'>
                         <button
-                            className={`flex-1 p-4 font-semibold transition-all duration-200 ${
+                            className={`flex-1 p-4 font-semibold transition-all duration-200 cursor-pointer ${
                                 tab === "signin" 
                                     ? "text-gray-300 hover:text-white hover:bg-[#353535]" 
                                     : "bg-white text-black shadow-inner"
@@ -33,7 +33,7 @@ const login = () => {
                             Sign In
                         </button>
                         <button
-                            className={`flex-1 p-4 font-semibold transition-all duration-200 ${
+                            className={`flex-1 p-4 font-semibold transition-all duration-200 cursor-pointer ${
                                 tab === "signup" 
                                     ? "text-gray-300 hover:text-white hover:bg-[#353535]" 
                                     : "bg-white text-black shadow-inner"

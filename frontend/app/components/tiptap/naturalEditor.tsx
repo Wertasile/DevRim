@@ -153,7 +153,7 @@ const NaturalEditor = ({ content, handleChange, onTitleChange, onSummaryChange, 
             src={coverImage}
             alt="Cover preview"
             className='w-full h-auto'
-            style={{ aspectRatio: '2/1', maxWidth: '1000px', objectFit:'cover' }}
+            style={{ aspectRatio: '2/1', maxWidth: '750px', objectFit:'cover' }}
           />
           <button
             type="button"

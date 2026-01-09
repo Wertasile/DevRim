@@ -10,6 +10,7 @@ import { TOPICS } from '~/constants/topics';
 import TopicPill from '~/components/TopicPill';
 import CommunityCard from '~/components/communityCard';
 import CommunityCardSmall from '~/components/CommunityCardSmall';
+import { Skeleton, CommunityCardSkeleton } from '~/components/SkeletonLoader';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -20,8 +21,11 @@ const CommunityHub = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoadingUserCommunities, setIsLoadingUserCommunities] = useState<boolean>(true);
 
   const fetchCommunities = async () => {
+    setIsLoading(true);
     try {
       const url = selectedTopic 
         ? `${API_URL}/communities?topic=${encodeURIComponent(selectedTopic)}`
@@ -36,11 +40,14 @@ const CommunityHub = () => {
       }
     } catch (error) {
       console.error('Failed to fetch communities:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const fetchUserCommunities = async () => {
     if (user?._id) {
+      setIsLoadingUserCommunities(true);
       try {
         const response = await fetch(`${API_URL}/communities/user/${user._id}`, {
           method: 'get',
@@ -52,6 +59,8 @@ const CommunityHub = () => {
         }
       } catch (error) {
         console.error('Failed to fetch user communities:', error);
+      } finally {
+        setIsLoadingUserCommunities(false);
       }
     }
   };
@@ -99,6 +108,25 @@ const CommunityHub = () => {
 
           {/* Central Content Area */}
           <div className='flex-grow flex flex-col gap-6'>
+          {isLoading ? (
+            <>
+              <div className='flex gap-3'>
+                <Skeleton width="100%" height={48} rounded />
+                <Skeleton width={200} height={48} rounded />
+              </div>
+              <div className='flex flex-wrap gap-2'>
+                {[...Array(8)].map((_, i) => (
+                  <Skeleton key={i} width={100} height={32} rounded />
+                ))}
+              </div>
+              <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+                {[...Array(6)].map((_, i) => (
+                  <Skeleton key={i} width="100%" height={200} rounded />
+                ))}
+              </div>
+            </>
+          ) : (
+          <>
           {/* Search Bar and Create Button */}
           <div className='flex gap-3'>
             <div className='relative flex-1'>
@@ -147,17 +175,23 @@ const CommunityHub = () => {
 
           {/* Community Cards */}
           <div className='grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-6'>
-            {filteredCommunities.map((community) => {
-              return (
-                <CommunityCard key={community._id} community={community} />
-              );
-            })}
+            {isLoading ? (
+              [...Array(6)].map((_, i) => (
+                <Skeleton key={`skeleton-${i}`} width="100%" height={200} rounded />
+              ))
+            ) : filteredCommunities.length > 0 ? (
+              filteredCommunities.map((community) => {
+                return (
+                  <CommunityCard key={community._id} community={community} />
+                );
+              })
+            ) : (
+              <div className='col-span-full text-[#979797] text-center py-12 bg-gradient-to-br from-[#EDEDE9] to-[#F5F5F1] rounded-lg border border-[#000000] p-8' role="status" aria-live="polite">
+                No communities found matching your search.
+              </div>
+            )}
           </div>
-
-          {filteredCommunities.length === 0 && (
-            <div className='text-[#9aa4bd] text-center py-12 bg-gradient-to-br from-[#EDEDE9] to-[#F5F5F1] rounded-lg border border-[#000000] p-8'>
-              No communities found matching your search.
-            </div>
+          </>
           )}
         </div>
 

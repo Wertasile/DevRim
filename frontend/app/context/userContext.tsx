@@ -7,6 +7,8 @@ import type { Chat, Message, User } from '~/types/types';
 type UserContextProps = {
   user: User | null;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  isLoading: boolean;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 // --- User Context ---
@@ -14,9 +16,10 @@ export const userContext = createContext<UserContextProps | null>(null);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true); // Start as loading
 
   return (
-    <userContext.Provider value={{ user, setUser }}>
+    <userContext.Provider value={{ user, setUser, isLoading, setIsLoading }}>
       {children}
     </userContext.Provider>
   );

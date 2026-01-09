@@ -487,7 +487,7 @@ const Settings = () => {
                     onChange={handleInputChange}
                     placeholder="e.g., Software Engineer at Company"
                     maxLength={100}
-                    className="form-input hover:border-[#FEC72F] focus:border-[#FEC72F] transition-all duration-300"
+                    className="input-decor hover:border-[#FEC72F] focus:border-[#FEC72F] transition-all duration-300"
                   />
                   <div className="text-[#979797] text-mini">{formData.byline.length}/100 characters</div>
                 </div>
@@ -505,7 +505,7 @@ const Settings = () => {
                     placeholder="Tell us about yourself..."
                     rows={6}
                     maxLength={500}
-                    className="form-input hover:border-[#FEC72F] focus:border-[#FEC72F] transition-all duration-300"
+                    className="input-decor hover:border-[#FEC72F] focus:border-[#FEC72F] transition-all duration-300"
                   />
                   <div className="text-[#979797] text-mini">{formData.about.length}/500 characters</div>
                 </div>
@@ -521,7 +521,7 @@ const Settings = () => {
                     type="email"
                     value={user.email || ''}
                     disabled
-                    className="form-input cursor-not-allowed text-[#979797] max-w-[400px]"
+                    className="input-decor cursor-not-allowed text-[#979797] max-w-[400px]"
                   />
                 </div>
 
@@ -537,7 +537,7 @@ const Settings = () => {
                     value={formData.name}
                     onChange={handleInputChange}
                     placeholder="Enter your full name"
-                    className="form-input max-w-[400px] hover:border-[#FEC72F] focus:border-[#FEC72F] transition-all duration-300"
+                    className="input-decor max-w-[400px] hover:border-[#FEC72F] focus:border-[#FEC72F] transition-all duration-300"
                   />
                 </div>
 
@@ -553,7 +553,7 @@ const Settings = () => {
                     value={formData.given_name}
                     onChange={handleInputChange}
                     placeholder="Enter your first name"
-                    className="form-input max-w-[400px] hover:border-[#FEC72F] focus:border-[#FEC72F] transition-all duration-300"
+                    className="input-decor max-w-[400px] hover:border-[#FEC72F] focus:border-[#FEC72F] transition-all duration-300"
                   />
                 </div>
 
@@ -569,7 +569,7 @@ const Settings = () => {
                     value={formData.family_name}
                     onChange={handleInputChange}
                     placeholder="Enter your last name"
-                    className="form-input max-w-[400px] hover:border-[#FEC72F] focus:border-[#FEC72F] transition-all duration-300"
+                    className="input-decor max-w-[400px] hover:border-[#FEC72F] focus:border-[#FEC72F] transition-all duration-300"
                     maxLength={50}
                   />
                 </div>

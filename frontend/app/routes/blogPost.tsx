@@ -20,6 +20,7 @@ import connect from '~/apiCalls/user/connect';
 import disconnect from '~/apiCalls/user/disconnect';
 import logEvent from '~/utils/logEvent';
 import Sidebar from '~/components/Sidebar';
+import { Skeleton } from '~/components/SkeletonLoader';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -27,6 +28,7 @@ export default function BlogPost({ params }: Route.ComponentProps) {
 
   const [blog, setBlog] = useState<Blog>()
   const [blogUser, setBlogUser] = useState<User | null>(null)
+  const [isLoading, setIsLoading] = useState<boolean>(true)
 
   const { user } = useUser()
 
@@ -101,26 +103,39 @@ export default function BlogPost({ params }: Route.ComponentProps) {
   {/* ----------------------- LOADING BLOG IN ---------------------------------------------------------------------------------------------------- */}
   
   const getBlog = async () => {
-    const response = await fetch(`${API_URL}/posts/${params.id}`, {
-      method: 'post'
-    })
-    const data = await response.json()
-    console.log(data)
-    setBlog(data)
-    setComments(data.comments)
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/posts/${params.id}`, {
+        method: 'post',
+        credentials: 'include'
+      })
+      if (!response.ok) {
+        throw new Error('Failed to load blog post');
+      }
+      const data = await response.json()
+      setBlog(data)
+      setComments(data.comments || [])
 
-    const userResponse = await fetch(`${API_URL}/users/${data.user}`, {
-      method: 'get'
-    })
-    const userData = await userResponse.json()
-    setBlogUser(userData)
-    
-    if (user?._id) {
-      const lists = await getAllList(user._id)
-      setUsersLists(lists)
+      const userResponse = await fetch(`${API_URL}/users/${data.user}`, {
+        method: 'get',
+        credentials: 'include'
+      })
+      if (userResponse.ok) {
+        const userData = await userResponse.json()
+        setBlogUser(userData)
+      }
+      
+      if (user?._id) {
+        const lists = await getAllList(user._id)
+        setUsersLists(lists)
+      }
+    } catch (error) {
+      console.error('Error loading blog post:', error);
+      alert('Failed to load blog post. Redirecting...');
+      window.location.href = '/blog';
+    } finally {
+      setIsLoading(false);
     }
-    console.log("USER IS")
-    console.log(userData)
   }
 
   {/* ----------------------- LIKES AND DISLIKES ---------------------------------------------------------------------------------------------------- */}
@@ -343,7 +358,28 @@ export default function BlogPost({ params }: Route.ComponentProps) {
     })
   }
 
-  if (!blog) return <p>Loading...</p>
+  if (isLoading || !blog) {
+    return (
+      <div id='blog-post' className='min-h-screen flex flex-row gap-8 px-6 py-12' role="status" aria-live="polite" aria-label="Loading blog post">
+        <Sidebar/>
+        <div className='flex-grow flex flex-col gap-8 max-w-[1200px] mx-auto'>
+          <Skeleton width="80%" height={48} className="mb-4" />
+          <div className='flex items-center gap-3 mb-6'>
+            <Skeleton circle width={40} height={40} />
+            <div className="flex flex-col gap-2">
+              <Skeleton width={120} height={16} />
+              <Skeleton width={100} height={12} />
+            </div>
+          </div>
+          <Skeleton width="100%" height={300} rounded className="mb-6" />
+          <Skeleton width="90%" height={20} />
+          <Skeleton width="95%" height={20} />
+          <Skeleton width="85%" height={20} />
+          <Skeleton width="90%" height={20} />
+        </div>
+      </div>
+    );
+  }
 
   {/* ----------------------- CONFIG TIPTAP STARTER KIT ---------------------------------------------------------------------------------------------------- */}   
 
@@ -370,50 +406,16 @@ export default function BlogPost({ params }: Route.ComponentProps) {
   ])
 
   return (
-    <div id='blog-post' className='min-h-screen flex flex-row gap-8 px-6 py-12 mx-auto max-w-[1200px]'>
+    <div id='blog-post' className='min-h-screen flex flex-row gap-8 px-6 py-12'>
 
       <Sidebar/>
       
 
       {/* ----------------------- MAIN CONTENT AREA ---------------------------------------------------------------------------------------------------- */}
-      <div className='flex-grow flex flex-col gap-8 max-w-[800px] mx-auto'>
+      <div className='flex-grow flex flex-col gap-8 max-w-[1200px] mx-auto'>
         {/* ----------------------- TITLE SECTION ---------------------------------------------------------------------------------------------------- */}
-        <div className='flex items-start justify-between gap-4'>
           <h1 className='text-4xl font-bold leading-tight'>{blog.title}</h1>
-          {isOwnPost && (
-            <div className="relative">
-              <button
-                onClick={() => setShowDeleteMenu(!showDeleteMenu)}
-                className="p-2 hover:bg-[#D6D6CD] rounded-lg transition-colors"
-                aria-label="Post options"
-              >
-                <MoreVertical size={20} className="text-black/60" />
-              </button>
-              {showDeleteMenu && (
-                <div className="absolute right-0 top-full mt-2 bg-[#EDEDE9] border-2 border-[#000000] rounded-lg shadow-lg z-50 min-w-[120px]">
-                  <button
-                    onClick={() => {
-                      setShowDeleteMenu(false);
-                      window.location.href = `/edit/${blog?._id}`;
-                    }}
-                    className="w-full px-4 py-2 text-left text-black hover:bg-[#D6D6CD] rounded-t-lg flex items-center gap-2 text-sm transition-colors"
-                  >
-                    Edit Post
-                  </button>
-                  <div className="border-t border-[#000000]"></div>
-                  <button
-                    onClick={handleDelete}
-                    disabled={isDeleting}
-                    className="w-full px-4 py-2 text-left text-red-600 hover:bg-[#D6D6CD] rounded-b-lg flex items-center gap-2 text-sm transition-colors disabled:opacity-50"
-                  >
-                    <Trash2 size={14} />
-                    {isDeleting ? 'Deleting...' : 'Delete Post'}
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+          
 
         {/* Author and Date */}
         <div className='flex items-center gap-3 text-sm text-black/70'>
@@ -468,8 +470,10 @@ export default function BlogPost({ params }: Route.ComponentProps) {
         {/* Like Button */}
         <button 
           onClick={handleLike}
-          className='flex flex-col items-center gap-1 p-2 hover:bg-[#EDEDE9] rounded-lg transition-colors'
-          title="Like"
+          className='flex flex-col items-center gap-1 p-2 hover:bg-[#EDEDE9] rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-[#E95444] focus:ring-offset-2'
+          title={like ? "Unlike this post" : "Like this post"}
+          aria-label={like ? "Unlike this post" : "Like this post"}
+          aria-pressed={like}
         >
           <ThumbsUp size={20} className={like ? 'fill-black text-black' : 'text-black/60'}/>
           <span className='text-xs text-black'>{noLikes}</span>
@@ -480,8 +484,10 @@ export default function BlogPost({ params }: Route.ComponentProps) {
           onClick={() => {
             (!commentsOpen) ? (openCommentsPanel()) : (closeCommentsPanel())
           }}
-          className='flex flex-col items-center gap-1 p-2 hover:bg-[#EDEDE9] rounded-lg transition-colors'
-          title="Comments"
+          className='flex flex-col items-center gap-1 p-2 hover:bg-[#EDEDE9] rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-[#E95444] focus:ring-offset-2'
+          title={commentsOpen ? "Close comments" : "Open comments"}
+          aria-label={commentsOpen ? "Close comments" : "Open comments"}
+          aria-expanded={commentsOpen}
         >
           <MessageSquare size={20} className='text-black/60'/>
           <span className='text-xs text-black'>{comments.length}</span>
@@ -498,8 +504,10 @@ export default function BlogPost({ params }: Route.ComponentProps) {
               <>
                 <button
                   onClick={() => setListModal(!listModal)} 
-                  className='flex flex-col items-center gap-1 p-2 hover:bg-[#EDEDE9] rounded-lg transition-colors'
-                  title="Save"
+                  className='flex flex-col items-center gap-1 p-2 hover:bg-[#EDEDE9] rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-[#E95444] focus:ring-offset-2'
+                  title={isInCollection ? "Remove from collections" : "Save to collection"}
+                  aria-label={isInCollection ? "Remove from collections" : "Save to collection"}
+                  aria-expanded={listModal}
                 >
                   <Bookmark 
                     className={isInCollection ? 'fill-black text-black' : 'text-black/60'}

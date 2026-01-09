@@ -10,6 +10,7 @@ import leaveCommunity from '~/apiCalls/Community/leaveCommunity';
 import joinCommunity from '~/apiCalls/Community/joinCommunity';
 import TopicPill from '~/components/TopicPill';
 import EditCommunityModal from '~/components/EditCommunityModal';
+import { Skeleton, BlogPostCardSkeleton } from '~/components/SkeletonLoader';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -182,8 +183,23 @@ export default function Community({ params }: Route.ComponentProps) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#EDEDE9]">
-        <h3 className="text-black">LOADING COMMUNITY</h3>
+      <div className="min-h-screen flex flex-row gap-6 px-6 py-8 bg-[#EDEDE9]">
+        <Sidebar />
+        <div className="flex-grow flex flex-col gap-6">
+          <Skeleton width="60%" height={48} />
+          <div className="flex gap-4 items-center">
+            <Skeleton circle width={80} height={80} />
+            <div className="flex flex-col gap-2">
+              <Skeleton width={200} height={24} />
+              <Skeleton width={150} height={16} />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[...Array(4)].map((_, i) => (
+              <BlogPostCardSkeleton key={`skeleton-${i}`} />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
@@ -236,7 +252,7 @@ export default function Community({ params }: Route.ComponentProps) {
               </div>
               <h1>{community.title.toUpperCase()}</h1>
             </div>
-            {user?.communities?.includes(community._id) ? (
+            {user?.communities?.some((c: Community | string) => (typeof c === 'string' ? c : c._id) === community._id) ? (
               <div className='flex gap-[10px]'>
               {isCreatorOrModerator && (
                 <button 

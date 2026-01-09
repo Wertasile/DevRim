@@ -165,13 +165,16 @@ const SignInTab = () => {
           </div>
 
           {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className={`primary-btn w-full py-3 mt-2 font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all ${isSubmitting ? "bg-[#353535]" : "hover:bg-[#D84333] hover:shadow-lg"}`}
-          >
-            {isSubmitting ? "Signing In..." : "SIGN IN"}
-          </button>
+          <div className='flex justify-center'>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className={`primary-btn bg-[#FFD700] w-full py-3 mt-2 font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all ${isSubmitting ? "bg-[#353535]" : "hover:bg-[#D84333] hover:shadow-lg"}`}
+            >
+              {isSubmitting ? "Signing In..." : "SIGN IN"}
+            </button>
+          </div>  
+
         </form>
 
         {/* Divider */}

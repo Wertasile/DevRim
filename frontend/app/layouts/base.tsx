@@ -11,7 +11,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 const base = () => {
   
-    const { user, setUser } = useUser()
+    const { user, setUser, isLoading, setIsLoading } = useUser()
     const { session, setSession} = useSession()
 
     // const {accessToken, setAccessToken, refreshToken, setRefreshToken} = useToken()
@@ -84,20 +84,28 @@ const base = () => {
     }
 
     const fetchUser = async () => {
+        setIsLoading(true);
+        try {
+            const user = await fetch(`${API_URL}/me`, {
+                method:'get',
+                credentials: 'include'
+            })
 
-        const user = await fetch(`${API_URL}/me`, {
-            method:'get',
-            credentials: 'include'
-        })
+            if (!user.ok) {
+                console.error("Failed to fetch user info")
+                setUser(null);
+                return
+            }
 
-        if (!user.ok) {
-            console.error("Failed to fetch user info")
-            return
+            const userData = await user.json()
+            console.log(userData)
+            setUser(userData)
+        } catch (error) {
+            console.error("Error fetching user:", error);
+            setUser(null);
+        } finally {
+            setIsLoading(false);
         }
-
-        const userData = await user.json()
-        console.log(userData)
-        setUser(userData)
     }
 
     useEffect( () => {
@@ -128,7 +136,7 @@ const base = () => {
                             ></img>
                                 
                         ):
-                        (<NavLink to="/login" className="primary-btn"><span>LOGIN</span></NavLink>)
+                        (<NavLink to="/login" className="primary-btn bg-[#FFD700]">LOGIN</NavLink>)
                     }
                     {/* {session ? 
                         (<div

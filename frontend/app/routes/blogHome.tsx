@@ -18,6 +18,8 @@ import BlogPostSmall from '~/components/blogPostSmall';
 import getUserCommunities from '~/apiCalls/Community/getUserCommunities';
 import CommunityIcon from '~/components/communityIcon';
 import CommunityCardSmall from '~/components/CommunityCardSmall';
+import { BlogPostCardSkeleton, BlogPostSmallSkeleton, CommunityCardSkeleton, Skeleton } from '~/components/SkeletonLoader';
+import WelcomeScreen from '~/components/WelcomeScreen';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -32,6 +34,10 @@ export default function BlogHome() {
     const [section, setSection] = useState<"For You" | "Featured" | "Search Results" | "Latest">("For You");
     const [userCommunities, setUserCommunities] = useState<Community[]>([]);
     const [trendingCommunities, setTrendingCommunities] = useState<Community[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [isLoadingTrending, setIsLoadingTrending] = useState<boolean>(true);
+    const [isLoadingCommunities, setIsLoadingCommunities] = useState<boolean>(true);
+    const [isLoadingRecommendations, setIsLoadingRecommendations] = useState<boolean>(true);
     
     const location = useLocation();
     useEffect(() => {
@@ -56,16 +62,23 @@ export default function BlogHome() {
     }, [user]);
 
     const getBlogs = async () => {
-        const response = await fetch(`${API_URL}/posts/`, {
-            method: "get",
-            credentials: "include",
-        });
-        const data = await response.json();
-        setBlogs(data);
-        
+        try {
+            const response = await fetch(`${API_URL}/posts/`, {
+                method: "get",
+                credentials: "include",
+            });
+            const data = await response.json();
+            setBlogs(data);
+        } catch (err) {
+            console.error('Failed to fetch blogs:', err);
+            setBlogs([]);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const getRecommendations = async () => {
+        setIsLoadingRecommendations(true);
         try {
             const response = await fetch(`${API_URL}/analytics/recommendations`, {
                 method: "get",
@@ -76,20 +89,30 @@ export default function BlogHome() {
         } catch (err) {
             console.error(err);
             setRecommendations([]);
+        } finally {
+            setIsLoadingRecommendations(false);
         }
-
     }
 
     const getTrending = async () => {
-        const response = await fetch(`${API_URL}/analytics/trending`, {
-            method: "get",
-            credentials: 'include'
-        })
-        const data = await response.json()
-        setTrending(data);
+        setIsLoadingTrending(true);
+        try {
+            const response = await fetch(`${API_URL}/analytics/trending`, {
+                method: "get",
+                credentials: 'include'
+            })
+            const data = await response.json()
+            setTrending(data);
+        } catch (err) {
+            console.error('Failed to fetch trending:', err);
+            setTrending([]);
+        } finally {
+            setIsLoadingTrending(false);
+        }
     }
 
     const getTrendingCommunities = async () => {
+        setIsLoadingCommunities(true);
         try {
             const response = await fetch(`${API_URL}/communities/`, {
                 method: "get",
@@ -116,6 +139,8 @@ export default function BlogHome() {
         } catch (err) {
             console.error("Failed to fetch trending communities:", err);
             setTrendingCommunities([]);
+        } finally {
+            setIsLoadingCommunities(false);
         }
     }
 
@@ -132,7 +157,29 @@ export default function BlogHome() {
     const trendingPosts = (trending?.[0]?.posts ?? []).slice(0, 5);
 
     const renderSection = () => {
+        const isLoadingSection = 
+            (section === "For You" && isLoadingRecommendations) ||
+            (section === "Latest" && isLoading) ||
+            (section === "Search Results" && searchResults.length === 0 && isLoading);
+
+        if (isLoadingSection) {
+            return (
+                <>
+                    {[...Array(3)].map((_, i) => (
+                        <BlogPostCardSkeleton key={`skeleton-${i}`} />
+                    ))}
+                </>
+            );
+        }
+
         if (section === "For You") {
+            if (recommendations.length === 0) {
+                return (
+                    <div className="text-center py-8 text-[#979797]" role="status" aria-live="polite">
+                        <p>No recommendations available yet. Check back later!</p>
+                    </div>
+                );
+            }
             return recommendations.map((b, idx) => (
                 <BlogPostCard
                     key={b._id}
@@ -152,6 +199,13 @@ export default function BlogHome() {
         }
 
         if (section === "Search Results") {
+            if (searchResults.length === 0) {
+                return (
+                    <div className="text-center py-8 text-[#979797]" role="status" aria-live="polite">
+                        <p>No search results found.</p>
+                    </div>
+                );
+            }
             return searchResults.map((b, idx) => (
                 <BlogPostCard
                     key={b._id}
@@ -168,6 +222,14 @@ export default function BlogHome() {
                     community={b.community}
                 />
             ));
+        }
+
+        if (blogs.length === 0) {
+            return (
+                <div className="text-center py-8 text-[#979797]" role="status" aria-live="polite">
+                    <p>No posts available yet.</p>
+                </div>
+            );
         }
 
         return blogs.map((b, idx) => (
@@ -188,30 +250,42 @@ export default function BlogHome() {
         ));
     };
 
-        // Redirect or show login page if not logged in
-    if (!user) {
+        // Show loading skeleton while checking authentication
+    const { isLoading: userLoading } = useUser();
+    
+    if (userLoading) {
         return (
-        <div className="flex flex-col gap-[10px] items-center justify-center min-h-screen bg-[#D6D6CD] text-center p-6">
-            <h1>Welcome to DevRim</h1>
-            <p>
-            Please <span className="text-[#5D64F4] font-semibold">log in</span> or <span className="text-[#5D64F4] font-semibold">sign up</span> to explore personalized blog recommendations and trending posts.
-            </p>
-            <div className="flex gap-4">
-            <a
-                href="/login"
-                className="primary-btn"
-            >
-                Log In
-            </a>
-            <a
-                href="/register"
-                className="secondary-btn"
-            >
-                Sign Up
-            </a>
+            <div className="blog-home min-h-screen px-[25px]">
+                <div className="flex gap-[20px]">
+                    <Sidebar />
+                    <section className="flex flex-col flex-grow gap-[10px]">
+                        <div className='flex justify-between items-center'>
+                            <Skeleton width={200} height={32} />
+                            <Skeleton width={40} height={40} rounded />
+                        </div>
+                        <div className="flex flex-row gap-4 border-[1px] w-fit border-black bg-[#EDEDE9] rounded-lg overflow-hidden shadow-md">
+                            {[...Array(3)].map((_, i) => (
+                                <Skeleton key={i} width={100} height={40} rounded />
+                            ))}
+                        </div>
+                        <div className="feed-list">
+                            {[...Array(3)].map((_, i) => (
+                                <BlogPostCardSkeleton key={`loading-${i}`} />
+                            ))}
+                        </div>
+                    </section>
+                    <aside className="flex gap-[20px] flex-col">
+                        <Skeleton width={400} height={300} rounded />
+                        <Skeleton width={400} height={300} rounded />
+                    </aside>
+                </div>
             </div>
-        </div>
-        )
+        );
+    }
+    
+    // Redirect or show login page if not logged in (only after loading is complete)
+    if (!user) {
+        return <WelcomeScreen />
     }
     
 
@@ -227,10 +301,12 @@ export default function BlogHome() {
                         <h1>DASHBOARD</h1>
                         <div className='flex gap-[10px]'>
                             <button 
-                                className='icon bg-[#FEC72F] hover:bg-[#FEC72F] transition-all duration-300 hover:scale-110 hover:shadow-lg' 
+                                className='icon bg-[#FEC72F] hover:bg-[#FEC72F] transition-all duration-300 hover:scale-110 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-[#FEC72F] focus:ring-offset-2' 
                                 onClick={() => window.location.href = '/blog/new'}
+                                aria-label="Create new blog post"
+                                title="Create new blog post"
                             >
-                                <Plus size={16} />
+                                <Plus size={16} aria-hidden="true" />
                             </button>
                         </div>
                     </div>
@@ -243,12 +319,16 @@ export default function BlogHome() {
                         </div>
                     )}
 
-                    <div className="flex flex-row gap-4 border-[1px] w-fit border-black bg-[#EDEDE9] rounded-lg overflow-hidden shadow-md">
+                    <div className="flex flex-row gap-4 border-[1px] w-fit border-black bg-[#EDEDE9] rounded-lg overflow-hidden shadow-md" role="tablist" aria-label="Content sections">
                         {(["For You", "Search Results", "Latest"] as const).map((label,index) => (
                             <button
                                 key={label}
                                 onClick={() => setSection(label)}
-                                className={`cursor-pointer px-4 py-2 transition-all duration-300 relative ${
+                                role="tab"
+                                aria-selected={section === label}
+                                aria-controls={`${label.toLowerCase().replace(' ', '-')}-panel`}
+                                id={`${label.toLowerCase().replace(' ', '-')}-tab`}
+                                className={`cursor-pointer px-4 py-2 transition-all duration-300 relative focus:outline-none focus:ring-2 focus:ring-[#FEC72F] focus:ring-offset-2 ${
                                     section === label 
                                         ? "bg-[#FEC72F] text-black font-semibold shadow-lg transform scale-105" 
                                         : "hover:bg-[#FEC72F]/30 hover:font-medium"
@@ -256,41 +336,49 @@ export default function BlogHome() {
                             >
                                 {label}
                                 {section === label && (
-                                    <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#FEC72F]"></div>
+                                    <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#FEC72F]" aria-hidden="true"></div>
                                 )}
                             </button>
                         ))}
  
                     </div>
 
-                    <div className="feed-list">
+                    <div className="feed-list" role="tabpanel" id={`${section.toLowerCase().replace(' ', '-')}-panel`} aria-labelledby={`${section.toLowerCase().replace(' ', '-')}-tab`}>
                         {renderSection()}
                     </div>
                 </section>
 
-                <aside className="flex gap-[20px] flex-col">
+                <aside className="flex gap-[20px] flex-col" aria-label="Trending content">
                     <div className="w-[400px] flex border-[3px] bg-[#EDEDE9] border-solid border-[#000000] p-[10px] flex-col gap-[10px] rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
                         <h3>TRENDING POSTS</h3>
-                        <div className='flex flex-col gap-[10px]'>
-                            {user && trendingPosts.length > 0 ? (
+                        <div className='flex flex-col gap-[10px]' role="list" aria-label="Trending posts">
+                            {isLoadingTrending ? (
+                                [...Array(5)].map((_, i) => (
+                                    <BlogPostSmallSkeleton key={`trending-skeleton-${i}`} />
+                                ))
+                            ) : user && trendingPosts.length > 0 ? (
                                 trendingPosts.map((b: any) => (
                                     <BlogPostSmall key={b.blog?._id} blog={b.blog} />
                                 ))
                             ) : (
-                                <div className="text-gray-500 italic">Trending posts appear here once available.</div>
+                                <div className="text-[#979797] italic" role="status" aria-live="polite">Trending posts appear here once available.</div>
                             )}
                         </div>
                     </div>
 
                     <div className="w-[400px] bg-[#EDEDE9] flex border-[3px] border-solid border-[#000000] flex-col gap-[10px] p-[10px] rounded-lg shadow-lg">
                         <h3>TRENDING COMMUNITIES</h3>
-                        <div className='flex flex-col gap-[10px]'>
-                            {trendingCommunities.length > 0 ? (
+                        <div className='flex flex-col gap-[10px]' role="list" aria-label="Trending communities">
+                            {isLoadingCommunities ? (
+                                [...Array(5)].map((_, i) => (
+                                    <CommunityCardSkeleton key={`community-skeleton-${i}`} />
+                                ))
+                            ) : trendingCommunities.length > 0 ? (
                                 trendingCommunities.map((community) => (
                                     <CommunityCardSmall key={community._id} community={community} />
                                 ))
                             ) : (
-                                <div className="text-gray-500 italic">Trending communities appear here once available.</div>
+                                <div className="text-[#979797] italic" role="status" aria-live="polite">Trending communities appear here once available.</div>
                             )}
                         </div>
                     </div>

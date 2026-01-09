@@ -170,10 +170,23 @@ p{
   font-family: 'DM Sans','Arial Narrow', Arial, sans-serif;
   text-align: center;
   border-radius: 5px;
-  min-width: 150px;
+  min-width: 125px;
   box-shadow: 0 2px 0 2px #000000;
   width: fit-content;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+
+
+.primary-btn:focus-visible {
+  outline: 2px solid #E95444;
+  outline-offset: 2px;
+}
+
+.secondary-btn:disabled, .primary-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .secondary-btn {
@@ -184,10 +197,11 @@ p{
   text-align: center;
   color: #ffffff;
   border-radius: 5px;
-  min-width: 150px;
+  min-width: 125px;
   box-shadow: 0 2px 0 2px #000000;
   width: fit-content;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .icon{
@@ -202,6 +216,17 @@ p{
   align-items: center;
   justify-content: center;
   padding: 10px;
+  transition: all 0.2s ease;
+}
+
+.icon:focus-visible {
+  outline: 2px solid #E95444;
+  outline-offset: 2px;
+}
+
+.icon:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .card{
@@ -238,6 +263,35 @@ p{
     border: 1px solid #353535;
 }
 
+/* Global Focus Styles for Accessibility */
+*:focus-visible {
+    outline: 2px solid #E95444;
+    outline-offset: 2px;
+}
+
+button:focus-visible,
+a:focus-visible {
+    outline: 2px solid #E95444;
+    outline-offset: 2px;
+}
+
+/* Skip to main content link for screen readers */
+.skip-to-main {
+    position: absolute;
+    left: -9999px;
+    z-index: 999;
+}
+
+.skip-to-main:focus {
+    left: 6px;
+    top: 7px;
+    background: #E95444;
+    color: white;
+    padding: 8px;
+    text-decoration: none;
+    border-radius: 4px;
+}
+
 /* Form Input Styling - Applied to all inputs and textareas */
 .form-input,
 input.form-input,
@@ -247,17 +301,18 @@ textarea.form-input {
     border: 2px solid #000000;
     border-radius: 8px;
     box-shadow: 0 2px 0 2px #000000;
-    background-color: #ffffff;
     transition: all 0.2s ease;
-    font: inherit;
 }
 
 .form-input:focus,
 input.form-input:focus,
 textarea.form-input:focus {
     outline: none;
-    border-color: transparent;
-    box-shadow: 0 2px 0 2px #000000, 0 0 0 2px #E95444;
+    border-color: #E95444;
+    box-shadow: 0 2px 0 2px #E95444, 0 0 0 3px rgba(233, 84, 68, 0.1);
+    background-color: #ffffff;
+    transition: all 0.2s ease;
+    font: inherit;
 }
 
 .form-input:disabled,
@@ -676,7 +731,7 @@ form{
   transition: all 0.3s ease;
 }
 
-.primary-btn:hover,.icon:hover {
+.secondary-btn:hover,.primary-btn:hover,.icon:hover {
   transform: translateY(2px);
 }
 
