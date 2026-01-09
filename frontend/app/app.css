@@ -230,7 +230,7 @@ p{
     min-height: 100vh;
 }
 
-input, textarea{
+.input-decor, textarea{
     background-color: #ffffff;
     width: stretch;
     box-shadow: 0 2px 0px 2px#000000;
@@ -265,6 +265,36 @@ input.form-input:disabled,
 textarea.form-input:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+/* Select dropdown styling */
+select {
+    font-family: inherit;
+}
+
+select option {
+    background-color: #ffffff;
+    color: #000000;
+    padding: 8px 12px;
+}
+
+select option:hover {
+    background-color: #EDEDE9;
+}
+
+select:focus option:checked {
+    background-color: #E95444;
+    color: #000000;
+}
+
+/* Community select dropdown custom styling */
+.community-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23000000' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px 16px;
+    padding-right: 2.5rem;
 }
 
 /* Form Label Styling - Applied to all labels */
@@ -415,13 +445,71 @@ form{
     gap: 10px;
 }
 
+.control-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+
+.button-group {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  margin-right: 16px;
+}
+
+.button-group:last-child {
+  margin-right: 0;
+}
+
+.control-group [data-slot="toggle"] {
+  color: #000000 !important;
+  border: 1px solid #979797 !important;
+  background-color: transparent !important;
+  transition: all 0.2s ease;
+}
+
+.control-group [data-slot="toggle"]:hover {
+  background-color: #D6D6CD !important;
+  border-color: #000000 !important;
+}
+
+.control-group [data-slot="toggle"][data-state="on"],
+.control-group [data-slot="toggle"][aria-pressed="true"],
+.control-group button[data-state="on"] {
+  background-color: #E95444 !important;
+  color: #000000 !important;
+  border-color: #000000 !important;
+  box-shadow: 0 2px 4px rgba(233, 84, 68, 0.3) !important;
+}
+
+.control-group [data-slot="toggle"][data-state="on"]:hover,
+.control-group [data-slot="toggle"][aria-pressed="true"]:hover,
+.control-group button[data-state="on"]:hover {
+  background-color: #d84333 !important;
+  box-shadow: 0 2px 6px rgba(233, 84, 68, 0.4) !important;
+}
+
 .custom-file-upload {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    border: none;
+    border: 1px solid #979797;
     padding: 0px 8px;
     border-radius: 4px;
+    color: #000000;
+    background-color: transparent;
+    min-height: 36px;
+    min-width: 36px;
   }
+
+.custom-file-upload:hover {
+    background-color: #D6D6CD;
+    border-color: #000000;
+  }
+
   #file-upload {
     display: none;
   }

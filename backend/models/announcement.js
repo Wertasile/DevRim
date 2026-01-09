@@ -12,3 +12,4 @@ const announcementSchema = new Schema({
 
 export default mongoose.model("announcement", announcementSchema)
 
+

@@ -1,4 +1,5 @@
-// Natural Editor - First line is title, second line is content
+// Natural Editor - Content editor (title is separate, passed via titleInput prop)
+import React from 'react'
 import '../../tiptap.css'
 import Highlight from '@tiptap/extension-highlight'
 import TextAlign from '@tiptap/extension-text-align'
@@ -11,16 +12,23 @@ import { ImageUploadNode } from '../tiptap-node/image-upload-node'
 import { handleImageUpload, MAX_FILE_SIZE } from '~/lib/tiptap-utils'
 import CodeBlock from '@tiptap/extension-code-block'
 import { useEffect } from 'react'
-import { TextSelection } from '@tiptap/pm/state'
+import { X } from 'lucide-react'
 
 type NaturalEditorProps = {
   content: any | null;
   handleChange: (content: any) => void;
   onTitleChange?: (title: string) => void;
   onSummaryChange?: (summary: string) => void;
+  coverImage?: string;
+  showSummaryInput?: boolean;
+  summary?: string;
+  setSummary?: (summary: string) => void;
+  setShowSummaryInput?: (showSummaryInput: boolean) => void;
+  titleInput?: React.ReactNode;
+  handleRemoveCoverImage?: () => void;
 }
 
-const NaturalEditor = ({ content, handleChange, onTitleChange, onSummaryChange }: NaturalEditorProps) => {
+const NaturalEditor = ({ content, handleChange, onTitleChange, onSummaryChange, showSummaryInput, summary, setSummary, setShowSummaryInput, titleInput, coverImage, handleRemoveCoverImage }: NaturalEditorProps) => {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -44,16 +52,12 @@ const NaturalEditor = ({ content, handleChange, onTitleChange, onSummaryChange }
       }),
       CodeBlock.configure({
         HTMLAttributes: {
-          class: "bg-white"
+          class: "code-block-styled"
         }
       }),
       Placeholder.configure({
         placeholder: ({ node }) => {
-          // First line (heading) placeholder
-          if (node.type.name === 'heading') {
-            return 'Title';
-          }
-          // Second line (paragraph) placeholder
+          // Paragraph placeholder
           if (node.type.name === 'paragraph') {
             return 'Tell your story...';
           }
@@ -73,11 +77,6 @@ const NaturalEditor = ({ content, handleChange, onTitleChange, onSummaryChange }
       type: 'doc',
       content: [
         {
-          type: 'heading',
-          attrs: { level: 1 },
-          content: [{ type: 'text', text: '' }]
-        },
-        {
           type: 'paragraph',
           content: []
         }
@@ -89,80 +88,85 @@ const NaturalEditor = ({ content, handleChange, onTitleChange, onSummaryChange }
         class: "prose max-w-none bg-transparent text-black min-h-[600px] px-8 py-12 focus:outline-none"
       },
       handleKeyDown: (view, event) => {
-        const { state } = view;
-        const { selection } = state;
-        const { $from } = selection;
-        
-        // If we're in the first heading (title) and press Enter, move to next paragraph
-        if (event.key === 'Enter' && $from.parent.type.name === 'heading' && $from.depth === 1) {
-          // Check if we're in the first node
-          const firstNode = state.doc.firstChild;
-          if (firstNode && firstNode.type.name === 'heading' && $from.before() === 1) {
-            event.preventDefault();
-            // Move to the second node (content) or create it if it doesn't exist
-            const secondNodePos = firstNode.nodeSize;
-            const resolvedPos = state.doc.resolve(secondNodePos);
-            const selection = TextSelection.create(state.doc, resolvedPos.pos);
-            view.dispatch(state.tr.setSelection(selection));
-            return true;
-          }
-        }
         return false;
       }
     },
     onUpdate: ({ editor }) => {
       const json = editor.getJSON();
       handleChange(json);
-      
-      // Extract title from first heading
-      if (json.content && json.content[0] && json.content[0].type === 'heading') {
-        const titleNode = json.content[0];
-        if (titleNode.content && Array.isArray(titleNode.content)) {
-          // Extract all text from title node (handles multiple text nodes)
-          const title = titleNode.content
-            .filter((node: any) => node.type === 'text')
-            .map((node: any) => node.text || '')
-            .join('');
-          onTitleChange?.(title);
-        } else {
-          onTitleChange?.('');
-        }
-      } else {
-        onTitleChange?.('');
-      }
     }
   });
 
-  // Set initial focus on title
+  // Set initial focus on editor
   useEffect(() => {
     if (editor && !content) {
       setTimeout(() => {
         editor.commands.focus('start');
-        editor.commands.setHeading({ level: 1 });
       }, 100);
     }
   }, [editor, content]);
 
   return (
-    <div className="w-full overflow-hidden">
-      <div className="border border-[#1f2735] bg-[#EDEDE9] px-4 py-2">
+    <div className="w-full border border-[#979797] flex flex-col">
+      <div className="sticky top-0 z-10 flex gap-[20px] p-[10px] flex-col bg-[#EDEDE9] border-b border-[#000000] rounded-t-lg shadow-lg">
         <MenuBar editor={editor} />
       </div>
-      <div className="prose-wrapper">
+      {titleInput && (
+        <div>
+          {titleInput}
+        </div>
+      )}
+      {showSummaryInput && (
+        <div className='relative mb-4'>
+          <div className=' flex items-center justify-between mb-2 '>
+            <label htmlFor="summary" className='hidden'>
+              SUMMARY
+            </label>
+            {/* <button
+              onClick={() => {
+                setShowSummaryInput(false);
+                setSummary('');
+              }}
+              className='p-1 hover:bg-[#EDEDE9] rounded transition-colors'
+              title="Close summary"
+            >
+              <X size={16} className='text-black' />
+            </button> */}
+          </div>
+          <input
+            type='text'
+            id='summary'
+            name="summary"
+            value={summary || ''}
+            onChange={(e) => setSummary?.(e.target.value)}
+            placeholder='Add a brief summary of your post (optional)'
+            maxLength={250}
+            className="min-w-full py-2 px-8 focus:outline-none placeholder:text-[#9ca3af] placeholder:opacity-60"
+            style={{fontSize: '20px', fontWeight: 'medium', fontFamily: 'ManRope'}}
+          />
+          <p className='absolute -top-5 right-5 text-black/60 text-xs mt-1'>{summary?.length}/250 characters</p>
+        </div>
+      )}
+      {coverImage && (
+        <div className='relative w-fit self-center rounded-lg overflow-hidden'>
+          <img
+            src={coverImage}
+            alt="Cover preview"
+            className='w-full h-auto'
+            style={{ aspectRatio: '2/1', maxWidth: '1000px', objectFit:'cover' }}
+          />
+          <button
+            type="button"
+            onClick={handleRemoveCoverImage}
+            className="absolute top-3 right-3 bg-[#E95444] hover:bg-[#D84335] text-white rounded-full p-2 transition-all duration-200 shadow-lg border-2 border-[#000000]"
+            title="Remove cover image"
+          >
+            <X size={16} />
+          </button>
+        </div>
+      )}
+      <div className="prose-wrapper rounded-b-lg">
         <style>{`
-          .prose h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            line-height: 1.2;
-            margin-bottom: 2rem;
-            color: #000000;
-            border-bottom: none;
-            padding-bottom: 0;
-            text-align: center;
-          }
-          .prose h1:focus {
-            outline: none;
-          }
           .prose p {
             font-size: 1.125rem;
             line-height: 1.75;
@@ -174,22 +178,6 @@ const NaturalEditor = ({ content, handleChange, onTitleChange, onSummaryChange }
           }
           .prose-wrapper {
             max-width: 100%;
-          }
-          
-          /* Placeholder styles - Medium-like */
-          .prose h1.is-empty::before,
-          .tiptap h1.is-empty::before {
-            content: attr(data-placeholder);
-            float: left;
-            color: #9ca3af;
-            pointer-events: none;
-            height: 0;
-            font-size: 2.5rem;
-            font-weight: 700;
-            text-align: center;
-            width: 100%;
-            display: block;
-            opacity: 0.6;
           }
           
           .prose p.is-empty::before,
@@ -204,28 +192,52 @@ const NaturalEditor = ({ content, handleChange, onTitleChange, onSummaryChange }
             opacity: 0.6;
           }
           
-          .prose h1.is-empty:first-child::before,
-          .tiptap h1.is-empty:first-child::before {
-            display: block;
-            text-align: center;
-            width: 100%;
-          }
-          
           /* Ensure placeholders are visible */
           .prose .is-empty,
           .tiptap .is-empty {
             position: relative;
           }
           
-          /* Make sure empty nodes show placeholders */
-          .prose h1.is-empty:first-child,
-          .tiptap h1.is-empty:first-child {
-            min-height: 3rem;
-          }
-          
           .prose p.is-empty,
           .tiptap p.is-empty {
             min-height: 1.5rem;
+          }
+          
+          /* Code block styling - override tiptap.css */
+          .prose pre,
+          .tiptap pre,
+          .prose pre.code-block-styled,
+          .tiptap pre.code-block-styled {
+            background-color: #EDEDE9 !important;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            color: #000000 !important;
+          }
+          
+          .prose pre code,
+          .tiptap pre code,
+          .code-block-styled,
+          .prose pre.code-block-styled code,
+          .tiptap pre.code-block-styled code {
+            background-color: #EDEDE9 !important;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            color: #000000 !important;
+            padding: 0;
+            border-radius: 0;
+          }
+          
+          .prose code:not(pre code),
+          .tiptap code:not(pre code) {
+            background-color: #EDEDE9 !important;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+            font-size: 0.875rem;
+            padding: 0.125rem 0.25rem;
+            border-radius: 0.25rem;
+            color: #000000 !important;
           }
         `}</style>
         <EditorContent editor={editor} />

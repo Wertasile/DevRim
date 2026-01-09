@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {Editor, } from '@tiptap/core';
 import {AlignCenter, AlignJustify, AlignLeft, AlignRight, Bold, Code, CodeIcon, Heading1, Heading2, Heading3, Highlighter, Image, Italic, List, ListOrdered, Pilcrow, Strikethrough, Underline} from 'lucide-react'
 import { Toggle } from '../ui/toggle';
@@ -12,7 +12,30 @@ type MenuBarProps = {
     editor: Editor | null
 }
 const MenuBar = ({editor} : MenuBarProps) => {
+  const [updateKey, setUpdateKey] = useState(0);
+  const [selectedImage, setSelectedImage] = useState<any>();
   
+  // Force re-render when editor state changes
+  useEffect(() => {
+    if (!editor) {
+      return;
+    }
+
+    const update = () => {
+      setUpdateKey(prev => prev + 1);
+    };
+
+    editor.on('selectionUpdate', update);
+    editor.on('update', update);
+    editor.on('transaction', update);
+
+    return () => {
+      editor.off('selectionUpdate', update);
+      editor.off('update', update);
+      editor.off('transaction', update);
+    };
+  }, [editor]);
+
   if (!editor) {
     return null
   }
@@ -27,8 +50,6 @@ const MenuBar = ({editor} : MenuBarProps) => {
     'audio/wav',
     // Add more supported types as needed
   ];
-
-  const [selectedImage, setSelectedImage] = useState<any>()
 
   const onFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.length) return;
@@ -51,7 +72,8 @@ const MenuBar = ({editor} : MenuBarProps) => {
 
   }
 
-  const options = [
+  // Group 1: Headings
+  const headingGroup = [
     {
       icon: <Heading1 className="size-4"/>,
       onClick:() => editor.chain().focus().toggleHeading({ level: 1 }).run(),
@@ -72,6 +94,10 @@ const MenuBar = ({editor} : MenuBarProps) => {
       onClick:() => editor.chain().focus().setParagraph().run(),
       pressed:editor.isActive('paragraph')
     },
+  ];
+
+  // Group 2: Text Formatting
+  const textFormatGroup = [
     {
       icon: <Bold className="size-4"/>,
       onClick:() => editor.chain().focus().toggleBold().run(),
@@ -97,26 +123,34 @@ const MenuBar = ({editor} : MenuBarProps) => {
       onClick:() => editor.chain().focus().toggleHighlight().run(),
       pressed:editor.isActive('highlight')
     },
+  ];
+
+  // Group 3: Alignment
+  const alignmentGroup = [
     {
       icon: <AlignLeft className="size-4"/>,
       onClick:() => editor.chain().focus().setTextAlign('left').run(),
-      pressed:editor.isActive({TextAlign: 'left'})
+      pressed:editor.isActive('textAlign', { textAlign: 'left' })
     },
     {
       icon: <AlignCenter className="size-4"/>,
       onClick:() => editor.chain().focus().setTextAlign('center').run(),
-      pressed:editor.isActive({TextAlign: 'center'})
+      pressed:editor.isActive('textAlign', { textAlign: 'center' })
     },
     {
       icon: <AlignRight className="size-4"/>,
       onClick:() => editor.chain().focus().setTextAlign('right').run(),
-      pressed:editor.isActive({TextAlign: 'right'})
+      pressed:editor.isActive('textAlign', { textAlign: 'right' })
     },
     {
       icon: <AlignJustify className="size-4"/>,
       onClick:() => editor.chain().focus().setTextAlign('justify').run(),
-      pressed:editor.isActive({TextAlign: 'justify'})
+      pressed:editor.isActive('textAlign', { textAlign: 'justify' })
     },
+  ];
+
+  // Group 4: Lists
+  const listGroup = [
     {
       icon: <List className="size-4"/>,
       onClick:() => editor.chain().focus().toggleBulletList().run(),
@@ -127,31 +161,42 @@ const MenuBar = ({editor} : MenuBarProps) => {
       onClick:() => editor.chain().focus().toggleOrderedList().run(),
       pressed:editor.isActive('orderedList')
     },
+  ];
+
+  // Group 5: Code
+  const codeGroup = [
     {
       icon: <CodeIcon className="size-4"/>,
       onClick:() => editor.chain().focus().toggleCodeBlock().run(),
       pressed:editor.isActive('codeBlock')
     },
-    // {
-    //   icon: <Image className="size-4"/>,
-    //   onClick:() => {
-    //     editor.chain().focus().setImage({src: ''}).run()
-    //   },
-    //   pressed:editor.isActive('codeBlock')
-    // },
-  ]
+  ];
+
+  const buttonGroups = [
+    headingGroup,
+    textFormatGroup,
+    alignmentGroup,
+    listGroup,
+    codeGroup,
+  ];
 
   return (
     <div className="control-group">
-
-      {options.map((option, index) => (
-        <Toggle key={index} onPressedChange={option.onClick} pressed={option.pressed}>{option.icon}</Toggle>
+      {buttonGroups.map((group, groupIndex) => (
+        <div key={groupIndex} className="button-group">
+          {group.map((option, index) => (
+            <Toggle key={index} onPressedChange={option.onClick} pressed={option.pressed}>
+              {option.icon}
+            </Toggle>
+          ))}
+        </div>
       ))}
-      <label htmlFor="file-upload" className='custom-file-upload'>
-        <Image className="size-4"></Image>
-      </label>
-      <input type="file" onChange={onFileUpload} id="file-upload"/>
-        
+      <div className="button-group">
+        <label htmlFor="file-upload" className='custom-file-upload'>
+          <Image className="size-4"></Image>
+        </label>
+        <input type="file" onChange={onFileUpload} id="file-upload"/>
+      </div>
     </div>
   )
 }

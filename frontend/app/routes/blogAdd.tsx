@@ -221,37 +221,11 @@ const BlogAdd = ({ params }: Route.ComponentProps) => {
         }
       }
 
-      // Remove title heading from content to avoid duplication
-      // The title is stored separately, so we don't need it in content
-      let contentWithoutTitle = post;
-      if (contentWithoutTitle?.content && Array.isArray(contentWithoutTitle.content)) {
-        // Remove the first heading (title) from content
-        const contentNodes = contentWithoutTitle.content.filter((node: any, index: number) => {
-          // Skip the first heading node (index 0) if it's a heading
-          if (index === 0 && node.type === 'heading') {
-            return false;
-          }
-          return true;
-        });
-        
-        // If we removed the title and there's no content left, add an empty paragraph
-        if (contentNodes.length === 0) {
-          contentNodes.push({
-            type: 'paragraph',
-            content: []
-          });
-        }
-        
-        contentWithoutTitle = {
-          ...contentWithoutTitle,
-          content: contentNodes
-        };
-      }
-      
       // Build request body
+      // Content already doesn't include title since it's now separate
       const requestBody: any = {
         title: title.trim(),
-        content: contentWithoutTitle,
+        content: post,
         communityId: selectedCommunity,
         summary: summary.trim() || '', // Always include summary, empty string if not provided
         coverImage: finalCoverImageUrl || undefined // Include cover image if available
@@ -285,15 +259,15 @@ const BlogAdd = ({ params }: Route.ComponentProps) => {
       <div className='flex flex-row gap-6 p-[5px] mx-auto max-w-[1400px]'>
 
         {/* Main Content */}
-        <div className='flex-grow flex flex-col gap-6'>
+        <div className='flex-grow flex flex-col gap-6 p-[20px]'>
           {/* Header Section */}
-          <div className='flex flex-col gap-[10px] p-[10px] w-full'>
+          <div className='flex flex-col gap-[10px] w-full'>
             
             {/* Top Actions Bar */}
-            <div className='flex flex-wrap items-end justify-between gap-4 mb-6 pb-6 border-b-2 border-black/20'>
+            <div className='flex flex-wrap items-center justify-between gap-4'>
               {/* Community Selection */}
-              <div className='flex-1 min-w-[250px]'>
-                <label htmlFor="community" className='form-label mb-2 block'>
+              <div className='flex-1 min-w-[280px] max-w-[400px]'>
+                <label htmlFor="community" className='hidden'>
                   COMMUNITY <span className='text-[#E95444]'>*</span>
                 </label>
                 <select
@@ -301,7 +275,7 @@ const BlogAdd = ({ params }: Route.ComponentProps) => {
                   value={selectedCommunity}
                   onChange={(e) => setSelectedCommunity(e.target.value)}
                   required
-                  className='form-input w-full hover:border-[#E95444] focus:border-[#E95444] transition-all duration-200'
+                  className='community-select w-full px-4 py-2.5 bg-white border-2 border-[#000000] rounded-lg text-black font-medium text-sm cursor-pointer transition-all duration-200 hover:border-[#E95444] focus:outline-none focus:border-[#E95444] focus:ring-2 focus:ring-[#E95444] focus:ring-opacity-20 shadow-[0_2px_0_2px_rgba(0,0,0,1)] hover:shadow-[0_2px_0_2px_rgba(233,84,68,0.5)] focus:shadow-[0_2px_0_2px_rgba(233,84,68,0.8)]'
                 >
                   <option value="">Choose a community...</option>
                   {communities.map((community) => (
@@ -329,13 +303,23 @@ const BlogAdd = ({ params }: Route.ComponentProps) => {
                   disabled={isSubmitting || !selectedCommunity || !title.trim()}
                   className='primary-btn bg-[#E95444] hover:bg-[#D84335] border-2 border-[#000000] rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#E95444] shadow-md hover:shadow-lg'
                 >
-                  {isSubmitting ? 'PUBLISHING...' : 'PUBLISH POST'}
+                  {isSubmitting ? 'PUBLISHING...' : 'PUBLISH'}
                 </button>
+                <div className='flex items-center justify-between'>
+                  <label className='form-label hidden'>COVER IMAGE (OPTIONAL)</label>
+                  {!coverImage && !showCoverCropper && (
+                    <FileInput 
+                      onImageSelected={handleCoverImageSelected} 
+                      onError={(error: string) => alert(error)}
+                      type="Cover Image"
+                    />
+                  )}
+                </div>
               </div>
             </div>
 
             {/* Summary Input - Conditional */}
-            {showSummaryInput && (
+            {/* {showSummaryInput && (
               <div className='mb-4'>
                 <div className='flex items-center justify-between mb-2'>
                   <label htmlFor="summary" className='form-label'>
@@ -360,43 +344,14 @@ const BlogAdd = ({ params }: Route.ComponentProps) => {
                   onChange={(e) => setSummary(e.target.value)}
                   placeholder='Add a brief summary of your post (optional)'
                   maxLength={250}
-                  className="form-input hover:border-[#E95444] focus:border-[#E95444] transition-all duration-200"
+                  className="text-xl text-black/80 leading-relaxed font-medium"
                 />
                 <p className='text-black/60 text-xs mt-1'>{summary.length}/250 characters</p>
               </div>
-            )}
+            )} */}
 
             {/* Cover Image Section */}
-            <div className='flex flex-col gap-3'>
-              <div className='flex items-center justify-between'>
-                <label className='form-label'>COVER IMAGE (OPTIONAL)</label>
-                {!coverImage && !showCoverCropper && (
-                  <FileInput 
-                    onImageSelected={handleCoverImageSelected} 
-                    onError={(error: string) => alert(error)}
-                    type="Cover Image"
-                  />
-                )}
-              </div>
-              {coverImage && (
-                <div className='relative w-full border-2 border-[#000000] rounded-lg overflow-hidden'>
-                  <img
-                    src={coverImage}
-                    alt="Cover preview"
-                    className='w-full h-auto'
-                    style={{ aspectRatio: '2/1', maxHeight: '400px', objectFit:'cover' }}
-                  />
-                  <button
-                    type="button"
-                    onClick={handleRemoveCoverImage}
-                    className="absolute top-3 right-3 bg-[#E95444] hover:bg-[#D84335] text-white rounded-full p-2 transition-all duration-200 shadow-lg border-2 border-[#000000]"
-                    title="Remove cover image"
-                  >
-                    <X size={16} />
-                  </button>
-                </div>
-              )}
-            </div>
+              
           </div>
 
           {/* Cover Image Cropper Modal */}
@@ -423,14 +378,33 @@ const BlogAdd = ({ params }: Route.ComponentProps) => {
           )}
 
           {/* Editor Section */}
-          <div className='bg-white border-2 border-[#000000] rounded-lg p-6 shadow-md flex-grow'>
-            <NaturalEditor 
-              content={post} 
-              handleChange={handleChange}
-              onTitleChange={handleTitleChange}
-              onSummaryChange={handleSummaryChange}
-            />
-          </div>
+          
+          <NaturalEditor 
+            content={post} 
+            handleChange={handleChange}
+            onTitleChange={handleTitleChange}
+            onSummaryChange={handleSummaryChange}
+            titleInput={
+              <input
+                type="text"
+                placeholder="Title"
+                value={title}
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                  handleTitleChange(e.target.value);
+                }}
+                className="leading-tight min-w-full focus:outline-none placeholder:text-[#9ca3af] placeholder:opacity-60 p-8"
+                style={{fontSize: '36px', fontWeight: 'bold', fontFamily: 'ManRope'}}
+              />
+            }
+            coverImage={coverImage}
+            handleRemoveCoverImage={handleRemoveCoverImage}
+            setShowSummaryInput={setShowSummaryInput}
+            showSummaryInput={showSummaryInput}
+            summary={summary}
+            setSummary={setSummary}
+          />
+          
         </div>
       </div>
     </div>
