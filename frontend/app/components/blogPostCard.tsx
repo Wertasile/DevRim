@@ -22,6 +22,7 @@ type BlogPostProps = {
   community?: {
     _id: string;
     title: string;
+    picture?: string;
   };
   isModerator?: boolean;
   communityId?: string;
@@ -58,7 +59,7 @@ const BlogPostCard = ({
   const [isDeleting, setIsDeleting] = useState<boolean>(false)
   const [usersLists, setUsersLists] = useState<List[]>([])
   const [listModal, setListModal] = useState<boolean>(false)
-  const [postCommunity, setPostCommunity] = useState<{ _id: string; title: string } | null>(community || null)
+  const [postCommunity, setPostCommunity] = useState<{ _id: string; title: string; picture?: string } | null>(community || null)
   const [isPinned, setIsPinned] = useState<boolean>(false)
   const [isPinning, setIsPinning] = useState<boolean>(false)
 
@@ -104,7 +105,11 @@ const BlogPostCard = ({
             );
             
             if (postCommunity) {
-              setPostCommunity({ _id: postCommunity._id, title: postCommunity.title });
+              setPostCommunity({ 
+                _id: postCommunity._id, 
+                title: postCommunity.title,
+                picture: postCommunity.picture 
+              });
             }
           }
         } catch (error) {
@@ -233,9 +238,22 @@ const BlogPostCard = ({
           <div className='mb-2'>
             <button
               onClick={handleCommunityClick}
-              className='px-3 py-1 bg-[#E95444]/50 hover:bg-[#D84335] font-semibold rounded-[5px] border-2 border-[#E95444] transition-all duration-200 hover:shadow-md'
+              className='flex items-center gap-2 p-1 cursor-pointer bg-[#E95444]/50 hover:bg-[#D84335] font-semibold rounded-[100px] border-2 border-[#E95444] transition-all duration-200 hover:shadow-md'
             >
-              {postCommunity.title}
+              {postCommunity.picture ? (
+                <img 
+                  src={postCommunity.picture} 
+                  alt={postCommunity.title}
+                  className="w-[32px] h-[32px] rounded-full object-cover border border-[#000000]"
+                />
+              ) : (
+                <div className="w-5 h-5 rounded-full bg-[#E95444] border border-[#000000] flex items-center justify-center flex-shrink-0">
+                  <span className="text-white text-xs font-bold">
+                    {postCommunity.title.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+              )}
+              <div className='text-small'>{postCommunity.title}</div>
             </button>
           </div>
         )}
@@ -252,7 +270,7 @@ const BlogPostCard = ({
             {canModerate && (
               <div className="relative">
                 <button
-                  className=""
+                  className="cursor-pointer"
                   aria-label="Post options"
                   onClick={(e) => {
                     e.stopPropagation();
@@ -306,19 +324,19 @@ const BlogPostCard = ({
         </div>
 
         <div>{title}</div>
-          <div className="flex gap-[25px]">
+          <div className="flex gap-[25px] text-[#353535]">
 
             <button
-              className={`flex gap-[5px] items-center justify-center${liked ? 'blog-card__stat--liked' : ''}`}
+              className={`flex gap-[5px] cursor-pointer items-center justify-center${liked ? 'blog-card__stat--liked' : ''}`}
               onClick={handleLike}
               aria-label={liked ? 'Unlike post' : 'Like post'}
               title={liked ? 'Unlike' : 'Like'}
             >
               <ThumbsUp 
                 size={16} 
-                className={liked ? 'fill-[#E95444]' : ''}
+                className={liked ? 'fill-black' : ''}
               />
-              <div className={liked ? 'text-[#E95444]' : ''}>{likeCount}</div>
+              <div className={liked ? 'font-bold' : ''}>{likeCount}</div>
             </button>
 
             <div className="flex gap-[5px] items-center justify-center">
@@ -338,7 +356,7 @@ const BlogPostCard = ({
                 return (
                   <>
                     <button
-                      className="flex"
+                      className="flex cursor-pointer"
                       aria-label="Save for later"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -347,7 +365,7 @@ const BlogPostCard = ({
                     >
                       <Bookmark 
                         size={16} 
-                        className={isInCollection ? 'fill-[#E95444]' : ''}
+                        className={isInCollection ? 'fill-black' : ''}
                       />
                     </button>
                   </>
