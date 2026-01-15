@@ -40,10 +40,10 @@ export default function ImageCropper({image,onCropDone,onCropCancel,AR}) {
       </div>
 
       <div className="flex gap-2 mt-3">
-        <button type="button" className='primary-btn' onClick={onCropCancel} >CANCEL</button>
+        <button type="button" className='secondary-btn' onClick={onCropCancel} >CANCEL</button>
         <button
           type='button'
-          className='primary-btn'
+          className='primary-btn bg-[#E95444]'
           onClick={() => onCropDone(croppedAreaPixels)}
         >
           APPLY CHANGES

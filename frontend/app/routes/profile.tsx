@@ -211,56 +211,56 @@ const profile = ({params}: Route.ComponentProps) => {
                 </div>
 
                 {/* Navigation Tabs */}
-                <div className='flex flex-row gap-4 border-[1px] w-fit border-black bg-[#EDEDE9] rounded-lg overflow-hidden shadow-md'>
+                <div className='flex flex-row gap-4 border-[1px] w-fit border-black bg-[#EDEDE9] border-[3px] overflow-hidden shadow-md'>
                     <button 
-                        className={`cursor-pointer px-4 py-2 transition-all duration-300 relative ${
+                        className={`cursor-pointer px-4 py-2 transition-all duration-300 relative text-small ${
                             view === "highlights" 
                                 ? "bg-[#FEC72F] text-black font-semibold shadow-lg transform scale-105" 
                                 : "hover:bg-[#FEC72F]/30 hover:font-medium"
                         }`}
                         onClick={() => setView("highlights")}
                     >
-                        Highlights
+                        <h4>Highlights</h4>
                         {view === "highlights" && (
                             <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#FEC72F]"></div>
                         )}
                     </button>
                     <button 
-                        className={`cursor-pointer px-4 py-2 transition-all duration-300 relative ${
+                        className={`cursor-pointer px-4 py-2 transition-all duration-300 relative text-small ${
                             view === "blogs" 
                                 ? "bg-[#FEC72F] text-black font-semibold shadow-lg transform scale-105" 
                                 : "hover:bg-[#FEC72F]/30 hover:font-medium"
                         }`}
                         onClick={() => setView("blogs")}
                     >
-                        Posts
+                        <h4>Posts</h4>
                         {view === "blogs" && (
                             <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#FEC72F]"></div>
                         )}
                     </button>
                     <button 
-                        className={`cursor-pointer px-4 py-2 transition-all duration-300 relative ${
+                        className={`cursor-pointer px-4 py-2 transition-all duration-300 relative text-small ${
                             view === "collections" 
                                 ? "bg-[#FEC72F] text-black font-semibold shadow-lg transform scale-105" 
                                 : "hover:bg-[#FEC72F]/30 hover:font-medium"
                         }`}
                         onClick={() => setView("collections")}
                     >
-                        Collections
+                        <h4>Collections</h4>
                         {view === "collections" && (
                             <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#FEC72F]"></div>
                         )}
                     </button>
                     {profile?._id === user?._id && (
                         <button 
-                            className={`cursor-pointer px-4 py-2 transition-all duration-300 relative ${
+                            className={`cursor-pointer px-4 py-2 transition-all duration-300 relative text-small ${
                                 view === "liked" 
                                     ? "bg-[#FEC72F] text-black font-semibold shadow-lg transform scale-105" 
                                     : "hover:bg-[#FEC72F]/30 hover:font-medium"
                             }`}
                             onClick={() => setView("liked")}
                         >
-                            Liked
+                            <h4>Liked</h4>
                             {view === "liked" && (
                                 <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#FEC72F]"></div>
                             )}
@@ -289,21 +289,25 @@ const profile = ({params}: Route.ComponentProps) => {
                         <div className='flex gap-[30px]'>
 
                             {/* LEFT SIDE*/}
-                            <div className='flex flex-col'>
+                            <div className='flex flex-col border-[3px] border-[#000000] bg-white p-[10px] gap-[10px]'>
+                                <div className='flex justify-center'>
+                                    <button className='primary-btn w-full bg-[#E95444]' onClick={() => setListModal(!listModal)}>Create Collection</button>
+                                </div>
+                                <div className='flex flex-col gap-[10px] p-[10px]'>
                                 {lists?.map((list, index) => (
                                     <div 
-                                        className={`cursor-pointer p-4 hover:bg-[#FEC72F]/20 flex items-center justify-between gap-4 border border-[#000000] rounded-lg transition-all duration-200 ${selectedCollection?._id === list._id ? 'bg-[#FEC72F]/30 border-[#FEC72F]' : ''}`} 
+                                        className={`cursor-pointer p-4 hover:bg-[#FEC72F]/20 flex items-center justify-between gap-4 transition-all duration-200 ${selectedCollection?._id === list._id ? 'bg-[#FEC72F]/30 border-[#FEC72F]' : ''}`} 
                                         key={list._id || index} 
                                         onClick={() => {
                                             // handleViewList(index)
                                             setSelectedCollection(list)
                                         }}
                                     >
-                                        <div className='flex gap-2 items-center'>
-                                            <div className='text-small'>{list.name}</div>
+                                        <div className='flex gap-[10px] items-center'>
+                                            <h3>{list.name}</h3>
                                             <div className='text-mini'>{list.blogs?.length || 0} blog(s)</div>
                                         </div>
-                                        {profile?._id === user?._id && (
+                                        {/* {profile?._id === user?._id && (
                                             <div className='flex items-center gap-2' onClick={(e) => e.stopPropagation()}>
                                                 <button
                                                     onClick={(e) => handleEditList(list, e)}
@@ -321,26 +325,48 @@ const profile = ({params}: Route.ComponentProps) => {
                                                     <Trash2 size={16} className='cursor-pointer' />
                                                 </button>
                                             </div>
-                                        )}
+                                        )} */}
                                     </div>
                                 ))}
+                                </div>
                             </div>
 
                             {/* RIGHT SIDE*/}
-                            <div className='grow'>
+                            <div className='grow border-[3px] border-[#000000] bg-white p-[10px]'>
 
-                                <div className='mb-4 border-2 flex justify-between items-end gap-[10px] border-[#000000] bg-[#EDEDE9] rounded-lg p-4 shadow-md' >
-                                    <h3>{selectedCollection?.name.toUpperCase() || 'No collection selected'}</h3>
-                                    {profile?._id === user?._id && (
-                                        <button 
-                                            className='icon bg-[#FEC72F] hover:bg-[#FEC72F] transition-all duration-300 hover:scale-110 hover:shadow-lg'
-                                            onClick={() => {
-                                                setListModal(!listModal)
-                                            }}
-                                        >
-                                            <PlusIcon size={16}/>
-                                        </button>
-                                    )}
+                                <div className='mb-4 flex justify-between items-end gap-[10px]' >
+                                    <h3 className='font-bold'>{selectedCollection?.name.toUpperCase() || 'No collection selected'}</h3>
+                                    <div className='flex items-center gap-[10px]'>
+                                        {profile?._id === user?._id && (
+                                            <button
+                                                onClick={(e) => handleEditList(selectedCollection, e)}
+                                                className='icon bg-[#FEC72F]'
+                                                title="Edit collection"
+                                            >
+                                                <Edit size={16} className='cursor-pointer' />
+                                            </button>
+                                        )}
+                                        {/* {profile?._id === user?._id && (
+                                            <button 
+                                                className='icon bg-[#FEC72F] hover:bg-[#FEC72F] transition-all duration-300 hover:scale-110 hover:shadow-lg'
+                                                onClick={() => {
+                                                    setListModal(!listModal)
+                                                }}
+                                            >
+                                                <PlusIcon size={16}/>
+                                            </button>
+                                        )} */}
+                                        {profile?._id === user?._id && (
+                                            <button
+                                            onClick={(e) => handleDeleteList(selectedCollection?._id, e)}
+                                                disabled={deletingListId === selectedCollection?._id}
+                                                className='icon bg-[#FEC72F] '
+                                                title="Delete collection"
+                                            >
+                                                <Trash2 size={16} className='cursor-pointer' />
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
 
                                 {/* DISPLAY SELECTED COLLECTION*/}    
@@ -348,7 +374,13 @@ const profile = ({params}: Route.ComponentProps) => {
                                     {selectedCollection && selectedCollection.blogs.length > 0 ? (
                                         <div>
                                             {selectedCollection.blogs.map((blog: Blog, index) => (
-                                                <BlogPostSmall blog={blog}/>
+                                                <div 
+                                                className='cursor-pointer hover:bg-[#FEC72F]/20 transition-all duration-200 border-[1px] bg-[#EDEDE9] text-small p-[10px] py-[15px] border-[#000000] rounded-[5px]' 
+                                                key={blog._id}
+                                                onClick={() => window.location.href = `/blog/${blog._id}`}
+                                                >
+                                                    {blog.title}
+                                                </div>
                                             ))}
                                         </div>
                                     ) : (
@@ -382,7 +414,7 @@ const profile = ({params}: Route.ComponentProps) => {
                 </div>
 
                 {/* LOVED TOPICS / COMMUNITIES*/}
-                <div className='w-full bg-[#EDEDE9] flex border-[3px] border-solid border-[#000000] flex-col gap-[10px] p-[10px] rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:border-[#FEC72F]'>
+                <div className='w-full bg-[#EDEDE9] flex border-[3px] border-solid border-[#000000] flex-col gap-[10px] p-[10px] rounded-lg shadow-lg'>
                     <h3>LOVED TOPICS / COMMUNITIES</h3>
                     {userCommunities && userCommunities.length > 0 && (
                         <div className='flex flex-col gap-[10px] overflow-x-auto'>

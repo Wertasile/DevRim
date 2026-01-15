@@ -16,7 +16,7 @@ const CommunityCardSmall = ({ community }: { community: Community }) => {
   return (
     <div
         key={community._id}
-        className='bg-[#EDEDE9] border border-[#000000] overflow-hidden cursor-pointer rounded-[5px] p-[5px] hover:border-[#E95444] hover:shadow-lg hover:translate-x-[5px] transition-all group'
+        className='overflow-hidden cursor-pointer p-[5px] hover:bg-[#E95444]/20 hover:shadow-lg hover:translate-[1px] transition-all'
         onClick={() => window.location.href = `/community/${community._id}`}
     >
         

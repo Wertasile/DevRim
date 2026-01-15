@@ -26,6 +26,7 @@ type BlogPostProps = {
   };
   isModerator?: boolean;
   communityId?: string;
+  isPinned?: boolean;
 }
 
 const BlogPostCard = ({
@@ -40,7 +41,8 @@ const BlogPostCard = ({
   coverImage,
   community,
   isModerator = false,
-  communityId
+  communityId,
+  isPinned: initialIsPinned = false
 }: BlogPostProps) => {
   const formattedDate = (() => {
     const parsed = new Date(releaseDate);
@@ -60,7 +62,12 @@ const BlogPostCard = ({
   const [usersLists, setUsersLists] = useState<List[]>([])
   const [listModal, setListModal] = useState<boolean>(false)
   const [postCommunity, setPostCommunity] = useState<{ _id: string; title: string; picture?: string } | null>(community || null)
-  const [isPinned, setIsPinned] = useState<boolean>(false)
+  const [isPinned, setIsPinned] = useState<boolean>(initialIsPinned)
+  
+  // Update isPinned when prop changes
+  useEffect(() => {
+    setIsPinned(initialIsPinned);
+  }, [initialIsPinned]);
   const [isPinning, setIsPinning] = useState<boolean>(false)
 
   // Check if user has liked this blog

@@ -161,6 +161,7 @@ export type Community = {
     moderators: User[];
     rules: string[];
     picture: string;
+    coverImage?: string; // Optional cover image URL
     members: User[];
     posts: Blog[];
     pinnedPosts?: Blog[];

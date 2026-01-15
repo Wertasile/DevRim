@@ -110,18 +110,15 @@ const CommunityHub = () => {
           <div className='flex-grow flex flex-col gap-6'>
           {isLoading ? (
             <>
-              <div className='flex gap-3'>
-                <Skeleton width="100%" height={48} rounded />
-                <Skeleton width={200} height={48} rounded />
-              </div>
+              <Skeleton width="60%" height={36} />
               <div className='flex flex-wrap gap-2'>
-                {[...Array(8)].map((_, i) => (
-                  <Skeleton key={i} width={100} height={32} rounded />
+                {[...Array(6)].map((_, i) => (
+                  <Skeleton key={i} width={80} height={28} rounded />
                 ))}
               </div>
-              <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+              <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3'>
                 {[...Array(6)].map((_, i) => (
-                  <Skeleton key={i} width="100%" height={200} rounded />
+                  <Skeleton key={i} width="100%" height={150} rounded />
                 ))}
               </div>
             </>
@@ -135,7 +132,7 @@ const CommunityHub = () => {
                 placeholder="Search for Communities"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="form-input hover:border-[#E95444] focus:border-[#E95444] transition-all duration-300"
+                className="input-decor"
               />
             </div>
             <button
@@ -177,7 +174,7 @@ const CommunityHub = () => {
           <div className='grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-6'>
             {isLoading ? (
               [...Array(6)].map((_, i) => (
-                <Skeleton key={`skeleton-${i}`} width="100%" height={200} rounded />
+                <Skeleton key={`skeleton-${i}`} width="100%" height={150} rounded />
               ))
             ) : filteredCommunities.length > 0 ? (
               filteredCommunities.map((community) => {

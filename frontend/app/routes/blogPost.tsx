@@ -9,7 +9,7 @@ import TextAlign from '@tiptap/extension-text-align';
 import { ListItem } from '@tiptap/extension-list';
 import Image from '@tiptap/extension-image';
 import { useUser } from '~/context/userContext';
-import { Bookmark, SendIcon, CirclePlusIcon, CircleXIcon, MessageSquare, Share, Share2, ThumbsDown, ThumbsUp, ChevronRight, ChevronDown, ChevronUp, X, Trash2, MoreVertical, Edit } from 'lucide-react';
+import { Bookmark, SendIcon, CirclePlusIcon, CircleXIcon, MessageSquare, Share, Share2, ThumbsDown, ThumbsUp, ChevronRight, ChevronDown, ChevronUp, X, Trash2, MoreVertical, Edit, PlusIcon } from 'lucide-react';
 import gsap from 'gsap';
 import getAllList from '~/apiCalls/list/getAllLists';
 import AddToList from '~/apiCalls/list/addToList';
@@ -360,22 +360,18 @@ export default function BlogPost({ params }: Route.ComponentProps) {
 
   if (isLoading || !blog) {
     return (
-      <div id='blog-post' className='min-h-screen flex flex-row gap-8 px-6 py-12' role="status" aria-live="polite" aria-label="Loading blog post">
+      <div id='blog-post' className='min-h-screen flex flex-row gap-6 px-6 py-8' role="status" aria-live="polite" aria-label="Loading blog post">
         <Sidebar/>
-        <div className='flex-grow flex flex-col gap-8 max-w-[1200px] mx-auto'>
-          <Skeleton width="80%" height={48} className="mb-4" />
-          <div className='flex items-center gap-3 mb-6'>
-            <Skeleton circle width={40} height={40} />
-            <div className="flex flex-col gap-2">
-              <Skeleton width={120} height={16} />
-              <Skeleton width={100} height={12} />
-            </div>
+        <div className='flex-grow flex flex-col gap-4 max-w-[1200px] mx-auto'>
+          <Skeleton width="70%" height={36} />
+          <div className='flex items-center gap-2'>
+            <Skeleton circle width={32} height={32} />
+            <Skeleton width={100} height={14} />
           </div>
-          <Skeleton width="100%" height={300} rounded className="mb-6" />
-          <Skeleton width="90%" height={20} />
-          <Skeleton width="95%" height={20} />
-          <Skeleton width="85%" height={20} />
-          <Skeleton width="90%" height={20} />
+          <Skeleton width="100%" height={200} rounded />
+          <Skeleton width="85%" height={16} />
+          <Skeleton width="90%" height={16} />
+          <Skeleton width="80%" height={16} />
         </div>
       </div>
     );
@@ -515,7 +511,7 @@ export default function BlogPost({ params }: Route.ComponentProps) {
                   />
                 </button>
                 {listModal && (
-                  <div className="absolute bottom-0 right-full mr-4 flex flex-col bg-[#EDEDE9] border-2 border-[#000000] rounded-lg shadow-xl gap-3 p-4 w-[250px] text-center text-sm z-50 max-h-[400px] overflow-y-auto">
+                  <div className="absolute -top-10 right-full mr-4 flex flex-col bg-[#EDEDE9] border-[3px] border-[#000000] shadow-xl gap-[10px] p-[10px] w-[250px] text-center text-sm z-50 max-h-[400px] overflow-y-auto">
                     {(() => {
                       const collectionsWithPost = usersLists?.filter(list => 
                         list.blogs?.some(b => b._id === blog._id)
@@ -525,8 +521,8 @@ export default function BlogPost({ params }: Route.ComponentProps) {
                       return (
                         <>
                           {isInAnyCollection && (
-                            <div className="mb-2 pb-2 border-b border-[#000000]">
-                              <h4 className='text-black text-xs font-semibold mb-1'>IN COLLECTIONS:</h4>
+                            <div className="mb-2 pb-2 border-b flex flex-col gap-[10px] border-[#979797]">
+                              <h3>IN COLLECTIONS:</h3>
                               <div className="flex flex-col gap-1">
                                 {collectionsWithPost.map((list) => (
                                   <div 
@@ -550,9 +546,13 @@ export default function BlogPost({ params }: Route.ComponentProps) {
                               </div>
                             </div>
                           )}
-                          <h3 className='text-black mb-2 text-xs font-semibold'>
+                          {/* <h3 className='text-black mb-2 text-xs font-semibold'>
                             {isInAnyCollection ? 'ADD TO MORE COLLECTIONS:' : 'ADD BLOG TO COLLECTION:'}
-                          </h3>
+                          </h3> */}
+                          <div>
+                            <button className='primary-btn w-full bg-[#E95444]'>Create Collection</button>
+                          </div>
+                          <div className='flex flex-col gap-[10px] p-[10px]'>
                           {usersLists && usersLists.length > 0 ? (
                             usersLists.map((list, index) => {
                               const isInThisCollection = list.blogs?.some(b => b._id === blog._id);
@@ -563,21 +563,16 @@ export default function BlogPost({ params }: Route.ComponentProps) {
                                   key={list._id ?? index}
                                   className='flex gap-2 justify-between items-center'
                                 >
+                                  <h3>{list.name}</h3>
                                   <div 
-                                    className="primary-btn hover:none w-full text-left px-3 py-2"
-                                    onClick={() => {}}
-                                  >
-                                    {list.name}
-                                  </div>
-                                  <div 
-                                    className='primary-btn h-fit px-2 py-2'
+                                    className='highlight-btn'
                                     onClick={async () => {
                                       await AddToList(list._id, blog._id);
                                       const updatedLists = await getAllList(user?._id || null);
                                       setUsersLists(updatedLists);
                                     }}
                                   >
-                                    <CirclePlusIcon size={16}/>
+                                    <PlusIcon size={16}/>
                                   </div>
                                 </div>
                               );
@@ -585,6 +580,7 @@ export default function BlogPost({ params }: Route.ComponentProps) {
                           ) : (
                             <div className="text-black/60 text-xs py-2">No collections yet</div>
                           )}
+                          </div>
                         </>
                       );
                     })()}
@@ -627,7 +623,7 @@ export default function BlogPost({ params }: Route.ComponentProps) {
       {/* ----------------------- COMMENTS PANEL - RIGHT SIDE ---------------------------------------------------------------------------------------------------- */}
       <div 
         ref={commentsPanel}
-        className='fixed top-0 right-0 self-start w-[400px] h-screen bg-[#EDEDE9] border-l-2 border-[#000000] flex flex-col overflow-hidden z-50 shadow-2xl'
+        className='fixed top-0 right-0 self-start w-[400px] h-screen bg-white border-l-2 border-[#000000] flex flex-col overflow-hidden z-50 shadow-2xl'
         style={{transform: "translateX(100%)"}}
       >
         <div className='flex items-center justify-between p-6 border-b-2 border-[#000000] bg-white'>

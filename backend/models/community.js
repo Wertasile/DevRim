@@ -9,6 +9,7 @@ const communitySchema = new Schema({
     announcements: [{type: Schema.Types.ObjectId, ref:"announcement"}],
     rules: [{type: String, maxLength: 100}],
     picture: {type: String},
+    coverImage: {type: String},
     members: [{type: Schema.Types.ObjectId, ref:"user"}],
     posts: [{type: Schema.Types.ObjectId, ref:"post"}],
     pinnedPosts: [{type: Schema.Types.ObjectId, ref:"post"}],

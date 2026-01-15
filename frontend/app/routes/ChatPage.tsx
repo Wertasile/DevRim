@@ -33,7 +33,6 @@ import io from "socket.io-client" // io is a function to call an individual sock
 import { socket } from "../components/socket";
 import Sidebar from "../components/Sidebar"
 import GroupModal from "~/components/chatComponents/groupModal";
-import FindUserModal from "~/components/chatComponents/findUserModal";
 import Friends from "~/components/chatComponents/Friends";
 import CustomiseGCModal from "~/components/chatComponents/customiseGCModal";
 import GCUsersPanel from "~/components/chatComponents/GCUsersPanel";
@@ -90,8 +89,8 @@ const ChatPage = () => {
   const [searchUser, setSearchUser] = useState<User[]>([]) // search results
   const [groupUsers, setGroupUsers] = useState<User[]>([]) // users selected by user
 
-  const [findUsersModal, setFindUsersModal] = useState(false)
   const [findUsers, setFindUsers] = useState<User[]>([]) // search results
+  const [userSearchInput, setUserSearchInput] = useState<string>("") // search input for user search
 
   const [gcModal, setGCModal] = useState(false)
 
@@ -165,6 +164,39 @@ const ChatPage = () => {
     if (chatData) setChat(chatData[0]);
     console.log(chatData)
   };
+
+  // User search functionality
+  const handleUserSearch = async (searchValue: string) => {
+    if (searchValue === ""){
+      setFindUsers([])
+    } else {
+      const response = await fetch(`${API_URL}/users?search=${searchValue}`, {
+        method: 'get',
+        credentials: 'include'
+      })
+
+      const data : User[] = await response.json()
+      console.log(data)
+      setFindUsers(data)
+    }
+  }
+
+  const fetchChatWithUser = async (userId: string) => {
+    const response = await fetch(`${API_URL}/chats/`, {
+      method: 'post',
+      credentials: 'include',
+      headers: {
+        "Content-Type" : "application/json"
+      },
+      body : JSON.stringify({userId : userId})
+    })
+
+    const chatData = await response.json()
+    setUserSearchInput("")
+    setFindUsers([])
+    setChat(chatData)
+    fetchChats() // Refresh chat list
+  }
 
   const fetchMessages = async (chatId: string) => {
     setIsLoadingMessages(true);
@@ -541,9 +573,9 @@ const ChatPage = () => {
         return (
           <div>
             {message.reply && 
-            <div className="border-l-4 p-2 border-[#4DD499] bg-[#4DD499]/10 rounded-r-lg mb-2">
-              <div className="text-small font-medium text-black">{message.reply.sender.name}</div>
-              <div className="text-mini truncate text-black/70">{message.reply.content}</div>            
+            <div className="border-l-4 p-2 border-[#1B4E29] bg-[#4DD499]/30 rounded-r-lg mb-2">
+              <div className="text-small font-medium">{message.reply.sender.name}</div>
+              <div className="text-mini truncate">{message.reply.content}</div>            
             </div>
             }
             <div className="break-words">{message.content}</div>
@@ -706,10 +738,10 @@ const ChatPage = () => {
   
   if (userLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#EDEDE9]">
-        <div className="text-center">
-          <div className="skeleton w-16 h-16 rounded-full mx-auto mb-4"></div>
-          <div className="skeleton w-48 h-6 rounded mx-auto"></div>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center flex flex-col gap-3">
+          <div className="skeleton w-12 h-12 rounded-full mx-auto"></div>
+          <div className="skeleton w-36 h-5 rounded mx-auto"></div>
         </div>
       </div>
     );
@@ -717,7 +749,7 @@ const ChatPage = () => {
   
   // Redirect or show login page if not logged in (only after loading is complete)
   if (!user) {
-    return <WelcomeScreen message="Please log in or sign up to access your chats and messages." />
+    return <WelcomeScreen />
   }
 
 
@@ -752,9 +784,6 @@ const ChatPage = () => {
       <GroupModal groupName={groupName} setGroupName={setGroupName} groupUsers={groupUsers} setGroupUsers={setGroupUsers} searchUser={searchUser} setSearchUser={setSearchUser} setGroupModal={setGroupModal} setChat={setChat}/>
     }
 
-    {findUsersModal && 
-      <FindUserModal findUsers={findUsers} setFindUsers={setFindUsers} setFindUsersModal={setFindUsersModal} setChat={setChat}/>
-    }
 
     {(chat?.isGroupChat==true && gcModal) &&
       <CustomiseGCModal groupName={groupName} setGroupName={setGroupName} groupUsers={groupUsers} setGroupUsers={setGroupUsers} setGCModal={setGCModal}/>
@@ -775,24 +804,47 @@ const ChatPage = () => {
 
       {/* Chat List Sidebar */}
       { section === "messages" && 
-      <div className="w-[400px] border-[#000000]">
-        {/* Top Section - Menu and Search */}
-        <div className="p-4 flex flex-col gap-3 border-[#000000]">
+      <div className="w-[400px] border-[#000000] flex flex-col">
+        {/* Top Section - Search and Group Chat */}
+        <div className="px-2 pb-2 flex flex-col gap-3 border-[#000000]">
           
           <div className="flex gap-2">
-            <button
-              onClick={() => {setFindUsersModal(!findUsersModal)}}
-              className="primary-btn bg-[#4DD499] hover:bg-[#3BC088] text-black transition-all duration-200 hover:scale-105">
-                FIND USER
-            </button>
+            <div className="flex-1">
+              <input
+                type="text"
+                placeholder="Search for a user"
+                className="input-decor"
+                value={userSearchInput}
+                onChange={(e) => {
+                  setUserSearchInput(e.target.value);
+                  handleUserSearch(e.target.value);
+                }}
+              />
+            </div>
             <div className='icon bg-[#4DD499] hover:bg-[#3BC088] text-black transition-all duration-200 hover:scale-105' onClick={() => {setGroupModal(!groupModal)}}>
               <Users size={20} />
             </div>
           </div>
+
+          {/* Search Results */}
+          {findUsers.length > 0 && (
+            <div className="max-h-[300px] overflow-y-auto border-2 border-[#000000] rounded-lg p-3 bg-[#EDEDE9]">
+              {findUsers.map((user) => (
+                <div
+                  key={user._id}
+                  className="cursor-pointer p-3 hover:bg-[#D6D6CD] rounded-lg flex flex-row gap-3 items-center transition-colors mb-2"
+                  onClick={() => {fetchChatWithUser(user._id)}}
+                >   
+                  <img width={32} height={32} src={user.picture} className="rounded-full border-2 border-[#000000] object-cover"/>
+                  <div className="text-black font-medium">{user.name}</div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Chat List */}
-        <div className="flex flex-col gap-[20px] p-[10px] overflow-y-auto">
+        <div className="flex flex-col gap-[20px] p-[10px] overflow-y-auto flex-1">
           {chats && chats.length > 0 ? (
             chats.map((chatx, index) => {
             const otherUser = chatx.chatName === "sender" 
@@ -816,7 +868,7 @@ const ChatPage = () => {
             return (
               <div
                 key={index}
-                className={`cursor-pointer p-3 flex items-center gap-3 border-2 border-solid border-[#000000] rounded-lg transition-all duration-200 ${
+                className={`cursor-pointer p-3 flex items-center gap-3 border-2 border-solid border-[#000000] transition-all duration-200 ${
                   isSelected ? 'bg-[#4DD499] shadow-[4px_4px_0px_2px_rgb(0,0,0)]' : 'bg-[#EDEDE9] hover:bg-[#E0E0DC] hover:border-[#4DD499] hover:shadow-sm'
                 }`}
                 onClick={() => {setChat(chatx)}}
@@ -854,9 +906,9 @@ const ChatPage = () => {
       {/* MESSAGES */}
       { section === "messages" && 
 
-      <div className="flex-grow flex flex-col border-2 border-[#000000] overflow-hidden bg-white rounded-lg shadow-md">
+      <div className="flex-grow flex flex-col border-[1px] border-[#000000] overflow-hidden">
         {/* Chat Header */}
-        <div className="h-[60px] flex bg-[#4DD499] items-center justify-between px-5 border-b-2 border-[#000000] shadow-sm">
+        <div className="h-[60px] flex bg-[#4DD499] items-center justify-between px-5 border-b-[1px] border-[#000000] shadow-sm">
           <div 
             className="flex items-center gap-3 cursor-pointer"
             onClick={() => {
@@ -891,11 +943,11 @@ const ChatPage = () => {
         {/* Messages Area */}
         <div 
           ref={messagesContainerRef}
-          className="flex-1 overflow-y-auto px-5 py-4 feed-container flex flex-col gap-3 relative bg-[#F5F5F1]"
+          className="flex-1 overflow-y-auto px-5 py-4 feed-container flex flex-col gap-3 relative"
         >
           {/* Loading Overlay */}
           {isLoadingMessages && (
-            <div className="absolute inset-0 bg-[#EDEDE9]/95 backdrop-blur-sm z-10 flex items-center justify-center">
+            <div className="absolute inset-0 backdrop-blur-sm z-10 flex items-center justify-center">
               <div className="flex flex-col items-center gap-4">
                 <div className="w-12 h-12 border-4 border-[#000000] border-t-[#4DD499] rounded-full animate-spin"></div>
                 <p className="text-black font-medium">LOADING</p>
@@ -903,7 +955,7 @@ const ChatPage = () => {
             </div>
           )}
 
-          {/* Messages being mapped*/}
+          {/* MESSAGES being mapped*/}
           {messages?.map((message, index) => {
             const messageDate = new Date(message.createdAt || message.updatedAt);
             const prevMessageDate = index > 0 && messages[index - 1] 
@@ -940,7 +992,7 @@ const ChatPage = () => {
                 {/* Day indicator*/}
                 {isNewDay && (
                   <div className="flex items-center justify-center my-4">
-                    <div className="px-4 py-2 border-2 rounded-[100px] bg-[#EDEDE9] border-[#000000] shadow-sm">
+                    <div className="px-4 py-2 border-[0.5px] rounded-[100px] bg-[#EDEDE9] border-[#000000] shadow-sm">
                       <span className="text-mini text-black font-medium">
                         {formatDateLabel(messageDate)}
                       </span>
@@ -960,10 +1012,10 @@ const ChatPage = () => {
                 >
                   <div
                     id={`message:${message._id}`}
-                    className={`relative border-2 border-[#000000] rounded-2xl flex flex-col gap-2 p-3 transition-all duration-200 hover:shadow-md text-black ${
+                    className={`relative border-2 border-[#000000] flex flex-col gap-2 p-3 transition-all duration-200 hover:shadow-md text-black ${
                       message.sender._id === user?._id
-                        ? "bg-[#4DD499]/30"
-                        : "bg-[#EDEDE9] hover:bg-[#E0E0DC]"
+                        ? "bg-[#4DD499]"
+                        : "bg-[#1B4E29] text-white"
                     }`}
                   >
                     {renderMessageContent(message)}
@@ -981,7 +1033,7 @@ const ChatPage = () => {
                         </>
                       )}
 
-                      <span className={`text-xs ${message.sender._id === user?._id ? 'opacity-80' : 'opacity-70'}`}>
+                      <span className={`text-mini ${message.sender._id === user?._id ? 'opacity-80' : 'opacity-70'}`}>
                         {new Date(message.updatedAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
                       </span>
                     </div>
@@ -1006,7 +1058,7 @@ const ChatPage = () => {
         </div>
 
         {/* Message Input */}
-        <div className="border-t-2 border-[#000000] p-4 relative bg-[#EDEDE9]">
+        <div className="p-4 ">
           {reply && 
             <div className="absolute bottom-full left-0 right-0 mb-2 mx-4 bg-[#4DD499]/20 border-2 border-[#000000] p-3 rounded-lg shadow-md">
               <div className="flex justify-between items-center mb-1">
@@ -1038,7 +1090,7 @@ const ChatPage = () => {
               <div className="relative flex-1">
                 <input
                   placeholder="Type a message..."
-                  className="form-input hover:border-[#4DD499] focus:border-[#4DD499] transition-all duration-200"
+                  className="input-decor"
                   value={newMessage}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {

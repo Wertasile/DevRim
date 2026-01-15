@@ -1,5 +1,6 @@
 // src/Tiptap.tsx
 import '../../tiptap.css'
+import 'highlight.js/styles/github.css'
 import Highlight from '@tiptap/extension-highlight'
 import TextAlign from '@tiptap/extension-text-align'
 import Image from '@tiptap/extension-image'
@@ -12,7 +13,30 @@ import { BulletList, ListItem } from '@tiptap/extension-list'
 import { ImageUploadNode } from '../tiptap-node/image-upload-node'
 import { handleImageUpload, MAX_FILE_SIZE } from '~/lib/tiptap-utils'
 import { ImageUploadButton } from '../tiptap-ui/image-upload-button'
-import CodeBlock from '@tiptap/extension-code-block'
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
+import { createLowlight } from 'lowlight'
+import javascript from 'highlight.js/lib/languages/javascript'
+import typescript from 'highlight.js/lib/languages/typescript'
+import python from 'highlight.js/lib/languages/python'
+import java from 'highlight.js/lib/languages/java'
+import cpp from 'highlight.js/lib/languages/cpp'
+import css from 'highlight.js/lib/languages/css'
+import html from 'highlight.js/lib/languages/xml'
+import json from 'highlight.js/lib/languages/json'
+import bash from 'highlight.js/lib/languages/bash'
+import sql from 'highlight.js/lib/languages/sql'
+
+const lowlight = createLowlight()
+lowlight.register('javascript', javascript)
+lowlight.register('typescript', typescript)
+lowlight.register('python', python)
+lowlight.register('java', java)
+lowlight.register('cpp', cpp)
+lowlight.register('css', css)
+lowlight.register('html', html)
+lowlight.register('json', json)
+lowlight.register('bash', bash)
+lowlight.register('sql', sql)
 
 
 type TipTapProps = {
@@ -34,7 +58,8 @@ const Tiptap = ({content, handleChange} : TipTapProps) => {
           HTMLAttributes: {
             class: "list-decimal ml-3"
           }
-        }
+        },
+        codeBlock: false, // Disable default code block
       }),
       TextAlign.configure({
         types: ['heading', 'paragraph'],
@@ -44,7 +69,8 @@ const Tiptap = ({content, handleChange} : TipTapProps) => {
       Image.configure({
         inline: true,
       }),
-      CodeBlock.configure({
+      CodeBlockLowlight.configure({
+        lowlight,
         HTMLAttributes: {
           class: "bg-white"
         }

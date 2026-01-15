@@ -109,7 +109,7 @@ const createCommunity = async(req, res) => {
     try
     {
         const currentUser = req.user._id
-        const {title, description, moderators, rules, picture, members, posts, topics } = req.body
+        const {title, description, moderators, rules, picture, coverImage, members, posts, topics } = req.body
         
         if (!title) {
             return res.status(400).json({ error: "Title is required" })
@@ -122,6 +122,7 @@ const createCommunity = async(req, res) => {
                 moderators: moderators || [],
                 rules: rules || [],
                 picture: picture,
+                coverImage: coverImage,
                 members: members || [],
                 posts: posts || [],
                 topics: topics || []
@@ -156,7 +157,7 @@ const editCommunity = async(req, res) => {
     try
     {
         const communityId = req.params.communityId
-        const { title, description, moderators, rules, picture, members, posts, topics } = req.body
+        const { title, description, moderators, rules, picture, coverImage, members, posts, topics } = req.body
         
         // Check if community exists and user is creator or moderator
         const existingCommunity = await community.findById(communityId)
@@ -178,6 +179,7 @@ const editCommunity = async(req, res) => {
         if (moderators !== undefined) updateData.moderators = moderators
         if (rules !== undefined) updateData.rules = rules
         if (picture !== undefined) updateData.picture = picture
+        if (coverImage !== undefined) updateData.coverImage = coverImage
         if (members !== undefined) updateData.members = members
         if (posts !== undefined) updateData.posts = posts
         if (topics !== undefined) updateData.topics = topics

@@ -63,6 +63,9 @@ const Connections = () => {
   // Active section tracking
   const [activeSection, setActiveSection] = useState<string>('');
   
+  // Navigation view state
+  const [view, setView] = useState<'stats' | 'connections' | 'comments'>('stats');
+  
   // Loading states
   const [isLoadingConnections, setIsLoadingConnections] = useState<boolean>(true);
   const [isLoadingRequests, setIsLoadingRequests] = useState<boolean>(true);
@@ -527,22 +530,67 @@ const Connections = () => {
         <Sidebar/>
 
         {/* Main Content Area */}
-        <div className='flex-grow flex flex-col gap-8'>
+        <div className='flex-grow flex flex-col gap-[50px]'>
+
+          {/* Navigation Tabs */}
+          <div className='flex flex-row gap-4 border-[1px] w-fit border-black bg-[#EDEDE9] border-[3px] overflow-hidden shadow-md'>
+            {stats.totalPosts > 0 && (
+              <button 
+                className={`cursor-pointer px-4 py-2 transition-all duration-300 relative text-small ${
+                  view === "stats" 
+                    ? "bg-[#FEC72F] text-black font-semibold shadow-lg transform scale-105" 
+                    : "hover:bg-[#FEC72F]/30 hover:font-medium"
+                }`}
+                onClick={() => setView("stats")}
+              >
+                <h4>Stats</h4>
+                {view === "stats" && (
+                  <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#FEC72F]"></div>
+                )}
+              </button>
+            )}
+            <button 
+              className={`cursor-pointer px-4 py-2 transition-all duration-300 relative text-small ${
+                view === "connections" 
+                  ? "bg-[#FEC72F] text-black font-semibold shadow-lg transform scale-105" 
+                  : "hover:bg-[#FEC72F]/30 hover:font-medium"
+              }`}
+              onClick={() => setView("connections")}
+            >
+              <h4>Connections</h4>
+              {view === "connections" && (
+                <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#FEC72F]"></div>
+              )}
+            </button>
+            <button 
+              className={`cursor-pointer px-4 py-2 transition-all duration-300 relative text-small ${
+                view === "comments" 
+                  ? "bg-[#FEC72F] text-black font-semibold shadow-lg transform scale-105" 
+                  : "hover:bg-[#FEC72F]/30 hover:font-medium"
+              }`}
+              onClick={() => setView("comments")}
+            >
+              <h4>My Comments</h4>
+              {view === "comments" && (
+                <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#FEC72F]"></div>
+              )}
+            </button>
+          </div>
 
           {/* Stats Section */}
-          {isLoadingStats ? (
-            <div id="stats" className='flex flex-col gap-6 scroll-mt-8' role="status" aria-live="polite" aria-label="Loading statistics">
-              <div className='bg-[#EDEDE9] border-2 border-[#000000] rounded-lg p-6'>
-                <Skeleton width={200} height={32} className="mb-4" />
-                <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
+          {view === "stats" && (isLoadingStats ? (
+            <div id="stats" className='flex flex-col gap-4 scroll-mt-8' role="status" aria-live="polite" aria-label="Loading statistics">
+              <div className='p-4 flex flex-col gap-3'>
+                <Skeleton width={160} height={24} />
+                <div className='grid grid-cols-2 md:grid-cols-4 gap-3'>
                   {[...Array(4)].map((_, i) => (
                     <StatsCardSkeleton key={`stat-${i}`} />
                   ))}
                 </div>
               </div>
-              <div className='bg-[#EDEDE9] border-2 border-[#000000] rounded-lg p-6'>
-                <Skeleton width={200} height={32} className="mb-4" />
-                <div className='flex flex-col gap-4'>
+              <div className='p-4 flex flex-col gap-3'>
+                <Skeleton width={160} height={24} />
+                <div className='flex flex-col gap-3'>
                   {[...Array(3)].map((_, i) => (
                     <PostStatSkeleton key={`post-stat-${i}`} />
                   ))}
@@ -550,11 +598,11 @@ const Connections = () => {
               </div>
             </div>
           ) : stats.totalPosts > 0 && (
-            <div id="stats" className='flex flex-col gap-6 scroll-mt-8'>
-               <div className='bg-[#EDEDE9] border-[2px] border-[#000000] rounded-lg p-6'>
+            <div id="stats" className='flex flex-col gap-[50px] scroll-mt-8'>
+               <div className='flex flex-col justify-center items-center gap-[10px]'>
                  <h2>YOUR STATISTICS</h2>
-                 <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
-                   <div className='relative flex flex-col items-center p-4 bg-gradient-to-br from-[#4DD499]/10 via-[#4DD499]/5 to-white border-2 border-[#000000] rounded-lg overflow-hidden'>
+                 <div className='flex gap-[10px] w-fit'>
+                   <div className='relative flex flex-col min-w-[200px] items-center p-4 bg-gradient-to-br from-[#4DD499]/10 via-[#4DD499]/5 to-white border-2 border-[#000000] rounded-lg overflow-hidden'>
                      <Eye 
                        size={100}
                        className='absolute -right-[30px] top-1/2 -translate-y-1/2 text-[#4DD499]/15' 
@@ -564,7 +612,7 @@ const Connections = () => {
                      <div className='text-2xl font-bold relative z-10'>{stats.totalViews}</div>
                      <div className='text-small relative z-10'>VIEWS</div>
                    </div>
-                   <div className='relative flex flex-col items-center p-4 bg-gradient-to-br from-[#E95444]/10 via-[#E95444]/5 to-white border-2 border-[#000000] rounded-lg overflow-hidden'>
+                   <div className='relative flex flex-col min-w-[200px] items-center p-4 bg-gradient-to-br from-[#E95444]/10 via-[#E95444]/5 to-white border-2 border-[#000000] rounded-lg overflow-hidden'>
                      <Heart 
                        size={100}
                        className='absolute -right-[30px] top-1/2 -translate-y-1/2 text-[#E95444]/15' 
@@ -574,7 +622,7 @@ const Connections = () => {
                      <div className='text-2xl font-bold relative z-10'>{stats.totalLikes}</div>
                      <div className='text-small relative z-10'>LIKES</div>
                    </div>
-                   <div className='relative flex flex-col items-center p-4 bg-gradient-to-br from-[#5D64F4]/10 via-[#5D64F4]/5 to-white border-2 border-[#000000] rounded-lg overflow-hidden'>
+                   <div className='relative flex flex-col min-w-[200px] items-center p-4 bg-gradient-to-br from-[#5D64F4]/10 via-[#5D64F4]/5 to-white border-2 border-[#000000] rounded-lg overflow-hidden'>
                      <MessageCircle 
                        size={100}
                        className='absolute -right-[30px] top-1/2 -translate-y-1/2 text-[#5D64F4]/15' 
@@ -584,7 +632,7 @@ const Connections = () => {
                      <div className='text-2xl font-bold relative z-10'>{stats.totalComments}</div>
                      <div className='text-small relative z-10'>COMMENTS</div>
                    </div>
-                   <div className='relative flex flex-col items-center p-4 bg-gradient-to-br from-[#FEC72F]/10 via-[#FEC72F]/5 to-white border-2 border-[#000000] rounded-lg overflow-hidden'>
+                   <div className='relative flex flex-col min-w-[200px] items-center p-4 bg-gradient-to-br from-[#FEC72F]/10 via-[#FEC72F]/5 to-white border-2 border-[#000000] rounded-lg overflow-hidden'>
                      <FileText 
                        size={100}
                        className='absolute -right-[30px] top-1/2 -translate-y-1/2 text-[#FEC72F]/15' 
@@ -598,9 +646,9 @@ const Connections = () => {
                </div>
 
               {/* Individual Post Statistics */}
-              <div className='bg-[#EDEDE9] border-2 border-[#000000] rounded-lg p-6'>
+              <div className=''>
                 <h2 className='text-2xl font-semibold mb-4'>POST STATISTICS</h2>
-                <div className='flex flex-col gap-4'>
+                <div className='grid lg:grid-cols-3 grid-cols-1 md:grid-cols-2 gap-4'>
                   {postStats.map((postStat) => (
                     <div 
                       key={postStat.post._id}
@@ -643,9 +691,10 @@ const Connections = () => {
                 </div>
               </div>
             </div>
-          )}
+          ))}
 
           {/* Connections Section */}
+          {view === "connections" && (
           <div id="connections" className='flex flex-col gap-6 scroll-mt-8'>
             {/* Count Cards */}
             <div className='flex flex-row gap-4 justify-center'>
@@ -894,8 +943,10 @@ const Connections = () => {
             </div>
           </div>
           </div>
+          )}
           
           {/* User Comments Section */}
+          {view === "comments" && (
           <div id="comments" className='scroll-mt-8'>
             <h2 className='text-2xl font-semibold mb-4'>
               MY COMMENTS ({isLoadingComments ? '...' : userComments.length})
@@ -1027,49 +1078,8 @@ const Connections = () => {
               </div>
             )}
           </div>
+          )}
         </div>
-
-        {/* Right Sidebar Navigation */}
-        <aside className='w-[250px] flex-shrink-0 h-fit sticky top-[100px]'>
-          <div className='bg-[#EDEDE9] border-[3px] border-solid border-[#000000] rounded-lg p-4 shadow-lg'>
-            <h3 className='text-lg font-semibold mb-4 text-black'>NAVIGATION</h3>
-            <nav className='flex flex-col gap-2'>
-              {stats.totalPosts > 0 && (
-                <button
-                  onClick={() => scrollToSection('stats')}
-                  className={`text-left px-3 py-2 rounded-lg transition-all duration-200 text-sm font-medium ${
-                    activeSection === 'stats'
-                      ? 'bg-[#FEC72F] text-black font-semibold shadow-md'
-                      : 'hover:bg-[#FEC72F]/30 text-black'
-                  }`}
-                >
-                  Stats
-                </button>
-              )}
-              <button
-                onClick={() => scrollToSection('connections')}
-                className={`text-left px-3 py-2 rounded-lg transition-all duration-200 text-sm font-medium ${
-                  activeSection === 'connections'
-                    ? 'bg-[#FEC72F] text-black font-semibold shadow-md'
-                    : 'hover:bg-[#FEC72F]/30 text-black'
-                }`}
-              >
-                Connections
-              </button>
-              <button
-                onClick={() => scrollToSection('comments')}
-                className={`text-left px-3 py-2 rounded-lg transition-all duration-200 text-sm font-medium flex items-center gap-2 ${
-                  activeSection === 'comments'
-                    ? 'bg-[#FEC72F] text-black font-semibold shadow-md'
-                    : 'hover:bg-[#FEC72F]/30 text-black'
-                }`}
-              >
-                <MessageCircle size={16} />
-                My Comments
-              </button>
-            </nav>
-          </div>
-        </aside>
       </div>
 
       {/* Followers Modal */}

@@ -29,19 +29,26 @@ const EditCommunityModal = ({ isOpen, onClose, onSuccess, community }: EditCommu
   const [announcementContent, setAnnouncementContent] = useState<string>('');
   const [showAnnouncementForm, setShowAnnouncementForm] = useState<boolean>(false);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [isCreatingAnnouncement, setIsCreatingAnnouncement] = useState<boolean>(false);
   const [showCropper, setShowCropper] = useState<boolean>(false);
   const [imageToCrop, setImageToCrop] = useState<string>('');
   const [pendingCroppedFile, setPendingCroppedFile] = useState<File | null>(null);
+  const [coverImagePreview, setCoverImagePreview] = useState<string>('');
+  const [showCoverCropper, setShowCoverCropper] = useState<boolean>(false);
+  const [coverImageToCrop, setCoverImageToCrop] = useState<string>('');
+  const [pendingCoverFile, setPendingCoverFile] = useState<File | null>(null);
 
   useEffect(() => {
     if (community) {
       setTitle(community.title || '');
       setDescription(community.description || '');
       setPicturePreview(community.picture || '');
+      setCoverImagePreview(community.coverImage || '');
       setRules(community.rules && community.rules.length > 0 ? community.rules : ['']);
       setSelectedTopics(community.topics || []);
       setAnnouncements(community.announcements || []);
       setPendingCroppedFile(null);
+      setPendingCoverFile(null);
     }
   }, [community]);
 
@@ -54,8 +61,14 @@ const EditCommunityModal = ({ isOpen, onClose, onSuccess, community }: EditCommu
       if (imageToCrop.startsWith('blob:')) {
         URL.revokeObjectURL(imageToCrop);
       }
+      if (coverImagePreview.startsWith('blob:')) {
+        URL.revokeObjectURL(coverImagePreview);
+      }
+      if (coverImageToCrop.startsWith('blob:')) {
+        URL.revokeObjectURL(coverImageToCrop);
+      }
     };
-  }, [picturePreview, imageToCrop]);
+  }, [picturePreview, imageToCrop, coverImagePreview, coverImageToCrop]);
 
   const toggleTopic = (topicName: string) => {
     setSelectedTopics(prev => 
@@ -143,6 +156,84 @@ const EditCommunityModal = ({ isOpen, onClose, onSuccess, community }: EditCommu
     setPendingCroppedFile(null);
   };
 
+  // Handle cover image selection from FileInput
+  const handleCoverImageSelected = (imageSrc: string) => {
+    if (!imageSrc) {
+      return;
+    }
+    setCoverImageToCrop(imageSrc);
+    setShowCoverCropper(true);
+  };
+
+  // Handle cover crop completion
+  const handleCoverCropDone = async (croppedAreaPixels: { x: number; y: number; width: number; height: number } | null) => {
+    if (!croppedAreaPixels || !coverImageToCrop) {
+      setShowCoverCropper(false);
+      setCoverImageToCrop('');
+      return;
+    }
+
+    try {
+      // Create cropped image blob
+      const croppedBlob = await createImage(coverImageToCrop, croppedAreaPixels);
+      
+      // Convert blob to file
+      const croppedFile = blobToFile(croppedBlob, `community-cover-${Date.now()}.jpg`);
+
+      // Validate file size (max 5MB)
+      if (croppedFile.size > 5 * 1024 * 1024) {
+        alert('Cropped image size must be less than 5MB');
+        setShowCoverCropper(false);
+        setCoverImageToCrop('');
+        return;
+      }
+
+      // Store the cropped file for later upload (when user clicks Save)
+      setPendingCoverFile(croppedFile);
+      
+      // Create preview URL from the cropped file
+      const previewBlobUrl = URL.createObjectURL(croppedFile);
+      setCoverImagePreview(previewBlobUrl);
+      
+      // Clean up
+      setShowCoverCropper(false);
+      if (coverImageToCrop.startsWith('blob:')) {
+        URL.revokeObjectURL(coverImageToCrop);
+      }
+      setCoverImageToCrop('');
+    } catch (error) {
+      console.error('Crop failed:', error);
+      alert(error instanceof Error ? error.message : 'Failed to crop image. Please try again.');
+      setShowCoverCropper(false);
+      setCoverImageToCrop('');
+    }
+  };
+
+  // Handle cover crop cancellation
+  const handleCoverCropCancel = () => {
+    setShowCoverCropper(false);
+    if (coverImageToCrop.startsWith('blob:')) {
+      URL.revokeObjectURL(coverImageToCrop);
+    }
+    setCoverImageToCrop('');
+    // Restore preview to existing cover image if available
+    if (community?.coverImage) {
+      setCoverImagePreview(community.coverImage);
+    } else {
+      setCoverImagePreview('');
+    }
+  };
+
+  // Handle remove cover image
+  const handleRemoveCoverImage = () => {
+    // Clean up preview blob URL if it exists
+    if (coverImagePreview.startsWith('blob:')) {
+      URL.revokeObjectURL(coverImagePreview);
+    }
+    setCoverImagePreview('');
+    setPendingCoverFile(null);
+  };
+
   const addRule = () => {
     setRules([...rules, '']);
   };
@@ -206,6 +297,53 @@ const EditCommunityModal = ({ isOpen, onClose, onSuccess, community }: EditCommu
     }
   };
 
+  const uploadCoverImage = async (file: File): Promise<string> => {
+    try {
+      const timestamp = Date.now();
+      const fileExtension = file.name.split('.').pop() || 'jpg';
+      const filename = `community-covers/${timestamp}.${fileExtension}`;
+      
+      const presignUrl = `${API_URL}/s3/community-image-upload?filename=${encodeURIComponent(filename)}&contentType=${encodeURIComponent(file.type)}`;
+      
+      const res = await fetch(presignUrl, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Failed to get upload URL: ${res.status} ${errorText}`);
+      }
+      
+      const data = await res.json();
+      const { uploadUrl, fileUrl } = data;
+      
+      if (!uploadUrl) {
+        throw new Error('No upload URL received from server');
+      }
+
+      const uploadRes = await fetch(uploadUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': file.type },
+        body: file,
+      });
+
+      if (!uploadRes.ok) {
+        const errorText = await uploadRes.text().catch(() => 'Unknown error');
+        throw new Error(`Failed to upload cover image to S3: ${uploadRes.status} ${errorText}`);
+      }
+
+      return fileUrl;
+      
+    } catch (error) {
+      console.error('Cover image upload failed:', error);
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Network error: Unable to connect to server. Please check your internet connection.');
+      }
+      throw error;
+    }
+  };
+
   const handleCreateAnnouncement = async () => {
     if (!announcementTitle.trim() || !announcementContent.trim()) {
       alert('Please fill in both title and content for the announcement');
@@ -214,6 +352,7 @@ const EditCommunityModal = ({ isOpen, onClose, onSuccess, community }: EditCommu
 
     if (!community?._id) return;
 
+    setIsCreatingAnnouncement(true);
     try {
       const response = await fetch(`${API_URL}/announcements`, {
         method: 'post',
@@ -238,9 +377,14 @@ const EditCommunityModal = ({ isOpen, onClose, onSuccess, community }: EditCommu
       setAnnouncementTitle('');
       setAnnouncementContent('');
       setShowAnnouncementForm(false);
+      
+      // Refresh community data by calling onSuccess
+      onSuccess();
     } catch (error) {
       console.error('Error creating announcement:', error);
       alert(error instanceof Error ? error.message : 'Failed to create announcement. Please try again.');
+    } finally {
+      setIsCreatingAnnouncement(false);
     }
   };
 
@@ -261,6 +405,9 @@ const EditCommunityModal = ({ isOpen, onClose, onSuccess, community }: EditCommu
       }
 
       setAnnouncements(announcements.filter(a => a._id !== announcementId));
+      
+      // Refresh community data by calling onSuccess
+      onSuccess();
     } catch (error) {
       console.error('Error deleting announcement:', error);
       alert(error instanceof Error ? error.message : 'Failed to delete announcement. Please try again.');
@@ -281,6 +428,7 @@ const EditCommunityModal = ({ isOpen, onClose, onSuccess, community }: EditCommu
 
     try {
       let pictureUrl = community?.picture || '';
+      let coverImageUrl = community?.coverImage || '';
       
       // If there's a pending cropped file, upload it first
       if (pendingCroppedFile) {
@@ -304,6 +452,31 @@ const EditCommunityModal = ({ isOpen, onClose, onSuccess, community }: EditCommu
         }
       }
 
+      // If there's a pending cover file, upload it
+      if (pendingCoverFile) {
+        try {
+          coverImageUrl = await uploadCoverImage(pendingCoverFile);
+          
+          // Clean up the preview blob URL
+          if (coverImagePreview.startsWith('blob:')) {
+            URL.revokeObjectURL(coverImagePreview);
+          }
+          
+          // Update preview with the uploaded URL
+          setCoverImagePreview(coverImageUrl);
+          setPendingCoverFile(null);
+        } catch (uploadError) {
+          console.error('Failed to upload cover image:', uploadError);
+          const errorMessage = uploadError instanceof Error ? uploadError.message : 'Failed to upload cover image. Please try again.';
+          alert(errorMessage);
+          setIsSubmitting(false);
+          return;
+        }
+      } else if (!coverImagePreview && community?.coverImage) {
+        // If cover image was removed, set to empty string
+        coverImageUrl = '';
+      }
+
       // Filter out empty rules
       const validRules = rules.filter(rule => rule.trim().length > 0);
 
@@ -318,6 +491,7 @@ const EditCommunityModal = ({ isOpen, onClose, onSuccess, community }: EditCommu
           title: title.trim(),
           description: description.trim(),
           picture: pictureUrl,
+          coverImage: coverImageUrl || undefined,
           rules: validRules,
           topics: selectedTopics,
         }),
@@ -345,19 +519,26 @@ const EditCommunityModal = ({ isOpen, onClose, onSuccess, community }: EditCommu
         setTitle(community.title || '');
         setDescription(community.description || '');
         setPicturePreview(community.picture || '');
+        setCoverImagePreview(community.coverImage || '');
         setRules(community.rules && community.rules.length > 0 ? community.rules : ['']);
         setSelectedTopics(community.topics || []);
         setAnnouncements(community.announcements || []);
       }
       setPendingCroppedFile(null);
+      setPendingCoverFile(null);
       setAnnouncementTitle('');
       setAnnouncementContent('');
       setShowAnnouncementForm(false);
       setShowCropper(false);
+      setShowCoverCropper(false);
       if (imageToCrop.startsWith('blob:')) {
         URL.revokeObjectURL(imageToCrop);
       }
+      if (coverImageToCrop.startsWith('blob:')) {
+        URL.revokeObjectURL(coverImageToCrop);
+      }
       setImageToCrop('');
+      setCoverImageToCrop('');
       onClose();
     }
   };
@@ -372,10 +553,10 @@ const EditCommunityModal = ({ isOpen, onClose, onSuccess, community }: EditCommu
       >
         {/* Header */}
         <div className="flex items-center justify-between">
-          <h3>EDIT COMMUNITY</h3>
+          <h2>EDIT COMMUNITY</h2>
           <button
             onClick={handleClose}
-            className="icon"
+            className="icon bg-[#E95444]"
             disabled={isSubmitting}
           >
             <X size={20}/>
@@ -396,9 +577,68 @@ const EditCommunityModal = ({ isOpen, onClose, onSuccess, community }: EditCommu
           </div>
         )}
 
+        {/* Cover Image Cropper Modal */}
+        {showCoverCropper && coverImageToCrop && (
+          <div className="fixed inset-0 bg-black/80 z-[60] flex items-center justify-center p-4">
+            <div className="bg-gradient-to-br from-[#EDEDE9] via-[#F5F5F1] to-[#EDEDE9] border-2 border-[#000000] p-6 max-w-4xl w-full rounded-lg shadow-2xl">
+              <ImageCropper
+                image={coverImageToCrop}
+                onCropDone={handleCoverCropDone}
+                onCropCancel={handleCoverCropCancel}
+                AR={4}
+              />
+            </div>
+          </div>
+        )}
+
         {/* Form */}
         <form onSubmit={handleSubmit} className="flex overflow-y-auto">
           <div className="flex flex-col gap-[50px] p-[10px] w-full">
+
+            {/* Cover Image Upload */}
+            <div className="flex flex-col gap-4">
+              <label className="text-black font-medium text-sm">Community Cover Image</label>
+              <p className="text-[#979797] text-xs">4:1 aspect ratio • Max 1028x256px</p>
+              
+              {/* Preview */}
+              {coverImagePreview && (
+                <div className="relative w-full group">
+                  <img
+                    src={coverImagePreview}
+                    alt="Cover preview"
+                    className="w-full max-w-[1028px] h-auto object-cover border-2 border-[#000000] rounded-lg"
+                    style={{ aspectRatio: '4/1', maxHeight: '256px' }}
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleRemoveCoverImage}
+                    className="absolute top-2 right-2 bg-gradient-to-br from-red-600 to-red-700 hover:from-red-700 hover:to-red-600 rounded-full p-1.5 transition-all duration-300 hover:scale-110 hover:shadow-lg border-2 border-black"
+                    title="Remove cover image"
+                  >
+                    <X size={14} className="text-white" />
+                  </button>
+                </div>
+              )}
+
+              {/* Upload Button */}
+              <div className="flex flex-col gap-2">
+                {!showCoverCropper ? (
+                  <FileInput 
+                    onImageSelected={handleCoverImageSelected} 
+                    onError={(error: string) => alert(error)}
+                    type="Community Cover Image"
+                  />
+                ) : null}
+                {!showCoverCropper && (
+                  <p className="text-[#979797] text-mini hover:text-[#FEC72F] transition-colors duration-200">
+                    SUPPORTED FORMATS: JPG, PNG, GIF. MAX SIZE: 5MB
+                  </p>
+                )}
+              </div>
+            </div>
 
             {/* Picture Upload */}
             <div className="flex flex-col gap-4 items-center">
@@ -456,7 +696,7 @@ const EditCommunityModal = ({ isOpen, onClose, onSuccess, community }: EditCommu
                 placeholder="Enter community title"
                 maxLength={50}
                 required
-                className="form-input"
+                className="input-decor"
               />
               <span className="text-[#979797] text-xs">{title.length}/50</span>
             </div>
@@ -474,7 +714,7 @@ const EditCommunityModal = ({ isOpen, onClose, onSuccess, community }: EditCommu
                 maxLength={250}
                 rows={4}
                 required
-                className="form-input"
+                className="input-decor"
               />
               <span className="text-[#979797] text-xs">{description.length}/250</span>
             </div>
@@ -519,15 +759,15 @@ const EditCommunityModal = ({ isOpen, onClose, onSuccess, community }: EditCommu
                       onChange={(e) => updateRule(index, e.target.value)}
                       placeholder={`Rule ${index + 1}`}
                       maxLength={100}
-                      className="flex-1 px-4 py-2 bg-[#EDEDE9] border border-[#000000] rounded-lg text-black placeholder-[#979797] focus:outline-none focus:border-[#5D64F4]"
+                      className="input-decor"
                     />
-                    {rules.length > 1 && (
+                    {rules.length > 0 && index > 0 && (
                       <button
                         type="button"
                         onClick={() => removeRule(index)}
-                        className="p-2 bg-[#EDEDE9] border border-[#000000] rounded-lg hover:bg-[#D6D6CD] transition-colors"
+                        className="icon bg-[#E95444]"
                       >
-                        <Trash2 size={16} className="text-red-600" />
+                        <Trash2 size={16} />
                       </button>
                     )}
                   </div>
@@ -542,23 +782,23 @@ const EditCommunityModal = ({ isOpen, onClose, onSuccess, community }: EditCommu
                 <button
                   type="button"
                   onClick={() => setShowAnnouncementForm(!showAnnouncementForm)}
-                  className="primary-btn flex gap-[5px] items-center bg-[#E95444]"
+                  className="icon bg-[#E95444]"
                 >
-                  <Plus size={16} />
-                  {showAnnouncementForm ? 'CANCEL' : 'NEW ANNOUNCEMENT'}
+                  <Plus size={16} style={{transform: showAnnouncementForm ? 'rotate(45deg)' : 'rotate(0deg)'}}/>
+                  
                 </button>
               </div>
 
               {/* Announcement Form */}
               {showAnnouncementForm && (
-                <div className="flex flex-col gap-2 p-3 bg-[#D6D6CD] rounded-lg border border-[#000000]">
+                <div className="flex flex-col gap-2 ">
                   <input
                     type="text"
                     value={announcementTitle}
                     onChange={(e) => setAnnouncementTitle(e.target.value)}
                     placeholder="Announcement Title"
                     maxLength={100}
-                    className="px-4 py-2 bg-[#EDEDE9] border border-[#000000] rounded-lg text-black placeholder-[#979797] focus:outline-none focus:border-[#5D64F4]"
+                    className="input-decor"
                   />
                   <textarea
                     value={announcementContent}
@@ -566,15 +806,16 @@ const EditCommunityModal = ({ isOpen, onClose, onSuccess, community }: EditCommu
                     placeholder="Announcement Content"
                     maxLength={500}
                     rows={3}
-                    className="px-4 py-2 bg-[#EDEDE9] border border-[#000000] rounded-lg text-black placeholder-[#979797] focus:outline-none focus:border-[#5D64F4]"
+                    className="input-decor"
                   />
                   <div className="flex gap-2">
                     <button
                       type="button"
                       onClick={handleCreateAnnouncement}
-                      className="px-4 py-2 primary-btn rounded-lg"
+                      disabled={isCreatingAnnouncement}
+                      className="primary-btn bg-[#E95444]"
                     >
-                      CREATE
+                      {isCreatingAnnouncement ? 'CREATING...' : 'CREATE'}
                     </button>
                     <button
                       type="button"
@@ -583,7 +824,8 @@ const EditCommunityModal = ({ isOpen, onClose, onSuccess, community }: EditCommu
                         setAnnouncementTitle('');
                         setAnnouncementContent('');
                       }}
-                      className="px-4 py-2 bg-[#EDEDE9] border border-[#000000] rounded-lg text-black hover:bg-[#D6D6CD] transition-colors"
+                      disabled={isCreatingAnnouncement}
+                      className="secondary-btn"
                     >
                       CANCEL
                     </button>
@@ -619,7 +861,7 @@ const EditCommunityModal = ({ isOpen, onClose, onSuccess, community }: EditCommu
         </form>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 border-t border-[#000000] pt-4">
+        <div className="flex justify-end gap-3 border-t border-[#000000] pt-4">
           <button
             type="button"
             onClick={handleClose}

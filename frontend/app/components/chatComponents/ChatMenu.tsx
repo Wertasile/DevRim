@@ -19,7 +19,7 @@ const ChatMenu = ({Chat} : ChatMenuProps) => {
   }
 
   return (
-    <div className={`cursor-pointer p-2 ${chat == Chat && ('bg-hover rounded-[5px]')} border-b-[2px] border-solid border-[#000000] flex flex-row py-2 justify-between`} onClick={() => {setChat(Chat)}}>
+    <div className={`cursor-pointer p-2 ${chat == Chat && ('bg-hover ')} border-b-[2px] border-solid border-[#000000] flex flex-row py-2 justify-between`} onClick={() => {setChat(Chat)}}>
         <div>
             {Chat?.chatName === "sender" ? (<h3>{Chat.users.filter((u) => u._id !== user?._id).map( (otherUser) => <h3>{otherUser.name}</h3>)}</h3>) : (<h3>{Chat?.chatName}</h3>)}
             <p className='font-light text-sm'>

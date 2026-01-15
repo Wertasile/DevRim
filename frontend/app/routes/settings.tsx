@@ -7,6 +7,7 @@ import { Save, User, Mail, Image as ImageIcon, FileText, Briefcase, Upload, X } 
 import FileInput from '~/components/cropping/FileInput';
 import ImageCropper from '~/components/cropping/ImageCropper';
 import { createImage, blobToFile } from '~/utils/cropImage';
+import { Skeleton } from '~/components/SkeletonLoader';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -295,80 +296,27 @@ const Settings = () => {
   const SkeletonLoader = () => (
     <div className="min-h-screen">
       <div className="flex flex-row gap-6 px-6 py-8 mx-auto max-w-[1600px]">
-        {/* Left Sidebar Skeleton */}
         <Sidebar />
-
-        {/* Main Content Skeleton */}
-        <div className="flex-grow flex flex-col gap-6">
-          {/* Header Skeleton */}
-          <div className="flex flex-col gap-2">
-            <div className="h-9 w-48 skeleton rounded-lg"></div>
-            <div className="h-5 w-96 skeleton rounded-lg"></div>
-          </div>
-
-          {/* Form Sections Skeleton */}
-          <div className="flex flex-col gap-6">
-            {/* Personal Information Section Skeleton */}
-            <div className="bg-[#EDEDE9] border border-[#000000] rounded-lg p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-5 h-5 skeleton rounded"></div>
-                <div className="h-6 w-48 skeleton rounded-lg"></div>
-              </div>
-
-              <div className="flex flex-col gap-5">
-                {/* Email Field Skeleton */}
-                <div className="flex flex-col gap-2">
-                  <div className="h-4 w-32 skeleton rounded"></div>
-                  <div className="h-10 w-full bg-[#D6D6CD] border border-[#000000] rounded-lg skeleton"></div>
-                  <div className="h-3 w-80 skeleton rounded"></div>
-                </div>
-
-                {/* Name Fields Skeleton */}
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="flex flex-col gap-2">
-                    <div className="h-4 w-24 skeleton rounded"></div>
-                    <div className="h-10 w-full bg-[#D6D6CD] border border-[#000000] rounded-lg skeleton"></div>
-                  </div>
-                ))}
+        <div className="flex-grow flex flex-col gap-4">
+          <Skeleton width={180} height={28} />
+          <div className="flex flex-col gap-4">
+            <div className="p-4 flex flex-col gap-3">
+              <Skeleton width={140} height={20} />
+              <div className="flex flex-col gap-2">
+                <Skeleton width="100%" height={36} rounded />
+                <Skeleton width="100%" height={36} rounded />
+                <Skeleton width="100%" height={36} rounded />
               </div>
             </div>
-
-            {/* Profile Section Skeleton */}
-            <div className="bg-[#EDEDE9] border border-[#000000] rounded-lg p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-5 h-5 skeleton rounded"></div>
-                <div className="h-6 w-32 skeleton rounded-lg"></div>
-              </div>
-
-              <div className="flex flex-col gap-5">
-                {/* Profile Picture Skeleton */}
-                <div className="flex flex-col gap-4">
-                  <div className="h-4 w-32 skeleton rounded"></div>
-                  <div className="w-32 h-32 rounded-full skeleton"></div>
-                  <div className="h-10 w-40 bg-[#D6D6CD] border border-[#000000] rounded-lg skeleton"></div>
-                  <div className="h-3 w-64 skeleton rounded"></div>
-                </div>
-
-                {/* Byline Skeleton */}
-                <div className="flex flex-col gap-2">
-                  <div className="h-4 w-20 skeleton rounded"></div>
-                  <div className="h-10 w-full bg-[#D6D6CD] border border-[#000000] rounded-lg skeleton"></div>
-                  <div className="h-3 w-24 skeleton rounded"></div>
-                </div>
-
-                {/* About Skeleton */}
-                <div className="flex flex-col gap-2">
-                  <div className="h-4 w-16 skeleton rounded"></div>
-                  <div className="h-32 w-full bg-[#D6D6CD] border border-[#000000] rounded-lg skeleton"></div>
-                  <div className="h-3 w-24 skeleton rounded"></div>
-                </div>
+            <div className="p-4 flex flex-col gap-3">
+              <Skeleton width={120} height={20} />
+              <div className="flex flex-col gap-2">
+                <Skeleton circle width={60} height={60} />
+                <Skeleton width="100%" height={36} rounded />
+                <Skeleton width="100%" height={80} rounded />
               </div>
             </div>
-
-            {/* Submit Button Skeleton */}
-            <div className="flex justify-end gap-4">
-              <div className="h-10 w-40 skeleton rounded-lg"></div>
-            </div>
+            <Skeleton width={120} height={36} rounded />
           </div>
         </div>
       </div>

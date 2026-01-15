@@ -255,28 +255,25 @@ export default function BlogHome() {
     
     if (userLoading) {
         return (
-            <div className="blog-home min-h-screen px-[25px]">
-                <div className="flex gap-[20px]">
+            <div className="blog-home min-h-screen px-6 py-8">
+                <div className="flex gap-6">
                     <Sidebar />
-                    <section className="flex flex-col flex-grow gap-[10px]">
-                        <div className='flex justify-between items-center'>
-                            <Skeleton width={200} height={32} />
-                            <Skeleton width={40} height={40} rounded />
-                        </div>
-                        <div className="flex flex-row gap-4 border-[1px] w-fit border-black bg-[#EDEDE9] rounded-lg overflow-hidden shadow-md">
+                    <section className="flex flex-col flex-grow gap-4">
+                        <Skeleton width={180} height={28} />
+                        <div className="flex gap-3">
                             {[...Array(3)].map((_, i) => (
-                                <Skeleton key={i} width={100} height={40} rounded />
+                                <Skeleton key={i} width={90} height={36} rounded />
                             ))}
                         </div>
-                        <div className="feed-list">
+                        <div className="feed-list flex flex-col gap-3">
                             {[...Array(3)].map((_, i) => (
                                 <BlogPostCardSkeleton key={`loading-${i}`} />
                             ))}
                         </div>
                     </section>
-                    <aside className="flex gap-[20px] flex-col">
-                        <Skeleton width={400} height={300} rounded />
-                        <Skeleton width={400} height={300} rounded />
+                    <aside className="flex gap-4 flex-col">
+                        <Skeleton width={300} height={200} rounded />
+                        <Skeleton width={300} height={200} rounded />
                     </aside>
                 </div>
             </div>
@@ -290,8 +287,8 @@ export default function BlogHome() {
     
 
     return (
-        <div className="blog-home min-h-screen px-[25px]">
-            <div className="flex gap-[20px]">
+        <div className="blog-home min-h-screen">
+            <div className="flex gap-[20px] p-[25px]">
 
                 <Sidebar />
 
@@ -319,7 +316,7 @@ export default function BlogHome() {
                         </div>
                     )}
 
-                    <div className="flex flex-row gap-4 border-[1px] w-fit border-black bg-[#EDEDE9] rounded-lg overflow-hidden shadow-md" role="tablist" aria-label="Content sections">
+                    <div className="flex flex-row gap-4 border-[1px] w-fit border-black bg-[#EDEDE9] border-[3px] overflow-hidden shadow-md" role="tablist" aria-label="Content sections">
                         {(["For You", "Search Results", "Latest"] as const).map((label,index) => (
                             <button
                                 key={label}
@@ -328,13 +325,13 @@ export default function BlogHome() {
                                 aria-selected={section === label}
                                 aria-controls={`${label.toLowerCase().replace(' ', '-')}-panel`}
                                 id={`${label.toLowerCase().replace(' ', '-')}-tab`}
-                                className={`cursor-pointer px-4 py-2 transition-all duration-300 relative focus:outline-none focus:ring-2 focus:ring-[#FEC72F] focus:ring-offset-2 ${
+                                className={`cursor-pointer px-4 py-2 transition-all duration-300 relative text-small ${
                                     section === label 
                                         ? "bg-[#FEC72F] text-black font-semibold shadow-lg transform scale-105" 
                                         : "hover:bg-[#FEC72F]/30 hover:font-medium"
                                 }`}
                             >
-                                {label}
+                                <h4>{label}</h4>
                                 {section === label && (
                                     <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#FEC72F]" aria-hidden="true"></div>
                                 )}
@@ -349,7 +346,7 @@ export default function BlogHome() {
                 </section>
 
                 <aside className="flex gap-[20px] flex-col" aria-label="Trending content">
-                    <div className="w-[400px] flex border-[3px] bg-[#EDEDE9] border-solid border-[#000000] p-[10px] flex-col gap-[10px] rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
+                    <div className="w-[400px] flex border-[3px] bg-[#EDEDE9] border-solid border-[#000000] p-[10px] flex-col gap-[10px] shadow-lg hover:shadow-xl transition-all duration-300">
                         <h3>TRENDING POSTS</h3>
                         <div className='flex flex-col gap-[10px]' role="list" aria-label="Trending posts">
                             {isLoadingTrending ? (
@@ -366,7 +363,7 @@ export default function BlogHome() {
                         </div>
                     </div>
 
-                    <div className="w-[400px] bg-[#EDEDE9] flex border-[3px] border-solid border-[#000000] flex-col gap-[10px] p-[10px] rounded-lg shadow-lg">
+                    <div className="w-[400px] bg-[#EDEDE9] flex border-[3px] border-solid border-[#000000] flex-col gap-[10px] p-[10px] shadow-lg">
                         <h3>TRENDING COMMUNITIES</h3>
                         <div className='flex flex-col gap-[10px]' role="list" aria-label="Trending communities">
                             {isLoadingCommunities ? (

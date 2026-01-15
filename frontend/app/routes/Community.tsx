@@ -3,7 +3,7 @@ import { useUser } from '~/context/userContext';
 import type { Community, Blog } from '~/types/types';
 import Sidebar from '~/components/Sidebar';
 import BlogPostCard from '~/components/blogPostCard';
-import { Search, Users, Calendar, Film, FlaskConical, Briefcase, Edit, Trash2, FilterIcon, SortAscIcon, SortDescIcon, PlusIcon } from 'lucide-react';
+import { Search, Users, Calendar, Film, FlaskConical, Briefcase, Edit, Trash2, FilterIcon, SortAscIcon, SortDescIcon, PlusIcon, Pin } from 'lucide-react';
 import type { Route } from './+types/Community';
 import BlogPostSmall from '~/components/blogPostSmall';
 import leaveCommunity from '~/apiCalls/Community/leaveCommunity';
@@ -109,17 +109,15 @@ export default function Community({ params }: Route.ComponentProps) {
     )
   );
 
-  // Separate pinned posts from regular posts
+  // Get pinned post IDs for checking
   const pinnedPostIds = community?.pinnedPosts?.map((p: Blog) => 
     typeof p === 'string' ? p : p._id
   ) || [];
   
-  const regularPosts = community?.posts?.filter((post: Blog) => {
-    const postId = typeof post === 'string' ? post : post._id;
-    return !pinnedPostIds.includes(postId);
-  }) || [];
+  // Include all posts (pinned and regular) in the feed
+  const allPosts = community?.posts || [];
 
-  const filteredPosts = regularPosts.filter((post: Blog) => {
+  const filteredPosts = allPosts.filter((post: Blog) => {
     if (!searchQuery.trim()) return true;
     const query = searchQuery.toLowerCase();
     const postTitle = typeof post === 'string' ? '' : post.title;
@@ -129,6 +127,26 @@ export default function Community({ params }: Route.ComponentProps) {
       postSummary.toLowerCase().includes(query)
     );
   }) || [];
+
+  // Sort posts: pinned posts first, then by date
+  const sortedPosts = [...filteredPosts].sort((a: Blog, b: Blog) => {
+    // Skip sorting if posts are strings (shouldn't happen, but safety check)
+    if (typeof a === 'string' || typeof b === 'string') return 0;
+    
+    const aId = a._id;
+    const bId = b._id;
+    const aIsPinned = pinnedPostIds.includes(aId);
+    const bIsPinned = pinnedPostIds.includes(bId);
+    
+    // Pinned posts come first
+    if (aIsPinned && !bIsPinned) return -1;
+    if (!aIsPinned && bIsPinned) return 1;
+    
+    // If both pinned or both not pinned, sort by date (newest first)
+    const aDate = new Date(a.releaseDate || 0).getTime();
+    const bDate = new Date(b.releaseDate || 0).getTime();
+    return bDate - aDate;
+  });
 
   const filteredPinnedPosts = (community?.pinnedPosts || []).filter((post: Blog) => {
     if (!searchQuery.trim()) return true;
@@ -183,19 +201,16 @@ export default function Community({ params }: Route.ComponentProps) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-row gap-6 px-6 py-8 bg-[#EDEDE9]">
+      <div className="min-h-screen flex flex-row gap-6 px-6 py-8">
         <Sidebar />
-        <div className="flex-grow flex flex-col gap-6">
-          <Skeleton width="60%" height={48} />
-          <div className="flex gap-4 items-center">
-            <Skeleton circle width={80} height={80} />
-            <div className="flex flex-col gap-2">
-              <Skeleton width={200} height={24} />
-              <Skeleton width={150} height={16} />
-            </div>
+        <div className="flex-grow flex flex-col gap-4">
+          <Skeleton width="50%" height={36} />
+          <div className="flex gap-3 items-center">
+            <Skeleton circle width={60} height={60} />
+            <Skeleton width={160} height={20} />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[...Array(4)].map((_, i) => (
+          <div className="flex flex-col gap-3">
+            {[...Array(3)].map((_, i) => (
               <BlogPostCardSkeleton key={`skeleton-${i}`} />
             ))}
           </div>
@@ -234,12 +249,31 @@ export default function Community({ params }: Route.ComponentProps) {
         community={community}
       />
 
-      <div className="flex flex-row gap-6 px-6 py-8 mx-auto">
+      <div className="flex flex-row justify-between gap-[10px] px-6 py-8 mx-auto">
         {/* Left Sidebar */}
         <Sidebar />
 
         {/* Main Content Area */}
-        <div className="flex-grow flex flex-col gap-6">
+        <div className="flex-grow flex flex-col gap-[30px] max-w-[1028px]">
+          {/* Cover Image */}
+          {community.coverImage && (
+            <div className="w-full flex items-center justify-center overflow-hidden">
+              <img
+                src={community.coverImage}
+                alt={`${community.title} cover`}
+                className="w-full h-auto object-cover"
+                style={{ 
+                  aspectRatio: '4/1', 
+                  maxWidth: '1028px',
+                  maxHeight: '256px'
+                }}
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+            </div>
+          )}
+
           {/* Community Header */}
           <div className='flex justify-between items-center'>
             <div className="flex items-center gap-4">
@@ -281,62 +315,48 @@ export default function Community({ params }: Route.ComponentProps) {
               placeholder={`Search in ${community.title}`}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-1 py-3 px-4 bg-[#D6D6CD] border-2 border-[#000000] rounded-lg focus:outline-none focus:border-[#E95444] transition-all duration-200 text-black placeholder:text-[#979797]"
+              className="input-decor"
             />
             <button className='icon bg-[#E95444]'><FilterIcon size={20} /></button>
             <button className='icon bg-[#E95444]'><SortDescIcon size={20} /></button>
           </div>
 
-          {/* Pinned Posts */}
-          {filteredPinnedPosts.length > 0 && (
-            <div className="flex flex-col gap-4">
-              <h3 className="text-black font-semibold flex items-center gap-2">
-                📌 PINNED POSTS
-              </h3>
-              <div className="flex flex-col gap-6">
-                {filteredPinnedPosts.map((post: Blog, index: number) => (
-                  <BlogPostCard
-                    key={post._id}
-                    id={post._id}
-                    title={post.title}
-                    releaseDate={post.releaseDate}
-                    summary={post.summary || ''}
-                    postUser={post.user}
-                    comments={post.comments || []}
-                    likes={post.likes || []}
-                    content={post.content}
-                    visualIndex={index}
-                    coverImage={post.coverImage}
-                    community={post.community || (community ? { _id: community._id, title: community.title } : undefined)}
-                    isModerator={isCreatorOrModerator || false}
-                    communityId={community._id}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-
           {/* Posts Feed */}
           <div className="flex flex-col gap-6">
-            {filteredPosts.length > 0 ? (
-              filteredPosts.map((post: Blog, index: number) => (
-                <BlogPostCard
-                  key={post._id}
-                  id={post._id}
-                  title={post.title}
-                  releaseDate={post.releaseDate}
-                  summary={post.summary || ''}
-                  postUser={post.user}
-                  comments={post.comments || []}
-                  likes={post.likes || []}
-                  content={post.content}
-                  visualIndex={index}
-                  coverImage={post.coverImage}
-                  community={post.community || (community ? { _id: community._id, title: community.title } : undefined)}
-                  isModerator={isCreatorOrModerator || false}
-                  communityId={community._id}
-                />
-              ))
+            {sortedPosts.length > 0 ? (
+              sortedPosts.map((post: Blog, index: number) => {
+                // Skip if post is a string (shouldn't happen, but safety check)
+                if (typeof post === 'string') return null;
+                
+                const postId = post._id;
+                const isPinned = pinnedPostIds.includes(postId);
+                
+                return (
+                  <div key={post._id} className="relative">
+                    {isPinned && (
+                      <div className="absolute -top-2 -left-2 z-10 bg-[#4DD499] border-2 border-[#000000] rounded-full p-1 shadow-lg">
+                        <Pin size={16} className="text-black" />
+                      </div>
+                    )}
+                    <BlogPostCard
+                      id={post._id}
+                      title={post.title}
+                      releaseDate={post.releaseDate}
+                      summary={post.summary || ''}
+                      postUser={post.user}
+                      comments={post.comments || []}
+                      likes={post.likes || []}
+                      content={post.content}
+                      visualIndex={index}
+                      coverImage={post.coverImage}
+                      community={post.community || (community ? { _id: community._id, title: community.title } : undefined)}
+                      isModerator={isCreatorOrModerator || false}
+                      communityId={community._id}
+                      isPinned={isPinned}
+                    />
+                  </div>
+                );
+              })
             ) : (
               <div className="text-center text-[#979797] py-8">
                 {searchQuery ? 'No posts found matching your search.' : 'No posts yet in this community.'}
@@ -346,30 +366,22 @@ export default function Community({ params }: Route.ComponentProps) {
         </div>
 
         {/* Right Sidebar */}
-        <aside className="w-80 flex-shrink-0 flex flex-col gap-6">
+        <aside className="w-80 flex-shrink-0 flex flex-col gap-[10px]">
           {/* Your Communities Section */}
 
 
 
             {/* Current Community Details */}
-            <div className="bg-[#EDEDE9] border-[3px] border-[#000000] rounded-lg p-4 shadow-lg hover:shadow-xl transition-all duration-300 mb-6">
-              <div className="flex items-center gap-3 mb-3">
-                {community.picture ? (
-                  <img src={community.picture} alt={community.title} className="w-10 h-10 rounded-full object-cover border-2 border-[#000000]" />
-                ) : (
-                  <div className="w-10 h-10 rounded-full bg-[#E95444] flex items-center justify-center border-2 border-[#000000]">
-                    {getCommunityIcon(community.title)}
-                  </div>
-                )}
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-black">{community.title}</h3>
-                  <p className="text-[#979797] text-xs">
-                    {formatMemberCount(community.members?.length || 0)} members
-                  </p>
-                </div>
-              </div>
+            <div className="bg-[#EDEDE9] border-[3px] border-[#000000] gap-[10px] flex flex-col p-[10px] shadow-lg hover:shadow-xl transition-all duration-300 mb-6">
+              <h3 className="text-black">{community.title}</h3>
               <div className="text-small leading-relaxed mb-3 text-black">
                 {community.description || 'A community for like-minded people'}
+              </div>
+              <div className="text-small">                 
+                Created on {formatDate(community.createdAt)}
+              </div>
+              <div className="text-small">                 
+                {formatMemberCount(community.members?.length || 0)} members
               </div>
               {/* Topics */}
               {community.topics && community.topics.length > 0 && (
@@ -386,30 +398,11 @@ export default function Community({ params }: Route.ComponentProps) {
                   </div>
                 </div>
               )}
-              <div className="text-small text-black">
-                <p>Creator: @{community.creator?.name || 'Unknown'}</p>
-                <p className="flex items-center gap-1 text-[#979797]">
-                  <Calendar size={12} />
-                  Date Created: {formatDate(community.createdAt)}
-                </p>
-              </div>
             </div>
-
-            {/* Rules Section */}
-            {community.rules && community.rules.length > 0 && (
-              <div className="bg-[#EDEDE9] border-[3px] border-[#000000] rounded-lg p-4 shadow-lg hover:shadow-xl transition-all duration-300 mb-6">
-                <h3 className="text-black mb-3 font-semibold">RULES</h3>
-                <ul className="list-decimal list-inside space-y-2 text-small text-black">
-                  {community.rules.map((rule: string, index: number) => (
-                    <li key={index} className="text-black/90">{rule}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
 
             {/* Announcements Section */}
             {community.announcements && community.announcements.length > 0 && (
-              <div className="bg-[#EDEDE9] border-[3px] border-[#000000] rounded-lg p-4 shadow-lg hover:shadow-xl transition-all duration-300 mb-6">
+              <div className="bg-[#EDEDE9] border-[3px] border-[#000000] p-[10px] shadow-lg hover:shadow-xl transition-all duration-300 mb-6">
                 <h3 className="text-black mb-3 font-semibold">ANNOUNCEMENTS</h3>
                 <div className="flex flex-col gap-3">
                   {community.announcements.map((announcement: any) => {
@@ -429,9 +422,35 @@ export default function Community({ params }: Route.ComponentProps) {
               </div>
             )}
 
+            {/* Pinned Posts Section */}
+            {filteredPinnedPosts.length > 0 && (
+              <div className="bg-[#EDEDE9] border-[3px] border-[#000000] p-[10px] shadow-lg hover:shadow-xl transition-all duration-300 mb-6">
+                <h3 className="text-black mb-3 font-semibold flex items-center gap-2">
+                  📌 PINNED POSTS
+                </h3>
+                <div className="flex flex-col gap-2">
+                  {filteredPinnedPosts.map((post: Blog) => (
+                    <BlogPostSmall key={post._id} blog={post} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Rules Section */}
+            {community.rules && community.rules.length > 0 && (
+              <div className="bg-[#EDEDE9] border-[3px] border-[#000000] p-[10px] shadow-lg hover:shadow-xl transition-all duration-300 mb-6">
+                <h3 className="text-black mb-3 font-semibold">RULES</h3>
+                <ul className="list-decimal list-inside space-y-2 text-small text-black">
+                  {community.rules.map((rule: string, index: number) => (
+                    <li key={index} className="text-black/90">{rule}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             {/* Your Posts Section */}
             {user && userPosts.length > 0 && (
-              <div className="bg-[#EDEDE9] border-[3px] border-[#000000] rounded-lg p-4 shadow-lg hover:shadow-xl transition-all duration-300 mb-6">
+              <div className="bg-[#EDEDE9] border-[3px] border-[#000000] p-[10px] shadow-lg hover:shadow-xl transition-all duration-300 mb-6">
                 <h3 className="text-black mb-3">YOUR POSTS</h3>
                 <div className="flex flex-col gap-2">
                   {userPosts.map((post: Blog) => {
@@ -448,9 +467,9 @@ export default function Community({ params }: Route.ComponentProps) {
               </div>
             )}
 
-            {/* Other Communities */}
+            {/* Other Communities
             {otherCommunities.length > 0 && (
-              <div className='bg-[#EDEDE9] border-[3px] border-[#000000] rounded-lg p-4 shadow-lg hover:shadow-xl transition-all duration-300 mb-6'>
+              <div className='bg-[#EDEDE9] border-[3px] border-[#000000] p-4 shadow-lg hover:shadow-xl transition-all duration-300 mb-6'>
                 <h3 className="text-black mb-3">OTHER COMMUNITIES</h3>
                 <div className='flex flex-col gap-[10px]'>
                   {otherCommunities.map((comm: Community) => (
@@ -465,7 +484,7 @@ export default function Community({ params }: Route.ComponentProps) {
                   ))}
                 </div>
               </div>
-            )}
+            )} */}
         </aside>
       </div>
     </div>
