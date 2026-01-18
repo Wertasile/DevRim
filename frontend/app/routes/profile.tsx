@@ -187,7 +187,7 @@ const profile = ({params}: Route.ComponentProps) => {
             <div className='flex-grow flex flex-col items-center gap-6'>
                 {/* Profile Header */}
                 <div className='flex flex-col justify-center w-fullgap-4'>
-                    <div className='flex flex-col items-center gap-6'>
+                    <div className='flex flex-col items-center gap-[10px]'>
                         <img 
                             className="rounded-full border-2 border-[#000000]" 
                             src={profile?.picture} 
@@ -211,56 +211,56 @@ const profile = ({params}: Route.ComponentProps) => {
                 </div>
 
                 {/* Navigation Tabs */}
-                <div className='flex flex-row gap-4 border-[1px] w-fit border-black bg-[#EDEDE9] border-[3px] overflow-hidden shadow-md'>
+                <div className='flex flex-row gap-4 border-[2px] w-fit border-black bg-[#EDEDE9] overflow-hidden shadow-md'>
                     <button 
-                        className={`cursor-pointer px-4 py-2 transition-all duration-300 relative text-small ${
+                        className={`cursor-pointer px-4 py-2 transition-all duration-150 relative ${
                             view === "highlights" 
-                                ? "bg-[#FEC72F] text-black font-semibold shadow-lg transform scale-105" 
-                                : "hover:bg-[#FEC72F]/30 hover:font-medium"
+                                ? "bg-[#FEC72F] border-b-[3px] border-black" 
+                                : "hover:bg-[#FEC72F]/30 border-b-[3px] border-transparent"
                         }`}
                         onClick={() => setView("highlights")}
                     >
-                        <h4>Highlights</h4>
+                        <div className='text-body'>HIGHLIGHTS</div>
                         {view === "highlights" && (
                             <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#FEC72F]"></div>
                         )}
                     </button>
                     <button 
-                        className={`cursor-pointer px-4 py-2 transition-all duration-300 relative text-small ${
+                        className={`cursor-pointer px-4 py-2 transition-all duration-150 relative ${
                             view === "blogs" 
-                                ? "bg-[#FEC72F] text-black font-semibold shadow-lg transform scale-105" 
-                                : "hover:bg-[#FEC72F]/30 hover:font-medium"
+                                ? "bg-[#FEC72F] text-black border-b-[3px] border-black" 
+                                : "hover:bg-[#FEC72F]/30 border-b-[3px] border-transparent"
                         }`}
                         onClick={() => setView("blogs")}
                     >
-                        <h4>Posts</h4>
+                        <div className='text-body'>POSTS</div>
                         {view === "blogs" && (
                             <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#FEC72F]"></div>
                         )}
                     </button>
                     <button 
-                        className={`cursor-pointer px-4 py-2 transition-all duration-300 relative text-small ${
+                        className={`cursor-pointer px-4 py-2 transition-all duration-150 relative ${
                             view === "collections" 
-                                ? "bg-[#FEC72F] text-black font-semibold shadow-lg transform scale-105" 
-                                : "hover:bg-[#FEC72F]/30 hover:font-medium"
+                                ? "bg-[#FEC72F] text-black border-b-[3px] border-black" 
+                                : "hover:bg-[#FEC72F]/30 border-b-[3px] border-transparent"
                         }`}
                         onClick={() => setView("collections")}
                     >
-                        <h4>Collections</h4>
+                        <div className='text-body'>COLLECTIONS</div>
                         {view === "collections" && (
                             <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#FEC72F]"></div>
                         )}
                     </button>
                     {profile?._id === user?._id && (
                         <button 
-                            className={`cursor-pointer px-4 py-2 transition-all duration-300 relative text-small ${
+                            className={`cursor-pointer px-4 py-2 transition-all duration-150 relative ${
                                 view === "liked" 
-                                    ? "bg-[#FEC72F] text-black font-semibold shadow-lg transform scale-105" 
-                                    : "hover:bg-[#FEC72F]/30 hover:font-medium"
+                                    ? "bg-[#FEC72F] text-black border-b-[3px] border-black" 
+                                    : "hover:bg-[#FEC72F]/30 border-b-[3px] border-transparent"
                             }`}
                             onClick={() => setView("liked")}
                         >
-                            <h4>Liked</h4>
+                            <div className='text-body'>LIKED</div>
                             {view === "liked" && (
                                 <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#FEC72F]"></div>
                             )}

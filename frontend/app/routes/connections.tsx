@@ -533,44 +533,44 @@ const Connections = () => {
         <div className='flex-grow flex flex-col gap-[50px]'>
 
           {/* Navigation Tabs */}
-          <div className='flex flex-row gap-4 border-[1px] w-fit border-black bg-[#EDEDE9] border-[3px] overflow-hidden shadow-md'>
+          <div className='flex flex-row gap-4 border-[2px] w-fit border-black bg-[#EDEDE9] overflow-hidden shadow-md'>
             {stats.totalPosts > 0 && (
               <button 
-                className={`cursor-pointer px-4 py-2 transition-all duration-300 relative text-small ${
+                className={`cursor-pointer px-4 py-2 transition-all duration-150 relative ${
                   view === "stats" 
-                    ? "bg-[#FEC72F] text-black font-semibold shadow-lg transform scale-105" 
-                    : "hover:bg-[#FEC72F]/30 hover:font-medium"
+                    ? "bg-[#FEC72F] text-black border-b-[3px] border-black" 
+                    : "hover:bg-[#FEC72F]/30 border-b-[3px] border-transparent"
                 }`}
                 onClick={() => setView("stats")}
               >
-                <h4>Stats</h4>
+                <div className='text-body'>STATS</div>
                 {view === "stats" && (
                   <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#FEC72F]"></div>
                 )}
               </button>
             )}
             <button 
-              className={`cursor-pointer px-4 py-2 transition-all duration-300 relative text-small ${
+              className={`cursor-pointer px-4 py-2 transition-all duration-150 relative ${
                 view === "connections" 
-                  ? "bg-[#FEC72F] text-black font-semibold shadow-lg transform scale-105" 
-                  : "hover:bg-[#FEC72F]/30 hover:font-medium"
+                  ? "bg-[#FEC72F] text-black border-b-[3px] border-black" 
+                  : "hover:bg-[#FEC72F]/30 border-b-[3px] border-transparent"
               }`}
               onClick={() => setView("connections")}
             >
-              <h4>Connections</h4>
+              <div className='text-body'>CONNECTIONS</div>
               {view === "connections" && (
                 <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#FEC72F]"></div>
               )}
             </button>
             <button 
-              className={`cursor-pointer px-4 py-2 transition-all duration-300 relative text-small ${
+              className={`cursor-pointer px-4 py-2 transition-all duration-150 relative ${
                 view === "comments" 
-                  ? "bg-[#FEC72F] text-black font-semibold shadow-lg transform scale-105" 
-                  : "hover:bg-[#FEC72F]/30 hover:font-medium"
+                  ? "bg-[#FEC72F] text-black border-b-[3px] border-black" 
+                  : "hover:bg-[#FEC72F]/30 border-b-[3px] border-transparent"
               }`}
               onClick={() => setView("comments")}
             >
-              <h4>My Comments</h4>
+              <div className='text-body'>MY COMMENTS</div>
               {view === "comments" && (
                 <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#FEC72F]"></div>
               )}

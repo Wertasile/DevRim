@@ -179,18 +179,39 @@ const base = () => {
                 <Outlet/>
             </main>
 
-            {/* <footer className='bg-[#211F2D] text-[gray] flex flex-wrap flex-col sm:flex-row justify-around items-center px-[10px] py-[20px] bottom-0'>
-                                       
-                <a href="emailto:ahmedmharfan@gmail.com" target="_blank" className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>Email Developer(s)</a>
-                <a href="https://github.com/Wertasile" target="_blank" className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>GitHub</a>
-                <a href="https://www.linkedin.com/in/ahmed-mohamed-haniffa-arfan-989267202/" target="_blank" className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>LinkedIn</a>
-                <a href="https://ahmedarfan.netlify.app" target="_blank" className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>Developer's Website</a>
-                
-                <a href="#" className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>Policies</a>
-                <a href="#" className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>Terms of Use</a>
-                <a href="#" className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>Code of Conduct</a>
-                <a href="#"className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>Privacy</a> 
-            </footer> */}
+            <footer className='bg-[#9084C2] flex flex-wrap flex-col gap-[50px] sm:flex-row justify-around items-center px-[10px] sm:py-[50px] bottom-0 border-t-[3px] border-solid border-[#000000]'>
+                <div>
+                    <img src="/Images/DevRim_Logo_0.png" width="32"/>
+                    <h2>MIRVED</h2>
+                    <p>A platform for developers to connect and collaborate.</p>
+                </div>
+                <div className='flex flex-row gap-[25px]'>
+                    <div className='flex flex-col gap-2'>
+                        <h3>Quick Links</h3>
+                        <a href="/" className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>Home</a>
+                        <a href="/dashboard" className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>Dashboard</a>
+                        <a href="/chats" className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>Chats</a>
+                        <a href="/about" className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>About</a>
+                        <a href="/help" className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>Help</a>
+                    </div>
+                    <div className='flex flex-col gap-2'>                       
+                        <h3>Contact Us</h3>
+                        <a href="emailto:ahmedmharfan@gmail.com" target="_blank" className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>Email Developer(s)</a>
+                        <a href="https://github.com/Wertasile" target="_blank" className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>GitHub</a>
+                        <a href="https://www.linkedin.com/in/ahmed-mohamed-haniffa-arfan-989267202/" target="_blank" className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>LinkedIn</a>
+                        <a href="https://ahmedarfan.netlify.app" target="_blank" className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>Developer's Website</a>
+                    </div>
+                    
+                    <div className='flex flex-col gap-2'>
+                        <h3>Policies</h3>
+                        <a href="#" className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>Policies</a>
+                        <a href="#" className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>Terms of Use</a>
+                        <a href="#" className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>Code of Conduct</a>
+                        <a href="#"className='hover:text-white hover:duration-[200ms] hover:ease-in-out'>Privacy</a> 
+                    </div>
+                </div>
+
+            </footer>
         </div>
     )
 }

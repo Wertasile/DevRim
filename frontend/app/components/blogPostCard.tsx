@@ -251,7 +251,7 @@ const BlogPostCard = ({
                 <img 
                   src={postCommunity.picture} 
                   alt={postCommunity.title}
-                  className="w-[32px] h-[32px] rounded-full object-cover border border-[#000000]"
+                  className="w-[24px] h-[24px] rounded-full object-cover border border-[#000000]"
                 />
               ) : (
                 <div className="w-5 h-5 rounded-full bg-[#E95444] border border-[#000000] flex items-center justify-center flex-shrink-0">
@@ -267,7 +267,7 @@ const BlogPostCard = ({
         
         <div className='flex justify-between w-full'>
           <div className='flex gap-[10px] p-[5px]'>
-            <img src={postUser.picture} className="rounded-full" width={48} height={48} />
+            <img src={postUser.picture} className="rounded-full" width={32} height={32} />
             <div className='flex flex-col'>
               <span className="text-small">{postUser._id === user?._id ? "Your publication" : postUser.name}</span>
               <span className="text-mini">{formattedDate}</span>
@@ -330,7 +330,7 @@ const BlogPostCard = ({
           </div>
         </div>
 
-        <div>{title}</div>
+        <h4>{title}</h4>
           <div className="flex gap-[25px] text-[#353535]">
 
             <button

@@ -288,13 +288,13 @@ export default function BlogHome() {
 
     return (
         <div className="blog-home min-h-screen">
-            <div className="flex gap-[20px] p-[25px]">
+            <div className="flex gap-[50px] justify-between p-[25px]">
 
                 <Sidebar />
 
-                <section className="flex flex-col flex-grow gap-[10px]">
+                <section className="flex flex-col flex-grow gap-[10px] max-w-[1028px]">
 
-                <div className='flex justify-between items-center'>
+                    <div className='flex justify-between items-center max-w-[1028px]'>
                         <h1>DASHBOARD</h1>
                         <div className='flex gap-[10px]'>
                             <button 
@@ -316,7 +316,7 @@ export default function BlogHome() {
                         </div>
                     )}
 
-                    <div className="flex flex-row gap-4 border-[1px] w-fit border-black bg-[#EDEDE9] border-[3px] overflow-hidden shadow-md" role="tablist" aria-label="Content sections">
+                    <div className="flex flex-row gap-4 border-[1px] w-fit border-black bg-[#EDEDE9] border-[2px] overflow-hidden shadow-md" role="tablist" aria-label="Content sections">
                         {(["For You", "Search Results", "Latest"] as const).map((label,index) => (
                             <button
                                 key={label}
@@ -325,13 +325,13 @@ export default function BlogHome() {
                                 aria-selected={section === label}
                                 aria-controls={`${label.toLowerCase().replace(' ', '-')}-panel`}
                                 id={`${label.toLowerCase().replace(' ', '-')}-tab`}
-                                className={`cursor-pointer px-4 py-2 transition-all duration-300 relative text-small ${
+                                className={`cursor-pointer px-4 py-2 transition-all duration-150 relative ${
                                     section === label 
-                                        ? "bg-[#FEC72F] text-black font-semibold shadow-lg transform scale-105" 
-                                        : "hover:bg-[#FEC72F]/30 hover:font-medium"
+                                        ? "bg-[#FEC72F] border-b-[3px] border-black" 
+                                        : "hover:bg-[#FEC72F]/30 border-b-[3px] border-transparent"
                                 }`}
                             >
-                                <h4>{label}</h4>
+                                <div className='text-body'>{label.toUpperCase()}</div>
                                 {section === label && (
                                     <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#FEC72F]" aria-hidden="true"></div>
                                 )}

@@ -277,9 +277,9 @@ export default function Community({ params }: Route.ComponentProps) {
           {/* Community Header */}
           <div className='flex justify-between items-center'>
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-[#E95444] flex items-center justify-center flex-shrink-0 border-2 border-[#000000]">
+              <div className="w-16 h-16 bg-[#E95444] flex items-center justify-center flex-shrink-0 border-2 border-[#000000]">
                 {community.picture ? (
-                <img src={community.picture} alt={community.title.toUpperCase()} className="w-full h-full rounded-full border-2 border-[#000000] object-cover" />
+                <img src={community.picture} alt={community.title.toUpperCase()} className="w-full h-full border-[1px] border-[#000000] object-cover" />
                 ) : (
                 getCommunityIcon(community.title)
                 )}
@@ -409,7 +409,7 @@ export default function Community({ params }: Route.ComponentProps) {
                     const announcementData = typeof announcement === 'object' ? announcement : null;
                     if (!announcementData) return null;
                     return (
-                      <div key={announcementData._id} className="p-3 bg-[#D6D6CD] border border-[#000000] rounded-lg">
+                      <div key={announcementData._id} className="p-3 bg-[#E95444]/20 border-b-[1px] rounded-[5px] border-[#979797]">
                         <h4 className="font-semibold text-black mb-1">{announcementData.title}</h4>
                         <p className="text-small text-black mb-2">{announcementData.content}</p>
                         <p className="text-mini text-[#979797]">
